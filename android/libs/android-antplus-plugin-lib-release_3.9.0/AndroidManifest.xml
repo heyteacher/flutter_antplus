@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This software is subject to the license described in the License.txt file
+  ~ included with this software distribution. You may not use this file except in compliance
+  ~ with this license.
+  ~
+  ~ Copyright (c) Garmin Canada Inc. 2020
+  ~ All rights reserved.
+  ~
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.dsi.ant.plugins.pluginlib" >
+
+    <uses-sdk android:minSdkVersion="7" />
+
+    <!-- Added in API Level 30 as packages and intents are no longer visible by default -->
+    <queries>
+
+        <!-- Declares dependency on the ANT+ Plugin Service -->
+        <package android:name="com.dsi.ant.plugins.antplus" />
+
+        <!-- Declares dependency on the ANT Radio Service -->
+        <package android:name="com.dsi.ant.service.socket" />
+
+        <intent>
+            <action android:name="com.dsi.ant.plugins.antplus.queryalreadyconnecteddevices" />
+        </intent>
+    </queries>
+
+</manifest>

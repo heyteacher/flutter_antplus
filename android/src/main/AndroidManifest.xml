@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="me.heyteacher.flutter_antplus">
+  <queries>
+    <!-- Declares dependency on the ANT+ Plugin Service -->
+    <package android:name="com.dsi.ant.plugins.antplus" />
+    <!-- Declares dependency on the ANT Radio Service -->
+    <package android:name="com.dsi.ant.service.socket" />
+    <intent>
+      <action android:name="com.dsi.ant.plugins.antplus.queryalreadyconnecteddevices" />
+    </intent>
+  </queries>
+</manifest>
