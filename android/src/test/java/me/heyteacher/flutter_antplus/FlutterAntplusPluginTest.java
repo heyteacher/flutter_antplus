@@ -17,7 +17,7 @@ import org.junit.Test;
 
 public class FlutterAntplusPluginTest {
   @Test
-  public void onMethodCall_scan_returnsExpectedValue() {
+  public void onMethodCall_startScan_returnsExpectedValue() {
     FlutterAntplusPlugin plugin = new FlutterAntplusPlugin();
 
     final MethodCall call = new MethodCall("scan", null);

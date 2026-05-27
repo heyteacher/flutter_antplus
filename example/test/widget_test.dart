@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('Verify Platform version', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const HomePage());
 
     // Verify that platform version is retrieved.
     expect(

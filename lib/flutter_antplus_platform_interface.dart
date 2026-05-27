@@ -23,8 +23,21 @@ abstract class FlutterAntplusPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// On scan result stream.
+  Stream<Map<dynamic, dynamic>> get onScanResultStream;
+
+  /// On heart rate data stream.
+  Stream<Map<dynamic, dynamic>> get onHeartRateDataStream;
+
   /// Starts scan devices.
-  Future<String?> scan() {
-    throw UnimplementedError('scan() has not been implemented.');
-  }
+  Future<String?> startScan();
+
+  /// Stop scan devices.
+  Future<String?> stopScan();
+
+  /// Connect to device with [deviceNumber].
+  Future<String?> connect(int deviceNumber);
+
+  /// Disconnect to device .
+  Future<String?> disconnect();
 }

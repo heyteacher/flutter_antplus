@@ -15,7 +15,7 @@ void main() {
 
   testWidgets('scan test', (tester) async {
     final plugin = FlutterAntplus();
-    final version = await plugin.scan();
+    final version = await plugin.startScan();
     // The version string depends on the host platform running the test, so
     // just assert that some non-empty string is returned.
     expect(version?.isNotEmpty, true);

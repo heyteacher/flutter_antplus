@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.EnumSet;
 
 public class MyLegacyHeartRateCompat implements MyAntPlusHeartRatePcc.IHeartRateDataReceiver {
-    private MyAntPlusHeartRatePcc.IHeartRateDataReceiver mHeartRateDataReceiver;
+    private final MyAntPlusHeartRatePcc.IHeartRateDataReceiver mHeartRateDataReceiver;
     private long mEstTimestamp = -1L;
     private EnumSet<EventFlag> mEventFlags;
     private int mComputedHeartRate;
@@ -21,7 +21,7 @@ public class MyLegacyHeartRateCompat implements MyAntPlusHeartRatePcc.IHeartRate
         this.mHeartRateDataReceiver = HeartRateDataReceiver;
     }
 
-    public void onNewHeartRateDataTimestamp(long estTimestamp, EnumSet<EventFlag> eventFlags, BigDecimal heartBeatEventTime) {
+    public void onNewHeartRateDataTimestamp(long estTimestamp, EnumSet<EventFlag> ignoredEventFlags, BigDecimal heartBeatEventTime) {
         if (estTimestamp == this.mEstTimestamp) {
             this.mHeartRateDataReceiver.onNewHeartRateData(this.mEstTimestamp, this.mEventFlags, this.mComputedHeartRate, this.mHeartBeatCount, heartBeatEventTime, this.mDataState);
         }
@@ -34,14 +34,6 @@ public class MyLegacyHeartRateCompat implements MyAntPlusHeartRatePcc.IHeartRate
         this.mComputedHeartRate = computedHeartRate;
         this.mHeartBeatCount = heartBeatCount;
         this.mDataState = dataState;
-    }
-
-    /** @deprecated */
-    @Deprecated
-    private interface IHeartRateDataTimestampReceiver {
-        /** @deprecated */
-        @Deprecated
-        void onNewHeartRateDataTimestamp(long var1, EnumSet<EventFlag> var3, BigDecimal var4);
     }
 }
 

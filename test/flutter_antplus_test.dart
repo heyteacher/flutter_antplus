@@ -8,7 +8,22 @@ class MockFlutterAntplusPlatform
     with MockPlatformInterfaceMixin
     implements FlutterAntplusPlatform {
   @override
-  Future<String?> scan() => Future.value('42');
+  Future<String?> startScan() => Future.value('scanning');
+  @override
+  Stream<Map<String, dynamic>> get onScanResultStream => const Stream.empty();
+
+  @override
+  Future<String?> connect(int deviceNumber) => Future.value('connecting...');
+
+  @override
+  Stream<Map<dynamic, dynamic>> get onHeartRateDataStream =>
+      const Stream.empty();
+
+  @override
+  Future<String?> disconnect() => Future.value('disconnected');
+
+  @override
+  Future<String?> stopScan() => Future.value('stop scan');
 }
 
 void main() {
@@ -23,6 +38,6 @@ void main() {
     final fakePlatform = MockFlutterAntplusPlatform();
     FlutterAntplusPlatform.instance = fakePlatform;
 
-    expect(await flutterAntplusPlugin.scan(), '42');
+    expect(await flutterAntplusPlugin.startScan(), '42');
   });
 }

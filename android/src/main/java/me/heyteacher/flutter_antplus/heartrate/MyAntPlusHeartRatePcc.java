@@ -1,6 +1,5 @@
 package me.heyteacher.flutter_antplus.heartrate;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +12,7 @@ import com.dsi.ant.plugins.antplus.pccbase.AntPluginPcc;
 import com.dsi.ant.plugins.antplus.pccbase.AntPlusLegacyCommonPcc;
 import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController;
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -26,15 +26,6 @@ public class MyAntPlusHeartRatePcc extends AntPlusLegacyCommonPcc {
 
     protected int getRequiredServiceVersionForBind() {
         return 0;
-    }
-
-    public static PccReleaseHandle<MyAntPlusHeartRatePcc> requestAccess(Activity userActivity, Context bindToContext, boolean skipPreferredSearch, int searchProximityThreshold, AntPluginPcc.IPluginAccessResultReceiver<MyAntPlusHeartRatePcc> resultReceiver, AntPluginPcc.IDeviceStateChangeReceiver stateReceiver) {
-        MyAntPlusHeartRatePcc potentialRetObj = new MyAntPlusHeartRatePcc();
-        return requestAccess_Helper_SearchActivity(userActivity, bindToContext, skipPreferredSearch, searchProximityThreshold, potentialRetObj, resultReceiver, stateReceiver);
-    }
-
-    public static PccReleaseHandle<MyAntPlusHeartRatePcc> requestAccess(Activity userActivity, Context bindToContext, AntPluginPcc.IPluginAccessResultReceiver<MyAntPlusHeartRatePcc> resultReceiver, AntPluginPcc.IDeviceStateChangeReceiver stateReceiver) {
-        return requestAccess(userActivity, bindToContext, false, -1, resultReceiver, stateReceiver);
     }
 
     public static PccReleaseHandle<MyAntPlusHeartRatePcc> requestAccess(Context bindToContext, int antDeviceNumber, int searchProximityThreshold, AntPluginPcc.IPluginAccessResultReceiver<MyAntPlusHeartRatePcc> resultReceiver, AntPluginPcc.IDeviceStateChangeReceiver stateReceiver) {
@@ -74,7 +65,7 @@ public class MyAntPlusHeartRatePcc extends AntPlusLegacyCommonPcc {
                     eventFlags = EventFlag.getEventFlagsFromLong(b.getLong("long_EventFlags"));
                     computedHeartRate = b.getInt("int_computedHeartRate");
                     long heartBeatCounter = b.getLong("long_heartBeatCounter");
-                    BigDecimal heartBeatEventTime = (BigDecimal)b.getSerializable("decimal_timestampOfLastEvent");
+                    BigDecimal heartBeatEventTime = (BigDecimal) b.getSerializable("decimal_timestampOfLastEvent");
                     DataState dataState;
                     if (b.containsKey("int_dataState")) {
                         dataState = DataState.getValueFromInt(b.getInt("int_dataState"));
@@ -90,7 +81,7 @@ public class MyAntPlusHeartRatePcc extends AntPlusLegacyCommonPcc {
                     b = eventMsg.getData();
                     estTimestamp = b.getLong("long_EstTimestamp");
                     eventFlags = EventFlag.getEventFlagsFromLong(b.getLong("long_EventFlags"));
-                    calculatedRrInterval = (BigDecimal)b.getSerializable("decimal_timestampOfLastEvent");
+                    calculatedRrInterval = (BigDecimal) b.getSerializable("decimal_timestampOfLastEvent");
                     this.mCompat.onNewHeartRateDataTimestamp(estTimestamp, eventFlags, calculatedRrInterval);
                 }
                 break;
@@ -100,7 +91,7 @@ public class MyAntPlusHeartRatePcc extends AntPlusLegacyCommonPcc {
                     estTimestamp = b.getLong("long_EstTimestamp");
                     eventFlags = EventFlag.getEventFlagsFromLong(b.getLong("long_EventFlags"));
                     computedHeartRate = b.getInt("int_manufacturerSpecificByte");
-                    BigDecimal previousHeartBeatEventTime = (BigDecimal)b.getSerializable("decimal_timestampOfPreviousToLastHeartBeatEvent");
+                    BigDecimal previousHeartBeatEventTime = (BigDecimal) b.getSerializable("decimal_timestampOfPreviousToLastHeartBeatEvent");
                     this.mPage4AddtDataReceiver.onNewPage4AddtData(estTimestamp, eventFlags, computedHeartRate, previousHeartBeatEventTime);
                 }
                 break;
@@ -112,7 +103,7 @@ public class MyAntPlusHeartRatePcc extends AntPlusLegacyCommonPcc {
                     b = eventMsg.getData();
                     estTimestamp = b.getLong("long_EstTimestamp");
                     eventFlags = EventFlag.getEventFlagsFromLong(b.getLong("long_EventFlags"));
-                    calculatedRrInterval = (BigDecimal)b.getSerializable("decimal_calculatedRrInterval");
+                    calculatedRrInterval = (BigDecimal) b.getSerializable("decimal_calculatedRrInterval");
                     RrFlag rrFlag = RrFlag.getValueFromInt(b.getInt("int_rrFlag"));
                     this.mCalculatedRrIntervalReceiver.onNewCalculatedRrInterval(estTimestamp, eventFlags, calculatedRrInterval, rrFlag);
                 }
@@ -154,31 +145,6 @@ public class MyAntPlusHeartRatePcc extends AntPlusLegacyCommonPcc {
         }
 
     }
-
-    public void subscribePage4AddtDataEvent(IPage4AddtDataReceiver Page4AddtDataReceiver) {
-        this.mPage4AddtDataReceiver = Page4AddtDataReceiver;
-        if (Page4AddtDataReceiver != null) {
-            this.subscribeToEvent(203);
-        } else {
-            this.unsubscribeFromEvent(203);
-        }
-
-    }
-
-    public void subscribeCalculatedRrIntervalEvent(ICalculatedRrIntervalReceiver CalculatedRrIntervalReceiver) {
-        if (this.reportedServiceVersion < 20208) {
-            Log.d(TAG, "subscribeCalculatedRrIntervalEvent requires ANT+ Plugins Service >20208, installed: " + this.reportedServiceVersion);
-        } else {
-            this.mCalculatedRrIntervalReceiver = CalculatedRrIntervalReceiver;
-            if (CalculatedRrIntervalReceiver != null) {
-                this.subscribeToEvent(207);
-            } else {
-                this.unsubscribeFromEvent(207);
-            }
-        }
-    }
-
-
     public interface IHeartRateDataReceiver {
         void onNewHeartRateData(long var1, EnumSet<EventFlag> var3, int var4, long var5, BigDecimal var7, DataState var8);
     }

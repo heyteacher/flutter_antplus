@@ -21,6 +21,6 @@ void main() {
   });
 
   test('scan', () async {
-    expect(await platform.scan(), '42');
+    expect(await platform.startScan(), '42');
   });
 }
