@@ -95,7 +95,7 @@ public class FlutterAntplusPlugin implements FlutterPlugin, MethodCallHandler {
                 deviceNumber = (Integer) Objects.requireNonNull(args).get("deviceNumber");
                 if (deviceNumber != null) {
                     connect(deviceNumber);
-                    result.success("Device " + deviceNumber + " disconnected");
+                    result.success("Device " + deviceNumber + " connected");
                 } else {
                     result.error("Connection failed: mandatory deviceNumber not set", null, null);
                 }

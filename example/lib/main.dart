@@ -7,6 +7,8 @@ import 'package:flutter_heyteacher_locale/flutter_heyteacher_locale.dart';
 import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart'
     show LoggerViewModel;
 import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'
+    show FaIcon, FontAwesomeIcons;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -115,72 +117,82 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Flutter Ant+ Example')),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-        floatingActionButton: FloatingActionTextIconButtom(
-          text: 'Scan',
-          backgroundColor: _scanning
-              ? ThemeViewModel.instance.redColor
-              : ThemeViewModel.instance.greenColor,
-          iconData: _scanning ? Icons.stop_circle : Icons.play_circle,
-          onPressed: _scanning ? _stopScan : _startScan,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 50),
-          child: ListView(
-            children: _devices.values
-                .map(
-                  (device) => Column(
-                    children: [
-                      const Divider(height: 1, color: Colors.black12),
-                      ListTile(
-                        title: Text(
-                          '${device['deviceNumber']} ${device['displayName']}',
-                        ),
-                        subtitle: Text(
-                          device['alreadyConnected'] == true
-                              ? "${_heartRateData['heartRate']} bpm"
-                              : '',
-                        ),
-                        trailing: device['alreadyConnected'] == true
-                            ? OutlinedButton(
-                                onPressed: () =>
-                                    _disconnect(device['deviceNumber'] as int),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor:
-                                      ThemeViewModel.instance.redColor,
-                                ),
-                                child: const Text('Disconnect'),
-                              )
-                            : OutlinedButton(
-                                onPressed: () =>
-                                    _connect(device['deviceNumber'] as int),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor:
-                                      ThemeViewModel.instance.greenColor,
-                                ),
-                                child: const Text('Connect'),
-                              ),
-                      ),
-                      const Divider(height: 1, color: Colors.black12),
-                    ],
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-        bottomSheet: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(_statusMessage ?? ''),
-            ),
-          ],
-        ),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: const Text('Flutter Ant+ Example'),
+      actions: const [ThemeModeButton()],
+    ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    floatingActionButton: Padding(
+      padding: const EdgeInsets.only(bottom: 40),
+      child: FloatingActionTextIconButtom(
+        text: 'Scan',
+        backgroundColor: _scanning
+            ? ThemeViewModel.instance.redColor
+            : ThemeViewModel.instance.greenColor,
+        iconData: _scanning ? Icons.stop_circle : Icons.play_circle,
+        onPressed: _scanning ? _stopScan : _startScan,
       ),
-    );
-  }
+    ),
+    body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: ListView(
+        children: _devices.values
+            .map(
+              (device) => Column(
+                children: [
+                  ListTile(
+                    leading: const FaIcon(FontAwesomeIcons.heartPulse),
+                    title: Text(
+                      '${device['deviceNumber']} ${device['displayName']}',
+                    ),
+                    subtitle: Text(
+                      device['alreadyConnected'] == true &&
+                              _heartRateData['heartRate'] != null
+                          ? "${_heartRateData['heartRate']} bpm"
+                          : 'no data',
+                    ),
+                    trailing: device['alreadyConnected'] == true
+                        ? OutlinedButton(
+                            onPressed: () =>
+                                _disconnect(device['deviceNumber'] as int),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: ThemeViewModel.instance.redColor,
+                              side: BorderSide(
+                                color: ThemeViewModel.instance.redColor,
+                              ),
+                            ),
+                            child: const Text('Disconnect'),
+                          )
+                        : OutlinedButton(
+                            onPressed: () =>
+                                _connect(device['deviceNumber'] as int),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor:
+                                  ThemeViewModel.instance.greenColor,
+                              side: BorderSide(
+                                color: ThemeViewModel.instance.greenColor,
+                              ),
+                            ),
+                            child: const Text('Connect'),
+                          ),
+                  ),
+                  const Divider(),
+                ],
+              ),
+            )
+            .toList(),
+      ),
+    ),
+    bottomSheet: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(_statusMessage ?? ''),
+        ),
+      ],
+    ),
+  );
 }
