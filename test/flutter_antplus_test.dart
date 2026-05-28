@@ -38,6 +38,6 @@ void main() {
     final fakePlatform = MockFlutterAntplusPlatform();
     FlutterAntplusPlatform.instance = fakePlatform;
 
-    expect(await flutterAntplusPlugin.startScan(), '42');
+    expect(await flutterAntplusPlugin.startScan(), 'scanning');
   });
 }

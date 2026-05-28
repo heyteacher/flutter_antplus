@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_antplus/flutter_antplus_platform_interface.dart';
 import 'package:logging/logging.dart';
@@ -9,6 +10,7 @@ import 'package:logging/logging.dart';
 class MethodChannelFlutterAntplus extends FlutterAntplusPlatform {
   /// Constructs a [MethodChannelFlutterAntplus].
   MethodChannelFlutterAntplus() {
+    WidgetsFlutterBinding.ensureInitialized();
     _methodChannel.setMethodCallHandler(_methodCallHandler);
   }
   final _logger = Logger('MethodChannelFlutterAntplus');
