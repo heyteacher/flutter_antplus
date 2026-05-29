@@ -2,6 +2,7 @@ group = "me.heyteacher.flutter_antplus"
 version = "1.0"
 
 buildscript {
+    val kotlinVersion by extra("1.9.24")
     repositories {
         google()
         mavenCentral()
@@ -10,6 +11,7 @@ buildscript {
 
     dependencies {
         classpath("com.android.tools.build:gradle:8.11.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }
 
@@ -23,12 +25,14 @@ allprojects {
 
 plugins {
     id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
+
     namespace = "me.heyteacher.flutter_antplus"
 
-    compileSdk = 33
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -48,6 +52,9 @@ android {
                 showStandardStreams = true
             }
         }
+    }
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 

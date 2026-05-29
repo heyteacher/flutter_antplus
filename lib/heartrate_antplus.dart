@@ -1,42 +1,30 @@
 import 'dart:async';
 
-import 'package:flutter_antplus/src/heartrate.g.dart';
+import 'package:flutter_antplus/src/pigeons/heartrate.g.dart';
+import 'package:flutter_antplus/src/pigeons/heyteacher_event_channel.g.dart'
+    show
+        AntplusDevice,
+        AntplusDeviceState,
+        onDeviceStateChange,
+        onHeartRateData,
+        onScanResult;
 
-export 'src/heartrate.g.dart' show AntplusDevice, AntplusDeviceState;
+export 'src/pigeons/heyteacher_event_channel.g.dart'
+    show AntplusDevice, AntplusDeviceState;
 
 /// The flutter Ant+ plugin
-class HeartrateAntplus implements HeartrateFlutterApi {
-  /// Creates [HeartrateAntplus]
-  HeartrateAntplus() {
-    HeartrateFlutterApi.setUp(this);
-  }
-
+class HeartrateAntplus {
   final HeartrateHostApi _hostApi = HeartrateHostApi();
 
-  final _onScanResultController = StreamController<AntplusDevice>.broadcast();
-
   /// on scan result stream
-  Stream<AntplusDevice> get onScanResultStream =>
-      _onScanResultController.stream;
-
-  final _onHeartRateDataController = StreamController<int>.broadcast();
+  Stream<AntplusDevice> get onScanResultStream => onScanResult.call();
 
   /// on data stream
-  Stream<int> get onHeartRateDataStream => _onHeartRateDataController.stream;
-
-  final _onDeviceStateChangeController =
-      StreamController<AntplusDeviceState>.broadcast();
+  Stream<int> get onHeartRateDataStream => onHeartRateData.call();
 
   /// on device state change stream
   Stream<AntplusDeviceState> get onDeviceStateChangeStream =>
-      _onDeviceStateChangeController.stream;
-
-  /// Dispose.
-  void dispose() {
-    unawaited(_onScanResultController.close());
-    unawaited(_onHeartRateDataController.close());
-    unawaited(_onDeviceStateChangeController.close());
-  }
+      onDeviceStateChange();
 
   /// Starts scan.
   Future<void> startScan() => _hostApi.startScan();
@@ -49,19 +37,4 @@ class HeartrateAntplus implements HeartrateFlutterApi {
 
   /// Disconnect to device .
   Future<void> disconnect() => _hostApi.disconnect();
-
-  @override
-  void onHeartRateData(int rpm) {
-    _onHeartRateDataController.sink.add(rpm);
-  }
-
-  @override
-  void onScanResult(AntplusDevice device) {
-    _onScanResultController.sink.add(device);
-  }
-
-  @override
-  void onDeviceStateChange(AntplusDeviceState state) {
-    _onDeviceStateChangeController.sink.add(state);
-  }
 }
