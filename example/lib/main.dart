@@ -67,7 +67,6 @@ class _HomePageState extends State<HomePage> {
     unawaited(_onScanResultStreamSubscription?.cancel());
     unawaited(_onHeartRateDataStreamSubscription?.cancel());
     unawaited(_onDeviceStateChangeStreamSubscription?.cancel());
-    _heartrateAntplus.dispose();
     super.dispose();
   }
 
