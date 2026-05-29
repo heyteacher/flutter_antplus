@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.3.0+3] - 2026-05-29
+
+### 🚀 Features [0.3.0]
+
+- Implents plugin and pigeons in kotlin and implements even channel ([10f77d7](https://codeberg.org/heyteacher/flutter_antplus/commit/10f77d7169133c8a14b6b5cb3bcf7dd8e963f5db)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.3.0]
+
+- *(release)* New version 0.3.0+3 which closes ([#5](https://codeberg.org/heyteacher/flutter_antplus/issues/5)) ([a6e7eb6](https://codeberg.org/heyteacher/flutter_antplus/commit/a6e7eb61712808be4c78fce5977bb6fa55b42e3f)) by **heyteacher**
+
 ## [flutter_antplus-0.2.0+2] - 2026-05-29
 
 ### 🚀 Features [0.2.0]
