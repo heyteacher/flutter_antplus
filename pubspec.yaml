@@ -17,15 +17,13 @@ dev_dependencies:
   flutter_heyteacher_meta: ^7.6.9+178 
   flutter_test:
     sdk: flutter
+  pigeon: ^26.3.4
   very_good_analysis: ^10.2.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
   plugin:
     platforms:
       android:
         package: me.heyteacher.flutter_antplus
-        pluginClass: FlutterAntplusPlugin
+        pluginClass: AntplusFlutterPlugin
+  
