@@ -25,7 +25,6 @@ allprojects {
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -35,8 +34,8 @@ android {
     compileSdk = 34
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     defaultConfig {
@@ -53,9 +52,9 @@ android {
             }
         }
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    //kotlinOptions {
+    //    jvmTarget = "17"
+    //}
 }
 
 dependencies {
