@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.4.1+5] - 2026-06-04
+
+### 🛠️ Build [0.4.1]
+
+- Bigrates to built-in Kotlin and updates minimum supported SDK version to Flutter 3.44/Dart 3.12 ([4bea722](https://codeberg.org/heyteacher/flutter_antplus/commit/4bea722525b535438c3a9e01fcc8790429ad470d)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.4.1]
+
+- *(release)* New version 0.4.1+5 which closes ([#7](https://codeberg.org/heyteacher/flutter_antplus/issues/7)) ([e7b1e12](https://codeberg.org/heyteacher/flutter_antplus/commit/e7b1e1274854c620339877733fc2a2d9718c9681)) by **heyteacher**
+
 ## [flutter_antplus-0.4.0+4] - 2026-06-04
 
 ### 🚀 Features [0.4.0]
