@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.4.0+4] - 2026-06-04
+
+### 🚀 Features [0.4.0]
+
+- Power bike ([b07e56d](https://codeberg.org/heyteacher/flutter_antplus/commit/b07e56d648c5a3a571a52b80c72aa9a6c454da38)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.4.0]
+
+- *(release)* New version 0.4.0+4 which closes ([#3](https://codeberg.org/heyteacher/flutter_antplus/issues/3)) ([190f012](https://codeberg.org/heyteacher/flutter_antplus/commit/190f012737cafacae36499fa3d1c2c71767d3670)) by **heyteacher**
+
 ## [flutter_antplus-0.3.0+3] - 2026-05-29
 
 ### 🚀 Features [0.3.0]
