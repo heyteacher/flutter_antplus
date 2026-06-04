@@ -7,37 +7,21 @@ import 'package:pigeon/pigeon.dart';
 @ConfigurePigeon(
   PigeonOptions(
     // dart
-    dartOut: 'lib/src/pigeons/heyteacher_event_channel.g.dart',
+    dartOut: 'lib/src/pigeons/heartrate_event_channel.g.dart',
     dartOptions: DartOptions(ignoreLints: false),
     dartPackageName: 'heartrate',
     // kotkin
     kotlinOut:
         'android/src/main/kotlin/me/heyteacher/flutter_antplus/heartrate/pigeons/HeartrateEventChannel.g.kt',
-    kotlinOptions: KotlinOptions(includeErrorClass: false),
+    kotlinOptions: KotlinOptions(
+      includeErrorClass: false,
+      package: 'me.heyteacher.flutter_antplus.heartrate.pigeons',
+    ),
   ),
 )
-enum AntplusDeviceState {
-  dead,
-  closed,
-  searching,
-  tracking,
-  processingRequest,
-  unrecognized,
-}
-
-class AntplusDevice {
-  AntplusDevice({
-    required this.number,
-    required this.name,
-  });
-
-  final int number;
-  final String name;
-}
-
 @EventChannelApi()
+//
+// ignore: one_member_abstracts
 abstract class EventChannelMethods {
-  AntplusDevice onScanResult();
   int onHeartRateData();
-  AntplusDeviceState onDeviceStateChange();
 }
