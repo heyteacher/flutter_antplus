@@ -1,11 +1,11 @@
 name: flutter_antplus
 description: "A new Flutter Ant+ plugin"
-version: 0.4.0+4
+version: 0.4.1+5
 homepage:
 
 environment:
-  sdk: ^3.12.0-327.4.beta
-  flutter: '>=3.3.0'
+  sdk: ^3.12.0
+  flutter: ^3.44.0
 
 dependencies:
   flutter:
