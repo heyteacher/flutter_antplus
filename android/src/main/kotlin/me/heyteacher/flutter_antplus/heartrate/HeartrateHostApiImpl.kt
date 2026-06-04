@@ -1,11 +1,5 @@
 package me.heyteacher.flutter_antplus.heartrate
 
-import AntplusDevice
-import AntplusDeviceState
-import OnDeviceStateChangeStreamHandler
-import OnHeartRateDataStreamHandler
-import OnScanResultStreamHandler
-import PigeonEventSink
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -20,15 +14,30 @@ import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController
 import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.AsyncScanResultDeviceInfo
 import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.IAsyncScanResultReceiver
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
-import io.flutter.Log
 import io.flutter.plugin.common.BinaryMessenger
+import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeListener
+import me.heyteacher.flutter_antplus.device.OnRequestAccessResultListener
+import me.heyteacher.flutter_antplus.device.OnScanResultListener
+import me.heyteacher.flutter_antplus.device.pigeons.Device
+import me.heyteacher.flutter_antplus.device.pigeons.DeviceType
+import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
+import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
+import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi
-import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi.Companion.setUp
+import me.heyteacher.flutter_antplus.heartrate.pigeons.OnHeartRateDataStreamHandler
+import me.heyteacher.flutter_antplus.logging.OnLogDataListener
+import me.heyteacher.flutter_antplus.logging.pigeons.LogData
+import me.heyteacher.flutter_antplus.logging.pigeons.LogEvent
 import java.math.BigDecimal
 import java.util.EnumSet
+import me.heyteacher.flutter_antplus.device.pigeons.DeviceState as PigeonDeviceState
+import me.heyteacher.flutter_antplus.device.pigeons.RequestAccessResult as PigeonRequestAccessResult
 
-class HeartrateHostApiImpl(private val context: Context, binaryMessenger: BinaryMessenger) :
-    HeartrateHostApi {
+class HeartrateHostApiImpl(
+    private val context: Context,
+    binaryMessenger: BinaryMessenger,
+    private var onLogDataListener: OnLogDataListener
+) : HeartrateHostApi {
 
     companion object {
         private val TAG: String = HeartrateHostApiImpl::class.java.simpleName
@@ -37,101 +46,142 @@ class HeartrateHostApiImpl(private val context: Context, binaryMessenger: Binary
     private var onScanResultListener: OnScanResultListener = OnScanResultListener()
     private var onDeviceStateChangeListener: OnDeviceStateChangeListener =
         OnDeviceStateChangeListener()
+    private var onRequestAccessResultListener: OnRequestAccessResultListener =
+        OnRequestAccessResultListener()
     private var onHeartRateDataListener: OnHeartRateDataListener = OnHeartRateDataListener()
+
     private var releaseHandle: PccReleaseHandle<AntPlusHeartRatePcc>? = null
     private var hrPcc: AntPlusHeartRatePcc? = null
+
     private val stateChangeReceiver = IDeviceStateChangeReceiver { deviceState ->
-        Log.d(
-            TAG, "<onDeviceStateChange>: " + hrPcc!!.antDeviceNumber + " deviceState " + deviceState
-        )
         Handler(Looper.getMainLooper()).post {
-            onDeviceStateChangeListener.add(
-                when (deviceState) {
-                    DeviceState.DEAD -> AntplusDeviceState.DEAD
-                    DeviceState.CLOSED -> AntplusDeviceState.CLOSED
-                    DeviceState.PROCESSING_REQUEST -> AntplusDeviceState.PROCESSING_REQUEST
-                    DeviceState.SEARCHING -> AntplusDeviceState.SEARCHING
-                    DeviceState.TRACKING -> AntplusDeviceState.TRACKING
-                    DeviceState.UNRECOGNIZED -> AntplusDeviceState.UNRECOGNIZED
-                    null -> AntplusDeviceState.UNRECOGNIZED
-                }
+            onLogDataListener.add(
+                LogData(
+                    LogEvent.VERBOSE,
+                    TAG,
+                    "<onDeviceStateChange>: " + hrPcc?.antDeviceNumber + " deviceState " + deviceState
+                )
             )
+            onDeviceStateChangeListener.add(PigeonDeviceState.valueOf(deviceState.toString()))
         }
     }
     private val accessResultReceiver: IPluginAccessResultReceiver<AntPlusHeartRatePcc?> =
         IPluginAccessResultReceiver { result, resultCode, initialDeviceState ->
-
-            //Handle the result, connecting to events on success or reporting failure to user.
-            Log.d(
-                TAG, "<onResultReceived>: resultCode $resultCode"
-            )
             when (resultCode) {
                 RequestAccessResult.SUCCESS -> {
                     hrPcc = result
-                    Log.d(
-                        TAG,
-                        "(onResultReceived): resultCode $resultCode. deviceNumber " + (result?.antDeviceNumber
-                            ?: "") + " initialDeviceState " + initialDeviceState
-                    )
-                    Handler(Looper.getMainLooper()).post {
-                        onDeviceStateChangeListener.add(
-                            when (initialDeviceState) {
-                                DeviceState.DEAD -> AntplusDeviceState.DEAD
-                                DeviceState.CLOSED -> AntplusDeviceState.CLOSED
-                                DeviceState.PROCESSING_REQUEST -> AntplusDeviceState.PROCESSING_REQUEST
-                                DeviceState.SEARCHING -> AntplusDeviceState.SEARCHING
-                                DeviceState.TRACKING -> AntplusDeviceState.TRACKING
-                                DeviceState.UNRECOGNIZED -> AntplusDeviceState.UNRECOGNIZED
-                                null -> AntplusDeviceState.UNRECOGNIZED
-                            }
-                        )
-                    }
                     hrPcc!!.subscribeHeartRateDataEvent { _: Long, _: EnumSet<EventFlag?>?, computedHeartRate: Int, _: Long, _: BigDecimal?, _: DataState? ->
                         Handler(Looper.getMainLooper()).post {
                             onHeartRateDataListener.add(computedHeartRate.toLong())
                         }
                     }
+                    Handler(Looper.getMainLooper()).post {
+                        onRequestAccessResultListener.add(
+                            PigeonRequestAccessResult.valueOf(resultCode.name)
+                        )
+                        onDeviceStateChangeListener.add(
+                            PigeonDeviceState.valueOf(
+                                initialDeviceState.toString()
+                            )
+                        )
+                        onLogDataListener.add(
+                            LogData(
+                                LogEvent.INFO,
+                                TAG,
+                                "(onResultReceived): resultCode $resultCode. deviceNumber " + (result?.antDeviceNumber
+                                    ?: "") + " initialDeviceState " + initialDeviceState
+                            )
+                        )
+                    }
                 }
 
-                RequestAccessResult.DEPENDENCY_NOT_INSTALLED -> Log.e(
-                    TAG,
-                    "(onResultReceived): resultCode " + resultCode + ". The required service\"" + AntPlusHeartRatePcc.getMissingDependencyName() + "\"was not found. You need to install the ANT+ Plugins service or you may need to update your existing version if you already have it. Do you want to launch the Play Store to get it?"
-                )
+                RequestAccessResult.DEPENDENCY_NOT_INSTALLED -> Handler(Looper.getMainLooper()).post {
+                    onRequestAccessResultListener.add(
+                        PigeonRequestAccessResult.valueOf(resultCode.name)
+                    )
+                    onLogDataListener.add(
+                        LogData(
+                            LogEvent.ERROR,
+                            TAG,
+                            "(onResultReceived): resultCode " + resultCode + ". The required service\"" + AntPlusHeartRatePcc.getMissingDependencyName() + "\"was not found. You need to install the ANT+ Plugins service or you may need to update your existing version if you already have it. Do you want to launch the Play Store to get it?"
+                        )
+                    )
+                }
 
-                RequestAccessResult.UNRECOGNIZED, RequestAccessResult.CHANNEL_NOT_AVAILABLE, RequestAccessResult.ADAPTER_NOT_DETECTED, RequestAccessResult.BAD_PARAMS, RequestAccessResult.OTHER_FAILURE, RequestAccessResult.USER_CANCELLED -> {}
-                else -> {}
+                else -> {
+                    Handler(Looper.getMainLooper()).post {
+                        onRequestAccessResultListener.add(
+                            PigeonRequestAccessResult.valueOf(resultCode.name)
+                        )
+                        onLogDataListener.add(
+                            LogData(
+                                LogEvent.WARNING, TAG, "<onResultReceived>: resultCode $resultCode"
+                            )
+                        )
+                    }
+                }
             }
         }
     private var hrScanCtrl: AsyncScanController<AntPlusHeartRatePcc>? = null
 
+    /**
+     * Initializes
+     */
     init {
-        setUp(binaryMessenger, this)
+        HeartrateHostApi.setUp(binaryMessenger, this)
         OnHeartRateDataStreamHandler.register(binaryMessenger, onHeartRateDataListener)
-        OnDeviceStateChangeStreamHandler.register(binaryMessenger, onDeviceStateChangeListener)
-        OnScanResultStreamHandler.register(binaryMessenger, onScanResultListener)
+        OnDeviceStateChangeStreamHandler.register(
+            binaryMessenger, onDeviceStateChangeListener, DeviceType.HEARTRATE.name
+        )
+        OnScanResultStreamHandler.register(
+            binaryMessenger, onScanResultListener, DeviceType.HEARTRATE.name
+        )
+        OnRequestAccessResultStreamHandler.register(
+            binaryMessenger, onRequestAccessResultListener, DeviceType.HEARTRATE.name
+        )
     }
 
+    /**
+     * Starts the scan
+     */
     override fun startScan() {
-        Log.d(TAG, "<startScan>:")
+        Handler(Looper.getMainLooper()).post {
+            onLogDataListener.add(
+                LogData(
+                    LogEvent.VERBOSE, TAG, "<startScan>:"
+                )
+            )
+        }
         hrScanCtrl = AntPlusHeartRatePcc.requestAsyncScanController(
             context,
             0,
             object : IAsyncScanResultReceiver {
                 override fun onSearchStopped(reasonStopped: RequestAccessResult) {
-                    Log.d(TAG, "<onSearchStopped>:")
+                    Handler(Looper.getMainLooper()).post {
+                        onLogDataListener.add(
+                            LogData(
+                                LogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+                            )
+                        )
+                    }
                     //The triggers calling this function use the same codes and require the same actions as those received by the standard access result receiver
                     accessResultReceiver.onResultReceived(null, reasonStopped, DeviceState.DEAD)
                 }
 
                 override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
-                    Log.d(
-                        TAG,
-                        "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
-                    )
                     Handler(Looper.getMainLooper()).post {
+                        onLogDataListener.add(
+                            LogData(
+                                LogEvent.VERBOSE,
+                                TAG,
+                                "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
+                            )
+                        )
                         onScanResultListener.add(
-                            AntplusDevice(
-                                deviceFound.antDeviceNumber.toLong(), deviceFound.deviceDisplayName
+                            Device(
+                                deviceFound.antDeviceNumber.toLong(),
+                                deviceFound.deviceDisplayName,
+                                DeviceType.HEARTRATE
                             )
                         )
                     }
@@ -139,91 +189,79 @@ class HeartrateHostApiImpl(private val context: Context, binaryMessenger: Binary
             })
     }
 
+    /**
+     * Stops the scan
+     */
     override fun stopScan() {
+        Handler(Looper.getMainLooper()).post {
+            onLogDataListener.add(
+                LogData(
+                    LogEvent.VERBOSE, TAG, "<stopScan>:"
+                )
+            )
+        }
         if (hrScanCtrl != null) {
             hrScanCtrl!!.closeScanController()
         }
         hrScanCtrl = null
     }
 
+    /**
+     * Connects to device with device number specified
+     * @param deviceNumber the device number
+     */
     override fun connect(deviceNumber: Long) {
-        Log.d(
-            TAG, "<connect>: deviceNumber $deviceNumber"
-        )
+        Handler(Looper.getMainLooper()).post {
+            onLogDataListener.add(
+                LogData(
+                    LogEvent.VERBOSE, TAG, "<connect>: deviceNumber $deviceNumber"
+                )
+            )
+        }
         stopScan()
         releaseHandle = AntPlusHeartRatePcc.requestAccess(
             context, deviceNumber.toInt(), -1, accessResultReceiver, stateChangeReceiver
         )
     }
 
+    /**
+     * Disconnects the device
+     */
     override fun disconnect() {
-        Log.d(TAG, "<disconnect>:")
+        Handler(Looper.getMainLooper()).post {
+            onLogDataListener.add(
+                LogData(
+                    LogEvent.VERBOSE, TAG, "<disconnect>:"
+                )
+            )
+        }
         if (releaseHandle != null) {
             releaseHandle!!.close()
         }
         if (hrPcc != null) {
-            Log.d(TAG, "(disconnect): deviceNumber " + hrPcc!!.antDeviceNumber)
-            hrPcc!!.subscribeHeartRateDataEvent(null)
-            hrPcc!!.releaseAccess()
+            Handler(Looper.getMainLooper()).post {
+                onLogDataListener.add(
+                    LogData(
+                        LogEvent.VERBOSE, TAG, "(disconnect): deviceNumber " + hrPcc?.antDeviceNumber
+                    )
+                )
+            }
+            hrPcc?.subscribeHeartRateDataEvent(null)
+            hrPcc?.releaseAccess()
         }
         releaseHandle = null
         hrPcc = null
     }
 
+    /**
+     * Closes listeners
+     */
     fun close() {
+        // closes device listeners
         onScanResultListener.onEventsDone()
-        onHeartRateDataListener.onEventsDone()
+        onRequestAccessResultListener.onEventsDone()
         onDeviceStateChangeListener.onEventsDone()
-    }
-}
-
-class OnHeartRateDataListener : OnHeartRateDataStreamHandler() {
-    private var eventSink: PigeonEventSink<Long>? = null
-
-    override fun onListen(p0: Any?, sink: PigeonEventSink<Long>) {
-        eventSink = sink
-    }
-
-    fun add(bpm: Long) {
-        eventSink?.success(bpm)
-    }
-
-    fun onEventsDone() {
-        eventSink?.endOfStream()
-        eventSink = null
-    }
-}
-
-class OnScanResultListener : OnScanResultStreamHandler() {
-    private var eventSink: PigeonEventSink<AntplusDevice>? = null
-
-    override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusDevice>) {
-        eventSink = sink
-    }
-
-    fun add(antplusDevice: AntplusDevice) {
-        eventSink?.success(antplusDevice)
-    }
-
-    fun onEventsDone() {
-        eventSink?.endOfStream()
-        eventSink = null
-    }
-}
-
-class OnDeviceStateChangeListener : OnDeviceStateChangeStreamHandler() {
-    private var eventSink: PigeonEventSink<AntplusDeviceState>? = null
-
-    override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusDeviceState>) {
-        eventSink = sink
-    }
-
-    fun add(antplusDeviceState: AntplusDeviceState) {
-        eventSink?.success(antplusDeviceState)
-    }
-
-    fun onEventsDone() {
-        eventSink?.endOfStream()
-        eventSink = null
+        // closes heartrate listener
+        onHeartRateDataListener.onEventsDone()
     }
 }

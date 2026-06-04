@@ -6,13 +6,13 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_antplus_example/main.dart';
+import 'package:flutter_antplus_example/src/heartrate_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('Verify Platform version', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const HomePage());
+    await tester.pumpWidget(const HeartrateView());
 
     // Verify that platform version is retrieved.
     expect(

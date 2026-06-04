@@ -11,14 +11,14 @@ dependencies:
     sdk: flutter
   flutter_antplus:
     path: ../
-  flutter_heyteacher_locale: ^3.0.2+154
-  flutter_heyteacher_logger: ^3.0.2+159
-  flutter_heyteacher_views: ^4.1.0+163
+  flutter_heyteacher_locale: ^3.0.3+155
+  flutter_heyteacher_logger: ^3.0.3+160
+  flutter_heyteacher_views: ^4.1.1+164
   flutter_localizations:
     sdk: flutter
   font_awesome_flutter: ^11.0.0
+  go_router: ^17.3.0
   logging: ^1.3.0
-
 
 dev_dependencies:
   flutter_heyteacher_meta: ^7.6.9+178 
