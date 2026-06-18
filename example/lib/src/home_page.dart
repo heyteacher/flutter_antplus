@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_antplus_example/src/bikepower_view.dart';
+import 'package:flutter_antplus_example/src/cadence_view.dart' show CadenceView;
 import 'package:flutter_antplus_example/src/heartrate_view.dart';
 import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart';
 
@@ -43,15 +44,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           dividerColor: Colors.white24,
           controller: _tabController,
           tabs: const <Widget>[
-            Tab(text: 'Bike Power'),
-            Tab(text: 'Heart Rate'),
+            Tab(text: 'Cadence'),
+            Tab(text: 'BikePower'),
+            Tab(text: 'HeartRate'),
           ],
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height - 230,
           child: TabBarView(
             controller: _tabController,
-            children: const <Widget>[BikepowerView(), HeartrateView()],
+            children: const <Widget>[
+              CadenceView(),
+              BikepowerView(),
+              HeartrateView(),
+            ],
           ),
         ),
       ],

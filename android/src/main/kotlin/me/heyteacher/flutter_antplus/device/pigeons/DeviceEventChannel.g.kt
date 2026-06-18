@@ -162,7 +162,8 @@ private object DeviceEventChannelPigeonUtils {
 
 enum class DeviceType(val raw: Int) {
   HEARTRATE(0),
-  BIKEPOWER(1);
+  BIKEPOWER(1),
+  CADENCE(2);
 
   companion object {
     fun ofRaw(raw: Int): DeviceType? {
