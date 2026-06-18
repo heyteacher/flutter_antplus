@@ -74,6 +74,7 @@ int _deepHash(Object? value) {
 enum DeviceType {
   heartrate,
   bikepower,
+  cadence,
 }
 
 enum DeviceState {

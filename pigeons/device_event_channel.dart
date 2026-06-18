@@ -22,6 +22,7 @@ import 'package:pigeon/pigeon.dart';
 enum DeviceType {
   heartrate,
   bikepower,
+  cadence,
 }
 
 enum DeviceState {
