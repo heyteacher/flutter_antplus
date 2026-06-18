@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.5.0+6] - 2026-06-18
+
+### 🚀 Features [0.5.0]
+
+- Cadence ([30f13af](https://codeberg.org/heyteacher/flutter_antplus/commit/30f13afd20296ebfe4394cd4c0fa0a234d4bd38f)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.5.0]
+
+- *(release)* New version 0.5.0+6 which closes ([#10](https://codeberg.org/heyteacher/flutter_antplus/issues/10)) ([ee11a97](https://codeberg.org/heyteacher/flutter_antplus/commit/ee11a979f7f87e1ce04fca5e76755bf1da61b51e)) by **heyteacher**
+
 ## [flutter_antplus-0.4.1+5] - 2026-06-04
 
 ### 🛠️ Build [0.4.1]
