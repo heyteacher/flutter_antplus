@@ -18,8 +18,8 @@ import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.IAsyncScanResultR
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import com.dsi.ant.plugins.utility.log.LogAnt
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
-import me.heyteacher.flutter_antplus.logging.pigeons.LogData
-import me.heyteacher.flutter_antplus.logging.pigeons.LogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 import java.math.BigDecimal
 import java.util.EnumSet
 
@@ -80,8 +80,8 @@ class MyAntPlusBikePowerPcc private constructor() : AntPlusCommonPcc() {
     override fun handlePluginEvent(eventMsg: Message) {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.DEBUG,
+                AntplusLogData(
+                    AntplusLogEvent.DEBUG,
                     TAG,
                     "<handlePluginEvent> arg1 " + eventMsg.arg1 + " keys " + eventMsg.data.keySet()
                         .toTypedArray().contentToString()
@@ -340,8 +340,8 @@ class MyAntPlusBikePowerPcc private constructor() : AntPlusCommonPcc() {
                 dataType = b.getInt("int_dataType")
                 Handler(Looper.getMainLooper()).post {
                     onLogDataListener.add(
-                        LogData(
-                            LogEvent.DEBUG,
+                        AntplusLogData(
+                            AntplusLogEvent.DEBUG,
                             TAG,
                             "MeasurementOutput (arg1 " + eventMsg.arg1 + ") keys " + eventMsg.data.keySet()
                                 .toTypedArray()
@@ -362,8 +362,8 @@ class MyAntPlusBikePowerPcc private constructor() : AntPlusCommonPcc() {
                     )
                     Handler(Looper.getMainLooper()).post {
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.DEBUG,
+                            AntplusLogData(
+                                AntplusLogEvent.DEBUG,
                                 TAG,
                                 "MeasurementOutput dataType $dataType measurementValue $measurementValue"
                             )

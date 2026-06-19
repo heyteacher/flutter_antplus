@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:flutter_antplus/src/pigeons/device_event_channel.g.dart';
 
 /// The Device view model interface
-abstract class DeviceViewModel {
+abstract class AntplusDeviceViewModel {
   /// on scan result stream
-  Stream<Device> get onScanResultStream;
+  Stream<AntplusDevice> get onScanResultStream;
 
   /// on scan result stream
-  Stream<RequestAccessResult> get onRequestAccessResultStream;
+  Stream<AntplusRequestAccessResult> get onRequestAccessResultStream;
 
   /// on device state change stream
-  Stream<DeviceState> get onDeviceStateChangeStream;
+  Stream<AntplusDeviceState> get onDeviceStateChangeStream;
 
   /// Starts scan.
   Future<void> startScan();

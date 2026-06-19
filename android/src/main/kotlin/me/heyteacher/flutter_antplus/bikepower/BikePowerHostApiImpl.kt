@@ -14,7 +14,7 @@ import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.AsyncScanResultDe
 import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.IAsyncScanResultReceiver
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import io.flutter.plugin.common.BinaryMessenger
-import me.heyteacher.flutter_antplus.bikepower.pigeons.BatteryStatus
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusBatteryStatus
 import me.heyteacher.flutter_antplus.bikepower.pigeons.BikepowerHostApi
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBalanceDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBatteryStatusDataStreamHandler
@@ -22,22 +22,22 @@ import me.heyteacher.flutter_antplus.bikepower.pigeons.OnCadenceDataStreamHandle
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPedalSmoothnessDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPowerDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnTorqueEffectivenessDataStreamHandler
-import me.heyteacher.flutter_antplus.bikepower.pigeons.PedalSmoothnessData
-import me.heyteacher.flutter_antplus.bikepower.pigeons.TorqueEffectivenessData
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
 import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeListener
 import me.heyteacher.flutter_antplus.device.OnRequestAccessResultListener
 import me.heyteacher.flutter_antplus.device.OnScanResultListener
-import me.heyteacher.flutter_antplus.device.pigeons.Device
-import me.heyteacher.flutter_antplus.device.pigeons.DeviceType
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
-import me.heyteacher.flutter_antplus.logging.pigeons.LogData
-import me.heyteacher.flutter_antplus.logging.pigeons.LogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 import java.math.BigDecimal
 import java.util.EnumSet
-import me.heyteacher.flutter_antplus.device.pigeons.DeviceState as PigeonDeviceState
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as PigeonDeviceState
 
 class BikePowerHostApiImpl(
     private val context: Context,
@@ -69,8 +69,8 @@ class BikePowerHostApiImpl(
     private val stateChangeReceiver = IDeviceStateChangeReceiver { deviceState ->
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE,
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE,
                     TAG,
                     "<onDeviceStateChange>:  " + pwrPcc?.antDeviceNumber + " deviceState " + deviceState
                 )
@@ -89,7 +89,7 @@ class BikePowerHostApiImpl(
                     pwrPcc!!.setOnLogDataListener(onLogDataListener)
                     Handler(Looper.getMainLooper()).post {
                         onRequestAccessResultListener.add(
-                            me.heyteacher.flutter_antplus.device.pigeons.RequestAccessResult.valueOf(
+                            me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult.valueOf(
                                 resultCode.name
                             )
                         )
@@ -99,8 +99,8 @@ class BikePowerHostApiImpl(
                             )
                         )
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.INFO,
+                            AntplusLogData(
+                                AntplusLogEvent.INFO,
                                 TAG,
                                 "(onResultReceived): resultCode ${resultCode.name}. deviceNumber " + (result?.antDeviceNumber
                                     ?: "") + " initialDeviceState " + initialDeviceState
@@ -159,7 +159,7 @@ class BikePowerHostApiImpl(
                         ) {
                             Handler(Looper.getMainLooper()).post {
                                 onPedalSmoothnessDataListener.add(
-                                    PedalSmoothnessData(
+                                    AntplusPedalSmoothnessData(
                                         separatePedalSmoothnessSupport,
                                         leftOrCombinedPedalSmoothness!!.toDouble(),
                                         rightPedalSmoothness!!.toDouble()
@@ -179,7 +179,7 @@ class BikePowerHostApiImpl(
                         ) {
                             Handler(Looper.getMainLooper()).post {
                                 onTorqueEffectivenessDataListener.add(
-                                    TorqueEffectivenessData(
+                                    AntplusTorqueEffectivenessData(
                                         leftTorqueEffectiveness!!.toDouble(),
                                         rightTorqueEffectiveness!!.toDouble()
                                     )
@@ -191,8 +191,8 @@ class BikePowerHostApiImpl(
                         Handler(Looper.getMainLooper()).post {
                             onBatteryStatusListener.add(
                                 when (batteryStatus) {
-                                    com.dsi.ant.plugins.antplus.pcc.defines.BatteryStatus.NEW -> BatteryStatus.NEW_STATUS
-                                    else -> BatteryStatus.valueOf(batteryStatus.toString())
+                                    com.dsi.ant.plugins.antplus.pcc.defines.BatteryStatus.NEW -> AntplusBatteryStatus.NEW_STATUS
+                                    else -> AntplusBatteryStatus.valueOf(batteryStatus.toString())
                                 }
                             )
                         }
@@ -202,13 +202,13 @@ class BikePowerHostApiImpl(
 
                 RequestAccessResult.DEPENDENCY_NOT_INSTALLED -> Handler(Looper.getMainLooper()).post {
                     onRequestAccessResultListener.add(
-                        me.heyteacher.flutter_antplus.device.pigeons.RequestAccessResult.valueOf(
+                        me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult.valueOf(
                             resultCode.name
                         )
                     )
                     onLogDataListener.add(
-                        LogData(
-                            LogEvent.ERROR,
+                        AntplusLogData(
+                            AntplusLogEvent.ERROR,
                             TAG,
                             "(onResultReceived): resultCode ${RequestAccessResult.DEPENDENCY_NOT_INSTALLED.name}. " +
                                     "The required service \"${AntPluginPcc.getMissingDependencyName()}\" was not found. " +
@@ -222,13 +222,13 @@ class BikePowerHostApiImpl(
                 else -> {
                     Handler(Looper.getMainLooper()).post {
                         onRequestAccessResultListener.add(
-                            me.heyteacher.flutter_antplus.device.pigeons.RequestAccessResult.valueOf(
+                            me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult.valueOf(
                                 resultCode.name
                             )
                         )
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.WARNING,
+                            AntplusLogData(
+                                AntplusLogEvent.WARNING,
                                 TAG,
                                 "(onResultReceived): resultCode ${resultCode.name}"
                             )
@@ -241,13 +241,13 @@ class BikePowerHostApiImpl(
     init {
         BikepowerHostApi.setUp(binaryMessenger, this)
         OnScanResultStreamHandler.register(
-            binaryMessenger, onScanResultListener, DeviceType.BIKEPOWER.name
+            binaryMessenger, onScanResultListener, AntplusDeviceType.BIKEPOWER.name
         )
         OnDeviceStateChangeStreamHandler.register(
-            binaryMessenger, onDeviceStateChangeListener, DeviceType.BIKEPOWER.name
+            binaryMessenger, onDeviceStateChangeListener, AntplusDeviceType.BIKEPOWER.name
         )
         OnRequestAccessResultStreamHandler.register(
-            binaryMessenger, onRequestAccessResultListener, DeviceType.BIKEPOWER.name
+            binaryMessenger, onRequestAccessResultListener, AntplusDeviceType.BIKEPOWER.name
         )
 
         OnPowerDataStreamHandler.register(binaryMessenger, onPowerDataListener)
@@ -263,8 +263,8 @@ class BikePowerHostApiImpl(
     override fun startScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<startScan>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<startScan>:"
                 )
             )
         }
@@ -275,8 +275,8 @@ class BikePowerHostApiImpl(
                 override fun onSearchStopped(reasonStopped: RequestAccessResult) {
                     Handler(Looper.getMainLooper()).post {
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+                            AntplusLogData(
+                                AntplusLogEvent.VERBOSE, TAG, "<onSearchStopped>:"
                             )
                         )
                     }
@@ -287,23 +287,22 @@ class BikePowerHostApiImpl(
                 override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
                     Handler(Looper.getMainLooper()).post {
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.VERBOSE,
+                            AntplusLogData(
+                                AntplusLogEvent.VERBOSE,
                                 TAG,
                                 "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
                             )
                         )
                         onScanResultListener.add(
-                            Device(
+                            AntplusDevice(
                                 deviceFound.antDeviceNumber.toLong(),
                                 deviceFound.deviceDisplayName,
-                                DeviceType.BIKEPOWER
+                                AntplusDeviceType.BIKEPOWER
                             )
                         )
                     }
                 }
-            })
-    }
+            })}
 
     override fun stopScan() {
         if (pwrScanCtrl != null) {
@@ -315,8 +314,8 @@ class BikePowerHostApiImpl(
     override fun connect(deviceNumber: Long) {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<connect>: deviceNumber $deviceNumber"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<connect>: deviceNumber $deviceNumber"
                 )
             )
         }
@@ -329,8 +328,8 @@ class BikePowerHostApiImpl(
     override fun disconnect() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<disconnect>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<disconnect>:"
                 )
             )
         }
@@ -340,8 +339,8 @@ class BikePowerHostApiImpl(
         if (pwrPcc != null) {
             Handler(Looper.getMainLooper()).post {
                 onLogDataListener.add(
-                    LogData(
-                        LogEvent.VERBOSE,
+                    AntplusLogData(
+                        AntplusLogEvent.VERBOSE,
                         TAG,
                         "(disconnect): deviceNumber " + pwrPcc?.antDeviceNumber
                     )

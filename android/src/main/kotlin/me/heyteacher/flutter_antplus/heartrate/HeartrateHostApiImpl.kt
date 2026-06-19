@@ -18,20 +18,20 @@ import io.flutter.plugin.common.BinaryMessenger
 import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeListener
 import me.heyteacher.flutter_antplus.device.OnRequestAccessResultListener
 import me.heyteacher.flutter_antplus.device.OnScanResultListener
-import me.heyteacher.flutter_antplus.device.pigeons.Device
-import me.heyteacher.flutter_antplus.device.pigeons.DeviceType
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi
 import me.heyteacher.flutter_antplus.heartrate.pigeons.OnHeartRateDataStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
-import me.heyteacher.flutter_antplus.logging.pigeons.LogData
-import me.heyteacher.flutter_antplus.logging.pigeons.LogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 import java.math.BigDecimal
 import java.util.EnumSet
-import me.heyteacher.flutter_antplus.device.pigeons.DeviceState as PigeonDeviceState
-import me.heyteacher.flutter_antplus.device.pigeons.RequestAccessResult as PigeonRequestAccessResult
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as PigeonDeviceState
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult as PigeonRequestAccessResult
 
 class HeartrateHostApiImpl(
     private val context: Context,
@@ -56,8 +56,8 @@ class HeartrateHostApiImpl(
     private val stateChangeReceiver = IDeviceStateChangeReceiver { deviceState ->
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE,
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE,
                     TAG,
                     "<onDeviceStateChange>: " + hrPcc?.antDeviceNumber + " deviceState " + deviceState
                 )
@@ -85,8 +85,8 @@ class HeartrateHostApiImpl(
                             )
                         )
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.INFO,
+                            AntplusLogData(
+                                AntplusLogEvent.INFO,
                                 TAG,
                                 "(onResultReceived): resultCode $resultCode. deviceNumber " + (result?.antDeviceNumber
                                     ?: "") + " initialDeviceState " + initialDeviceState
@@ -100,8 +100,8 @@ class HeartrateHostApiImpl(
                         PigeonRequestAccessResult.valueOf(resultCode.name)
                     )
                     onLogDataListener.add(
-                        LogData(
-                            LogEvent.ERROR,
+                        AntplusLogData(
+                            AntplusLogEvent.ERROR,
                             TAG,
                             "(onResultReceived): resultCode " + resultCode + ". The required service\"" + AntPlusHeartRatePcc.getMissingDependencyName() + "\"was not found. You need to install the ANT+ Plugins service or you may need to update your existing version if you already have it. Do you want to launch the Play Store to get it?"
                         )
@@ -114,8 +114,8 @@ class HeartrateHostApiImpl(
                             PigeonRequestAccessResult.valueOf(resultCode.name)
                         )
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.WARNING, TAG, "<onResultReceived>: resultCode $resultCode"
+                            AntplusLogData(
+                                AntplusLogEvent.WARNING, TAG, "<onResultReceived>: resultCode $resultCode"
                             )
                         )
                     }
@@ -131,13 +131,13 @@ class HeartrateHostApiImpl(
         HeartrateHostApi.setUp(binaryMessenger, this)
         OnHeartRateDataStreamHandler.register(binaryMessenger, onHeartRateDataListener)
         OnDeviceStateChangeStreamHandler.register(
-            binaryMessenger, onDeviceStateChangeListener, DeviceType.HEARTRATE.name
+            binaryMessenger, onDeviceStateChangeListener, AntplusDeviceType.HEARTRATE.name
         )
         OnScanResultStreamHandler.register(
-            binaryMessenger, onScanResultListener, DeviceType.HEARTRATE.name
+            binaryMessenger, onScanResultListener, AntplusDeviceType.HEARTRATE.name
         )
         OnRequestAccessResultStreamHandler.register(
-            binaryMessenger, onRequestAccessResultListener, DeviceType.HEARTRATE.name
+            binaryMessenger, onRequestAccessResultListener, AntplusDeviceType.HEARTRATE.name
         )
     }
 
@@ -147,8 +147,8 @@ class HeartrateHostApiImpl(
     override fun startScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<startScan>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<startScan>:"
                 )
             )
         }
@@ -159,8 +159,8 @@ class HeartrateHostApiImpl(
                 override fun onSearchStopped(reasonStopped: RequestAccessResult) {
                     Handler(Looper.getMainLooper()).post {
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+                            AntplusLogData(
+                                AntplusLogEvent.VERBOSE, TAG, "<onSearchStopped>:"
                             )
                         )
                     }
@@ -171,17 +171,17 @@ class HeartrateHostApiImpl(
                 override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
                     Handler(Looper.getMainLooper()).post {
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.VERBOSE,
+                            AntplusLogData(
+                                AntplusLogEvent.VERBOSE,
                                 TAG,
                                 "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
                             )
                         )
                         onScanResultListener.add(
-                            Device(
+                            AntplusDevice(
                                 deviceFound.antDeviceNumber.toLong(),
                                 deviceFound.deviceDisplayName,
-                                DeviceType.HEARTRATE
+                                AntplusDeviceType.HEARTRATE
                             )
                         )
                     }
@@ -195,8 +195,8 @@ class HeartrateHostApiImpl(
     override fun stopScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<stopScan>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<stopScan>:"
                 )
             )
         }
@@ -213,8 +213,8 @@ class HeartrateHostApiImpl(
     override fun connect(deviceNumber: Long) {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<connect>: deviceNumber $deviceNumber"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<connect>: deviceNumber $deviceNumber"
                 )
             )
         }
@@ -230,8 +230,8 @@ class HeartrateHostApiImpl(
     override fun disconnect() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<disconnect>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<disconnect>:"
                 )
             )
         }
@@ -241,8 +241,8 @@ class HeartrateHostApiImpl(
         if (hrPcc != null) {
             Handler(Looper.getMainLooper()).post {
                 onLogDataListener.add(
-                    LogData(
-                        LogEvent.VERBOSE, TAG, "(disconnect): deviceNumber " + hrPcc?.antDeviceNumber
+                    AntplusLogData(
+                        AntplusLogEvent.VERBOSE, TAG, "(disconnect): deviceNumber " + hrPcc?.antDeviceNumber
                     )
                 )
             }

@@ -71,13 +71,13 @@ int _deepHash(Object? value) {
 }
 
 
-enum DeviceType {
+enum AntplusDeviceType {
   heartrate,
   bikepower,
   cadence,
 }
 
-enum DeviceState {
+enum AntplusDeviceState {
   dead,
   closed,
   searching,
@@ -86,7 +86,7 @@ enum DeviceState {
   unrecognized,
 }
 
-enum RequestAccessResult {
+enum AntplusRequestAccessResult {
   success,
   userCancelled,
   channelNotAvailable,
@@ -100,8 +100,8 @@ enum RequestAccessResult {
   unrecognized,
 }
 
-class Device {
-  Device({
+class AntplusDevice {
+  AntplusDevice({
     required this.number,
     required this.name,
     required this.type,
@@ -111,7 +111,7 @@ class Device {
 
   String name;
 
-  DeviceType type;
+  AntplusDeviceType type;
 
   List<Object?> _toList() {
     return <Object?>[
@@ -124,19 +124,19 @@ class Device {
   Object encode() {
     return _toList();  }
 
-  static Device decode(Object result) {
+  static AntplusDevice decode(Object result) {
     result as List<Object?>;
-    return Device(
+    return AntplusDevice(
       number: result[0]! as int,
       name: result[1]! as String,
-      type: result[2]! as DeviceType,
+      type: result[2]! as AntplusDeviceType,
     );
   }
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! Device || other.runtimeType != runtimeType) {
+    if (other is! AntplusDevice || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -158,16 +158,16 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is DeviceType) {
+    }    else if (value is AntplusDeviceType) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
-    }    else if (value is DeviceState) {
+    }    else if (value is AntplusDeviceState) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    }    else if (value is RequestAccessResult) {
+    }    else if (value is AntplusRequestAccessResult) {
       buffer.putUint8(131);
       writeValue(buffer, value.index);
-    }    else if (value is Device) {
+    }    else if (value is AntplusDevice) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else {
@@ -180,15 +180,15 @@ class _PigeonCodec extends StandardMessageCodec {
     switch (type) {
       case 129:
         final value = readValue(buffer) as int?;
-        return value == null ? null : DeviceType.values[value];
+        return value == null ? null : AntplusDeviceType.values[value];
       case 130:
         final value = readValue(buffer) as int?;
-        return value == null ? null : DeviceState.values[value];
+        return value == null ? null : AntplusDeviceState.values[value];
       case 131:
         final value = readValue(buffer) as int?;
-        return value == null ? null : RequestAccessResult.values[value];
+        return value == null ? null : AntplusRequestAccessResult.values[value];
       case 132:
-        return Device.decode(readValue(buffer)!);
+        return AntplusDevice.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -197,36 +197,36 @@ class _PigeonCodec extends StandardMessageCodec {
 
 const StandardMethodCodec pigeonMethodCodec = StandardMethodCodec(_PigeonCodec());
 
-Stream<Device> onScanResult( {String instanceName = ''}) {
+Stream<AntplusDevice> onScanResult( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
   final EventChannel onScanResultChannel =
       EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onScanResult$instanceName', pigeonMethodCodec);
   return onScanResultChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as Device;
+    return event as AntplusDevice;
   });
 }
     
-Stream<RequestAccessResult> onRequestAccessResult( {String instanceName = ''}) {
+Stream<AntplusRequestAccessResult> onRequestAccessResult( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
   final EventChannel onRequestAccessResultChannel =
       EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onRequestAccessResult$instanceName', pigeonMethodCodec);
   return onRequestAccessResultChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as RequestAccessResult;
+    return event as AntplusRequestAccessResult;
   });
 }
     
-Stream<DeviceState> onDeviceStateChange( {String instanceName = ''}) {
+Stream<AntplusDeviceState> onDeviceStateChange( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
   final EventChannel onDeviceStateChangeChannel =
       EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onDeviceStateChange$instanceName', pigeonMethodCodec);
   return onDeviceStateChangeChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as DeviceState;
+    return event as AntplusDeviceState;
   });
 }
     

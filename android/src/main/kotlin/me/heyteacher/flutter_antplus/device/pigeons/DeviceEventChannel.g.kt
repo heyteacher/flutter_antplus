@@ -160,19 +160,19 @@ private object DeviceEventChannelPigeonUtils {
 
 }
 
-enum class DeviceType(val raw: Int) {
+enum class AntplusDeviceType(val raw: Int) {
   HEARTRATE(0),
   BIKEPOWER(1),
   CADENCE(2);
 
   companion object {
-    fun ofRaw(raw: Int): DeviceType? {
+    fun ofRaw(raw: Int): AntplusDeviceType? {
       return values().firstOrNull { it.raw == raw }
     }
   }
 }
 
-enum class DeviceState(val raw: Int) {
+enum class AntplusDeviceState(val raw: Int) {
   DEAD(0),
   CLOSED(1),
   SEARCHING(2),
@@ -181,13 +181,13 @@ enum class DeviceState(val raw: Int) {
   UNRECOGNIZED(5);
 
   companion object {
-    fun ofRaw(raw: Int): DeviceState? {
+    fun ofRaw(raw: Int): AntplusDeviceState? {
       return values().firstOrNull { it.raw == raw }
     }
   }
 }
 
-enum class RequestAccessResult(val raw: Int) {
+enum class AntplusRequestAccessResult(val raw: Int) {
   SUCCESS(0),
   USER_CANCELLED(1),
   CHANNEL_NOT_AVAILABLE(2),
@@ -201,25 +201,25 @@ enum class RequestAccessResult(val raw: Int) {
   UNRECOGNIZED(10);
 
   companion object {
-    fun ofRaw(raw: Int): RequestAccessResult? {
+    fun ofRaw(raw: Int): AntplusRequestAccessResult? {
       return values().firstOrNull { it.raw == raw }
     }
   }
 }
 
 /** Generated class from Pigeon that represents data sent in messages. */
-data class Device (
+data class AntplusDevice (
   val number: Long,
   val name: String,
-  val type: DeviceType
+  val type: AntplusDeviceType
 )
  {
   companion object {
-    fun fromList(pigeonVar_list: List<Any?>): Device {
+    fun fromList(pigeonVar_list: List<Any?>): AntplusDevice {
       val number = pigeonVar_list[0] as Long
       val name = pigeonVar_list[1] as String
-      val type = pigeonVar_list[2] as DeviceType
-      return Device(number, name, type)
+      val type = pigeonVar_list[2] as AntplusDeviceType
+      return AntplusDevice(number, name, type)
     }
   }
   fun toList(): List<Any?> {
@@ -236,7 +236,7 @@ data class Device (
     if (this === other) {
       return true
     }
-    val other = other as Device
+    val other = other as AntplusDevice
     return DeviceEventChannelPigeonUtils.deepEquals(this.number, other.number) && DeviceEventChannelPigeonUtils.deepEquals(this.name, other.name) && DeviceEventChannelPigeonUtils.deepEquals(this.type, other.type)
   }
 
@@ -253,22 +253,22 @@ private open class DeviceEventChannelPigeonCodec : StandardMessageCodec() {
     return when (type) {
       129.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          DeviceType.ofRaw(it.toInt())
+          AntplusDeviceType.ofRaw(it.toInt())
         }
       }
       130.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          DeviceState.ofRaw(it.toInt())
+          AntplusDeviceState.ofRaw(it.toInt())
         }
       }
       131.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          RequestAccessResult.ofRaw(it.toInt())
+          AntplusRequestAccessResult.ofRaw(it.toInt())
         }
       }
       132.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          Device.fromList(it)
+          AntplusDevice.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -276,19 +276,19 @@ private open class DeviceEventChannelPigeonCodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is DeviceType -> {
+      is AntplusDeviceType -> {
         stream.write(129)
         writeValue(stream, value.raw.toLong())
       }
-      is DeviceState -> {
+      is AntplusDeviceState -> {
         stream.write(130)
         writeValue(stream, value.raw.toLong())
       }
-      is RequestAccessResult -> {
+      is AntplusRequestAccessResult -> {
         stream.write(131)
         writeValue(stream, value.raw.toLong())
       }
-      is Device -> {
+      is AntplusDevice -> {
         stream.write(132)
         writeValue(stream, value.toList())
       }
@@ -336,53 +336,53 @@ class PigeonEventSink<T>(private val sink: EventChannel.EventSink) {
   }
 }
       
-abstract class OnScanResultStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<Device> {
+abstract class OnScanResultStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<AntplusDevice> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: OnScanResultStreamHandler, instanceName: String = "") {
       var channelName: String = "dev.flutter.pigeon.device.EventChannelMethods.onScanResult"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }
-      val internalStreamHandler = DeviceEventChannelPigeonStreamHandler<Device>(streamHandler)
+      val internalStreamHandler = DeviceEventChannelPigeonStreamHandler<AntplusDevice>(streamHandler)
       EventChannel(messenger, channelName, DeviceEventChannelPigeonMethodCodec).setStreamHandler(internalStreamHandler)
     }
   }
 // Implement methods from DeviceEventChannelPigeonEventChannelWrapper
-override fun onListen(p0: Any?, sink: PigeonEventSink<Device>) {}
+override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusDevice>) {}
 
 override fun onCancel(p0: Any?) {}
 }
       
-abstract class OnRequestAccessResultStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<RequestAccessResult> {
+abstract class OnRequestAccessResultStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<AntplusRequestAccessResult> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: OnRequestAccessResultStreamHandler, instanceName: String = "") {
       var channelName: String = "dev.flutter.pigeon.device.EventChannelMethods.onRequestAccessResult"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }
-      val internalStreamHandler = DeviceEventChannelPigeonStreamHandler<RequestAccessResult>(streamHandler)
+      val internalStreamHandler = DeviceEventChannelPigeonStreamHandler<AntplusRequestAccessResult>(streamHandler)
       EventChannel(messenger, channelName, DeviceEventChannelPigeonMethodCodec).setStreamHandler(internalStreamHandler)
     }
   }
 // Implement methods from DeviceEventChannelPigeonEventChannelWrapper
-override fun onListen(p0: Any?, sink: PigeonEventSink<RequestAccessResult>) {}
+override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusRequestAccessResult>) {}
 
 override fun onCancel(p0: Any?) {}
 }
       
-abstract class OnDeviceStateChangeStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<DeviceState> {
+abstract class OnDeviceStateChangeStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<AntplusDeviceState> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: OnDeviceStateChangeStreamHandler, instanceName: String = "") {
       var channelName: String = "dev.flutter.pigeon.device.EventChannelMethods.onDeviceStateChange"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }
-      val internalStreamHandler = DeviceEventChannelPigeonStreamHandler<DeviceState>(streamHandler)
+      val internalStreamHandler = DeviceEventChannelPigeonStreamHandler<AntplusDeviceState>(streamHandler)
       EventChannel(messenger, channelName, DeviceEventChannelPigeonMethodCodec).setStreamHandler(internalStreamHandler)
     }
   }
 // Implement methods from DeviceEventChannelPigeonEventChannelWrapper
-override fun onListen(p0: Any?, sink: PigeonEventSink<DeviceState>) {}
+override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusDeviceState>) {}
 
 override fun onCancel(p0: Any?) {}
 }

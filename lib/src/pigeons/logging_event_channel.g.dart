@@ -71,7 +71,7 @@ int _deepHash(Object? value) {
 }
 
 
-enum LogEvent {
+enum AntplusLogEvent {
   verbose,
   debug,
   info,
@@ -79,14 +79,14 @@ enum LogEvent {
   error,
 }
 
-class LogData {
-  LogData({
+class AntplusLogData {
+  AntplusLogData({
     required this.level,
     required this.tag,
     required this.message,
   });
 
-  LogEvent level;
+  AntplusLogEvent level;
 
   String tag;
 
@@ -103,10 +103,10 @@ class LogData {
   Object encode() {
     return _toList();  }
 
-  static LogData decode(Object result) {
+  static AntplusLogData decode(Object result) {
     result as List<Object?>;
-    return LogData(
-      level: result[0]! as LogEvent,
+    return AntplusLogData(
+      level: result[0]! as AntplusLogEvent,
       tag: result[1]! as String,
       message: result[2]! as String,
     );
@@ -115,7 +115,7 @@ class LogData {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! LogData || other.runtimeType != runtimeType) {
+    if (other is! AntplusLogData || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -137,10 +137,10 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is LogEvent) {
+    }    else if (value is AntplusLogEvent) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
-    }    else if (value is LogData) {
+    }    else if (value is AntplusLogData) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
     } else {
@@ -153,9 +153,9 @@ class _PigeonCodec extends StandardMessageCodec {
     switch (type) {
       case 129:
         final value = readValue(buffer) as int?;
-        return value == null ? null : LogEvent.values[value];
+        return value == null ? null : AntplusLogEvent.values[value];
       case 130:
-        return LogData.decode(readValue(buffer)!);
+        return AntplusLogData.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -164,14 +164,14 @@ class _PigeonCodec extends StandardMessageCodec {
 
 const StandardMethodCodec pigeonMethodCodec = StandardMethodCodec(_PigeonCodec());
 
-Stream<LogData> onLogData( {String instanceName = ''}) {
+Stream<AntplusLogData> onLogData( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
   final EventChannel onLogDataChannel =
       EventChannel('dev.flutter.pigeon.logging.EventChannelMethods.onLogData$instanceName', pigeonMethodCodec);
   return onLogDataChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as LogData;
+    return event as AntplusLogData;
   });
 }
     

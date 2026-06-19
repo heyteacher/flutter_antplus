@@ -7,19 +7,20 @@ import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 /// The Ant+ state widget.
 abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     with AutomaticKeepAliveClientMixin<T> {
-  final Map<int, Device> _scanDevices = {};
-  DeviceState? _deviceState;
-  Device? _connectedDevice;
+  final Map<int, AntplusDevice> _scanDevices = {};
+  AntplusDeviceState? _deviceState;
+  AntplusDevice? _connectedDevice;
   bool _scanning = false;
 
-  StreamSubscription<Device>? _onScanResultStreamSubscription;
-  StreamSubscription<DeviceState>? _onDeviceStateChangeStreamSubscription;
-  StreamSubscription<RequestAccessResult>?
+  StreamSubscription<AntplusDevice>? _onScanResultStreamSubscription;
+  StreamSubscription<AntplusDeviceState>?
+  _onDeviceStateChangeStreamSubscription;
+  StreamSubscription<AntplusRequestAccessResult>?
   _onRequestAccessResultStreamSubscription;
 
   /// Initialize state
   @protected
-  DeviceViewModel get deviceViewModel;
+  AntplusDeviceViewModel get deviceViewModel;
 
   @override
   void initState() {
@@ -39,8 +40,10 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
               ? showSnackBar(
                   context: context,
                   message: requestAccessResult.name,
-                  error: requestAccessResult != RequestAccessResult.success,
-                  persist: requestAccessResult != RequestAccessResult.success,
+                  error:
+                      requestAccessResult != AntplusRequestAccessResult.success,
+                  persist:
+                      requestAccessResult != AntplusRequestAccessResult.success,
                 )
               : null,
         );
@@ -125,7 +128,7 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
       BlinkingText(
         '${value ?? '-'} $unit'.trim(),
         textAlign: TextAlign.center,
-        animated: _deviceState == DeviceState.tracking,
+        animated: _deviceState == AntplusDeviceState.tracking,
         style: Theme.of(
           context,
         ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
