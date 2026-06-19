@@ -160,7 +160,7 @@ private object BikepowerEventChannelPigeonUtils {
 
 }
 
-enum class DataSource(val raw: Int) {
+enum class AntplusDataSource(val raw: Int) {
   POWER_ONLY_DATA(0),
   WHEEL_TORQUE_DATA(1),
   CRANK_TORQUE_DATA(2),
@@ -175,13 +175,13 @@ enum class DataSource(val raw: Int) {
   UNRECOGNIZED(11);
 
   companion object {
-    fun ofRaw(raw: Int): DataSource? {
+    fun ofRaw(raw: Int): AntplusDataSource? {
       return values().firstOrNull { it.raw == raw }
     }
   }
 }
 
-enum class BatteryStatus(val raw: Int) {
+enum class AntplusBatteryStatus(val raw: Int) {
   NEW_STATUS(0),
   GOOD(1),
   OK(2),
@@ -191,25 +191,25 @@ enum class BatteryStatus(val raw: Int) {
   UNRECOGNIZED(6);
 
   companion object {
-    fun ofRaw(raw: Int): BatteryStatus? {
+    fun ofRaw(raw: Int): AntplusBatteryStatus? {
       return values().firstOrNull { it.raw == raw }
     }
   }
 }
 
 /** Generated class from Pigeon that represents data sent in messages. */
-data class PedalSmoothnessData (
+data class AntplusPedalSmoothnessData (
   val separatePedalSmoothnessSupport: Boolean,
   val leftOrCombinedPedalSmoothness: Double? = null,
   val rightPedalSmoothness: Double
 )
  {
   companion object {
-    fun fromList(pigeonVar_list: List<Any?>): PedalSmoothnessData {
+    fun fromList(pigeonVar_list: List<Any?>): AntplusPedalSmoothnessData {
       val separatePedalSmoothnessSupport = pigeonVar_list[0] as Boolean
       val leftOrCombinedPedalSmoothness = pigeonVar_list[1] as Double?
       val rightPedalSmoothness = pigeonVar_list[2] as Double
-      return PedalSmoothnessData(separatePedalSmoothnessSupport, leftOrCombinedPedalSmoothness, rightPedalSmoothness)
+      return AntplusPedalSmoothnessData(separatePedalSmoothnessSupport, leftOrCombinedPedalSmoothness, rightPedalSmoothness)
     }
   }
   fun toList(): List<Any?> {
@@ -226,7 +226,7 @@ data class PedalSmoothnessData (
     if (this === other) {
       return true
     }
-    val other = other as PedalSmoothnessData
+    val other = other as AntplusPedalSmoothnessData
     return BikepowerEventChannelPigeonUtils.deepEquals(this.separatePedalSmoothnessSupport, other.separatePedalSmoothnessSupport) && BikepowerEventChannelPigeonUtils.deepEquals(this.leftOrCombinedPedalSmoothness, other.leftOrCombinedPedalSmoothness) && BikepowerEventChannelPigeonUtils.deepEquals(this.rightPedalSmoothness, other.rightPedalSmoothness)
   }
 
@@ -240,16 +240,16 @@ data class PedalSmoothnessData (
 }
 
 /** Generated class from Pigeon that represents data sent in messages. */
-data class TorqueEffectivenessData (
+data class AntplusTorqueEffectivenessData (
   val leftTorqueEffectiveness: Double? = null,
   val rightTorqueEffectiveness: Double
 )
  {
   companion object {
-    fun fromList(pigeonVar_list: List<Any?>): TorqueEffectivenessData {
+    fun fromList(pigeonVar_list: List<Any?>): AntplusTorqueEffectivenessData {
       val leftTorqueEffectiveness = pigeonVar_list[0] as Double?
       val rightTorqueEffectiveness = pigeonVar_list[1] as Double
-      return TorqueEffectivenessData(leftTorqueEffectiveness, rightTorqueEffectiveness)
+      return AntplusTorqueEffectivenessData(leftTorqueEffectiveness, rightTorqueEffectiveness)
     }
   }
   fun toList(): List<Any?> {
@@ -265,7 +265,7 @@ data class TorqueEffectivenessData (
     if (this === other) {
       return true
     }
-    val other = other as TorqueEffectivenessData
+    val other = other as AntplusTorqueEffectivenessData
     return BikepowerEventChannelPigeonUtils.deepEquals(this.leftTorqueEffectiveness, other.leftTorqueEffectiveness) && BikepowerEventChannelPigeonUtils.deepEquals(this.rightTorqueEffectiveness, other.rightTorqueEffectiveness)
   }
 
@@ -281,22 +281,22 @@ private open class BikepowerEventChannelPigeonCodec : StandardMessageCodec() {
     return when (type) {
       129.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          DataSource.ofRaw(it.toInt())
+          AntplusDataSource.ofRaw(it.toInt())
         }
       }
       130.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          BatteryStatus.ofRaw(it.toInt())
+          AntplusBatteryStatus.ofRaw(it.toInt())
         }
       }
       131.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          PedalSmoothnessData.fromList(it)
+          AntplusPedalSmoothnessData.fromList(it)
         }
       }
       132.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TorqueEffectivenessData.fromList(it)
+          AntplusTorqueEffectivenessData.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -304,19 +304,19 @@ private open class BikepowerEventChannelPigeonCodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is DataSource -> {
+      is AntplusDataSource -> {
         stream.write(129)
         writeValue(stream, value.raw.toLong())
       }
-      is BatteryStatus -> {
+      is AntplusBatteryStatus -> {
         stream.write(130)
         writeValue(stream, value.raw.toLong())
       }
-      is PedalSmoothnessData -> {
+      is AntplusPedalSmoothnessData -> {
         stream.write(131)
         writeValue(stream, value.toList())
       }
-      is TorqueEffectivenessData -> {
+      is AntplusTorqueEffectivenessData -> {
         stream.write(132)
         writeValue(stream, value.toList())
       }
@@ -415,53 +415,53 @@ override fun onListen(p0: Any?, sink: PigeonEventSink<Long>) {}
 override fun onCancel(p0: Any?) {}
 }
       
-abstract class OnPedalSmoothnessDataStreamHandler : BikepowerEventChannelPigeonEventChannelWrapper<PedalSmoothnessData> {
+abstract class OnPedalSmoothnessDataStreamHandler : BikepowerEventChannelPigeonEventChannelWrapper<AntplusPedalSmoothnessData> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: OnPedalSmoothnessDataStreamHandler, instanceName: String = "") {
       var channelName: String = "dev.flutter.pigeon.bikepower.EventChannelMethods.onPedalSmoothnessData"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }
-      val internalStreamHandler = BikepowerEventChannelPigeonStreamHandler<PedalSmoothnessData>(streamHandler)
+      val internalStreamHandler = BikepowerEventChannelPigeonStreamHandler<AntplusPedalSmoothnessData>(streamHandler)
       EventChannel(messenger, channelName, BikepowerEventChannelPigeonMethodCodec).setStreamHandler(internalStreamHandler)
     }
   }
 // Implement methods from BikepowerEventChannelPigeonEventChannelWrapper
-override fun onListen(p0: Any?, sink: PigeonEventSink<PedalSmoothnessData>) {}
+override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusPedalSmoothnessData>) {}
 
 override fun onCancel(p0: Any?) {}
 }
       
-abstract class OnTorqueEffectivenessDataStreamHandler : BikepowerEventChannelPigeonEventChannelWrapper<TorqueEffectivenessData> {
+abstract class OnTorqueEffectivenessDataStreamHandler : BikepowerEventChannelPigeonEventChannelWrapper<AntplusTorqueEffectivenessData> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: OnTorqueEffectivenessDataStreamHandler, instanceName: String = "") {
       var channelName: String = "dev.flutter.pigeon.bikepower.EventChannelMethods.onTorqueEffectivenessData"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }
-      val internalStreamHandler = BikepowerEventChannelPigeonStreamHandler<TorqueEffectivenessData>(streamHandler)
+      val internalStreamHandler = BikepowerEventChannelPigeonStreamHandler<AntplusTorqueEffectivenessData>(streamHandler)
       EventChannel(messenger, channelName, BikepowerEventChannelPigeonMethodCodec).setStreamHandler(internalStreamHandler)
     }
   }
 // Implement methods from BikepowerEventChannelPigeonEventChannelWrapper
-override fun onListen(p0: Any?, sink: PigeonEventSink<TorqueEffectivenessData>) {}
+override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusTorqueEffectivenessData>) {}
 
 override fun onCancel(p0: Any?) {}
 }
       
-abstract class OnBatteryStatusDataStreamHandler : BikepowerEventChannelPigeonEventChannelWrapper<BatteryStatus> {
+abstract class OnBatteryStatusDataStreamHandler : BikepowerEventChannelPigeonEventChannelWrapper<AntplusBatteryStatus> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: OnBatteryStatusDataStreamHandler, instanceName: String = "") {
       var channelName: String = "dev.flutter.pigeon.bikepower.EventChannelMethods.onBatteryStatusData"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }
-      val internalStreamHandler = BikepowerEventChannelPigeonStreamHandler<BatteryStatus>(streamHandler)
+      val internalStreamHandler = BikepowerEventChannelPigeonStreamHandler<AntplusBatteryStatus>(streamHandler)
       EventChannel(messenger, channelName, BikepowerEventChannelPigeonMethodCodec).setStreamHandler(internalStreamHandler)
     }
   }
 // Implement methods from BikepowerEventChannelPigeonEventChannelWrapper
-override fun onListen(p0: Any?, sink: PigeonEventSink<BatteryStatus>) {}
+override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusBatteryStatus>) {}
 
 override fun onCancel(p0: Any?) {}
 }

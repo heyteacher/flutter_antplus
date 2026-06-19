@@ -26,7 +26,7 @@ class _CadenceViewState extends DeviceViewState<CadenceView> {
   @override
   Future<void> init(_) async {
     await super.init(null);
-    _onCadenceDataStreamSubscription = CadenceViewModel
+    _onCadenceDataStreamSubscription = AntplusCadenceViewModel
         .instance
         .onCadenceDataStream
         .listen((rpm) => setState(() => _rpm = rpm));
@@ -44,5 +44,6 @@ class _CadenceViewState extends DeviceViewState<CadenceView> {
   ];
 
   @override
-  DeviceViewModel get deviceViewModel => CadenceViewModel.instance;
+  AntplusDeviceViewModel get deviceViewModel =>
+      AntplusCadenceViewModel.instance;
 }

@@ -18,18 +18,18 @@ import me.heyteacher.flutter_antplus.cadence.pigeons.OnCadenceDataStreamHandler
 import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeListener
 import me.heyteacher.flutter_antplus.device.OnRequestAccessResultListener
 import me.heyteacher.flutter_antplus.device.OnScanResultListener
-import me.heyteacher.flutter_antplus.device.pigeons.Device
-import me.heyteacher.flutter_antplus.device.pigeons.DeviceType
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
-import me.heyteacher.flutter_antplus.logging.pigeons.LogData
-import me.heyteacher.flutter_antplus.logging.pigeons.LogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 import java.math.BigDecimal
 import java.util.EnumSet
-import me.heyteacher.flutter_antplus.device.pigeons.DeviceState as PigeonDeviceState
-import me.heyteacher.flutter_antplus.device.pigeons.RequestAccessResult as PigeonRequestAccessResult
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as PigeonDeviceState
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult as PigeonRequestAccessResult
 
 class CadenceHostApiImpl(
     private val context: Context,
@@ -49,15 +49,15 @@ class CadenceHostApiImpl(
     private var onCadenceDataListener: OnCadenceDataListener = OnCadenceDataListener()
 
     private var releaseHandle: PccReleaseHandle<AntPlusBikeCadencePcc>? = null
-    private var hrPcc: AntPlusBikeCadencePcc? = null
+    private var bcPcc: AntPlusBikeCadencePcc? = null
 
     private val stateChangeReceiver = IDeviceStateChangeReceiver { deviceState ->
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE,
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE,
                     TAG,
-                    "<onDeviceStateChange>: " + hrPcc?.antDeviceNumber + " deviceState " + deviceState
+                    "<onDeviceStateChange>: " + bcPcc?.antDeviceNumber + " deviceState " + deviceState
                 )
             )
             onDeviceStateChangeListener.add(PigeonDeviceState.valueOf(deviceState.toString()))
@@ -67,8 +67,8 @@ class CadenceHostApiImpl(
         IPluginAccessResultReceiver { result, resultCode, initialDeviceState ->
             when (resultCode) {
                 RequestAccessResult.SUCCESS -> {
-                    hrPcc = result
-                    hrPcc!!.subscribeCalculatedCadenceEvent { _: Long, _: EnumSet<EventFlag?>?,  computedCadence: BigDecimal ->
+                    bcPcc = result
+                    bcPcc!!.subscribeCalculatedCadenceEvent { _: Long, _: EnumSet<EventFlag?>?, computedCadence: BigDecimal ->
                         Handler(Looper.getMainLooper()).post {
                             onCadenceDataListener.add(computedCadence.toLong())
                         }
@@ -83,8 +83,8 @@ class CadenceHostApiImpl(
                             )
                         )
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.INFO,
+                            AntplusLogData(
+                                AntplusLogEvent.INFO,
                                 TAG,
                                 "(onResultReceived): resultCode $resultCode. deviceNumber " + (result?.antDeviceNumber
                                     ?: "") + " initialDeviceState " + initialDeviceState
@@ -98,8 +98,8 @@ class CadenceHostApiImpl(
                         PigeonRequestAccessResult.valueOf(resultCode.name)
                     )
                     onLogDataListener.add(
-                        LogData(
-                            LogEvent.ERROR,
+                        AntplusLogData(
+                            AntplusLogEvent.ERROR,
                             TAG,
                             "(onResultReceived): resultCode " + resultCode + ". The required service\"" + AntPlusBikeCadencePcc.getMissingDependencyName() + "\"was not found. You need to install the ANT+ Plugins service or you may need to update your existing version if you already have it. Do you want to launch the Play Store to get it?"
                         )
@@ -112,15 +112,15 @@ class CadenceHostApiImpl(
                             PigeonRequestAccessResult.valueOf(resultCode.name)
                         )
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.WARNING, TAG, "<onResultReceived>: resultCode $resultCode"
+                            AntplusLogData(
+                                AntplusLogEvent.WARNING, TAG, "<onResultReceived>: resultCode $resultCode"
                             )
                         )
                     }
                 }
             }
         }
-    private var hrScanCtrl: AsyncScanController<AntPlusBikeCadencePcc>? = null
+    private var bcScanCtrl: AsyncScanController<AntPlusBikeCadencePcc>? = null
 
     /**
      * Initializes
@@ -129,13 +129,13 @@ class CadenceHostApiImpl(
         CadenceHostApi.setUp(binaryMessenger, this)
         OnCadenceDataStreamHandler.register(binaryMessenger, onCadenceDataListener)
         OnDeviceStateChangeStreamHandler.register(
-            binaryMessenger, onDeviceStateChangeListener, DeviceType.CADENCE.name
+            binaryMessenger, onDeviceStateChangeListener, AntplusDeviceType.CADENCE.name
         )
         OnScanResultStreamHandler.register(
-            binaryMessenger, onScanResultListener, DeviceType.CADENCE.name
+            binaryMessenger, onScanResultListener, AntplusDeviceType.CADENCE.name
         )
         OnRequestAccessResultStreamHandler.register(
-            binaryMessenger, onRequestAccessResultListener, DeviceType.CADENCE.name
+            binaryMessenger, onRequestAccessResultListener, AntplusDeviceType.CADENCE.name
         )
     }
 
@@ -145,20 +145,20 @@ class CadenceHostApiImpl(
     override fun startScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<startScan>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<startScan>:"
                 )
             )
         }
-        hrScanCtrl = AntPlusBikeCadencePcc.requestAsyncScanController(
+        bcScanCtrl = AntPlusBikeCadencePcc.requestAsyncScanController(
             context,
             0,
             object : AntPlusBikeSpdCadCommonPcc.IBikeSpdCadAsyncScanResultReceiver {
                 override fun onSearchStopped(reasonStopped: RequestAccessResult) {
                     Handler(Looper.getMainLooper()).post {
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+                            AntplusLogData(
+                                AntplusLogEvent.VERBOSE, TAG, "<onSearchStopped>:"
                             )
                         )
                     }
@@ -169,18 +169,18 @@ class CadenceHostApiImpl(
                 override fun onSearchResult(deviceFound: AntPlusBikeSpdCadCommonPcc.BikeSpdCadAsyncScanResultDeviceInfo?) {
                     Handler(Looper.getMainLooper()).post {
                         onLogDataListener.add(
-                            LogData(
-                                LogEvent.VERBOSE,
+                            AntplusLogData(
+                                AntplusLogEvent.VERBOSE,
                                 TAG,
                                 "<onSearchResult>: number " + deviceFound?.resultInfo?.antDeviceNumber + " name " + deviceFound?.resultInfo?.deviceDisplayName + " already connected " + deviceFound?.resultInfo?.isAlreadyConnected
                             )
                         )
                         if (deviceFound?.resultInfo != null) {
                             onScanResultListener.add(
-                                Device(
+                                AntplusDevice(
                                     deviceFound.resultInfo.antDeviceNumber.toLong(),
                                     deviceFound.resultInfo.deviceDisplayName,
-                                    DeviceType.CADENCE
+                                    AntplusDeviceType.CADENCE
                                 )
                             )
                         }
@@ -195,15 +195,15 @@ class CadenceHostApiImpl(
     override fun stopScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<stopScan>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<stopScan>:"
                 )
             )
         }
-        if (hrScanCtrl != null) {
-            hrScanCtrl!!.closeScanController()
+        if (bcScanCtrl != null) {
+            bcScanCtrl!!.closeScanController()
         }
-        hrScanCtrl = null
+        bcScanCtrl = null
     }
 
     /**
@@ -213,8 +213,8 @@ class CadenceHostApiImpl(
     override fun connect(deviceNumber: Long) {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<connect>: deviceNumber $deviceNumber"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<connect>: deviceNumber $deviceNumber"
                 )
             )
         }
@@ -230,27 +230,27 @@ class CadenceHostApiImpl(
     override fun disconnect() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
-                LogData(
-                    LogEvent.VERBOSE, TAG, "<disconnect>:"
+                AntplusLogData(
+                    AntplusLogEvent.VERBOSE, TAG, "<disconnect>:"
                 )
             )
         }
         if (releaseHandle != null) {
             releaseHandle!!.close()
         }
-        if (hrPcc != null) {
+        if (bcPcc != null) {
             Handler(Looper.getMainLooper()).post {
                 onLogDataListener.add(
-                    LogData(
-                        LogEvent.VERBOSE, TAG, "(disconnect): deviceNumber " + hrPcc?.antDeviceNumber
+                    AntplusLogData(
+                        AntplusLogEvent.VERBOSE, TAG, "(disconnect): deviceNumber " + bcPcc?.antDeviceNumber
                     )
                 )
             }
-            hrPcc?.subscribeCalculatedCadenceEvent(null)
-            hrPcc?.releaseAccess()
+            bcPcc?.subscribeCalculatedCadenceEvent(null)
+            bcPcc?.releaseAccess()
         }
         releaseHandle = null
-        hrPcc = null
+        bcPcc = null
     }
 
     /**

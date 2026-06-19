@@ -1,8 +1,15 @@
-export 'src/bikepower_view_model.dart' show BikepowerViewModel;
-export 'src/cadence_view_model.dart' show CadenceViewModel;
-export 'src/device_view_model.dart' show DeviceViewModel;
-export 'src/heartrate_view_model.dart' show HeartrateViewModel;
+export 'src/antplus_bikepower_view_model.dart' show AntplusBikepowerViewModel;
+export 'src/antplus_cadence_view_model.dart' show AntplusCadenceViewModel;
+export 'src/antplus_device_view_model.dart' show AntplusDeviceViewModel;
+export 'src/antplus_heartrate_view_model.dart' show AntplusHeartrateViewModel;
 export 'src/pigeons/bikepower_event_channel.g.dart'
-    show BatteryStatus, PedalSmoothnessData, TorqueEffectivenessData;
+    show
+        AntplusBatteryStatus,
+        AntplusPedalSmoothnessData,
+        AntplusTorqueEffectivenessData;
 export 'src/pigeons/device_event_channel.g.dart'
-    show Device, DeviceState, DeviceType, RequestAccessResult;
+    show
+        AntplusDevice,
+        AntplusDeviceState,
+        AntplusDeviceType,
+        AntplusRequestAccessResult;

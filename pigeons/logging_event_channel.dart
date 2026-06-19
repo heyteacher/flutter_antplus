@@ -19,15 +19,15 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-enum LogEvent { verbose, debug, info, warning, error }
+enum AntplusLogEvent { verbose, debug, info, warning, error }
 
-class LogData {
-  const LogData({
+class AntplusLogData {
+  const AntplusLogData({
     required this.level,
     required this.tag,
     required this.message,
   });
-  final LogEvent level;
+  final AntplusLogEvent level;
   final String tag;
   final String message;
 }
@@ -36,5 +36,5 @@ class LogData {
 //
 // ignore: one_member_abstracts
 abstract class EventChannelMethods {
-  LogData onLogData();
+  AntplusLogData onLogData();
 }

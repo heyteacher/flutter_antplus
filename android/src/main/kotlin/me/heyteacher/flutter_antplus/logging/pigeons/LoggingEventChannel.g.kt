@@ -160,7 +160,7 @@ private object LoggingEventChannelPigeonUtils {
 
 }
 
-enum class LogEvent(val raw: Int) {
+enum class AntplusLogEvent(val raw: Int) {
   VERBOSE(0),
   DEBUG(1),
   INFO(2),
@@ -168,25 +168,25 @@ enum class LogEvent(val raw: Int) {
   ERROR(4);
 
   companion object {
-    fun ofRaw(raw: Int): LogEvent? {
+    fun ofRaw(raw: Int): AntplusLogEvent? {
       return values().firstOrNull { it.raw == raw }
     }
   }
 }
 
 /** Generated class from Pigeon that represents data sent in messages. */
-data class LogData (
-  val level: LogEvent,
+data class AntplusLogData (
+  val level: AntplusLogEvent,
   val tag: String,
   val message: String
 )
  {
   companion object {
-    fun fromList(pigeonVar_list: List<Any?>): LogData {
-      val level = pigeonVar_list[0] as LogEvent
+    fun fromList(pigeonVar_list: List<Any?>): AntplusLogData {
+      val level = pigeonVar_list[0] as AntplusLogEvent
       val tag = pigeonVar_list[1] as String
       val message = pigeonVar_list[2] as String
-      return LogData(level, tag, message)
+      return AntplusLogData(level, tag, message)
     }
   }
   fun toList(): List<Any?> {
@@ -203,7 +203,7 @@ data class LogData (
     if (this === other) {
       return true
     }
-    val other = other as LogData
+    val other = other as AntplusLogData
     return LoggingEventChannelPigeonUtils.deepEquals(this.level, other.level) && LoggingEventChannelPigeonUtils.deepEquals(this.tag, other.tag) && LoggingEventChannelPigeonUtils.deepEquals(this.message, other.message)
   }
 
@@ -220,12 +220,12 @@ private open class LoggingEventChannelPigeonCodec : StandardMessageCodec() {
     return when (type) {
       129.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          LogEvent.ofRaw(it.toInt())
+          AntplusLogEvent.ofRaw(it.toInt())
         }
       }
       130.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          LogData.fromList(it)
+          AntplusLogData.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -233,11 +233,11 @@ private open class LoggingEventChannelPigeonCodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is LogEvent -> {
+      is AntplusLogEvent -> {
         stream.write(129)
         writeValue(stream, value.raw.toLong())
       }
-      is LogData -> {
+      is AntplusLogData -> {
         stream.write(130)
         writeValue(stream, value.toList())
       }
@@ -285,19 +285,19 @@ class PigeonEventSink<T>(private val sink: EventChannel.EventSink) {
   }
 }
       
-abstract class OnLogDataStreamHandler : LoggingEventChannelPigeonEventChannelWrapper<LogData> {
+abstract class OnLogDataStreamHandler : LoggingEventChannelPigeonEventChannelWrapper<AntplusLogData> {
   companion object {
     fun register(messenger: BinaryMessenger, streamHandler: OnLogDataStreamHandler, instanceName: String = "") {
       var channelName: String = "dev.flutter.pigeon.logging.EventChannelMethods.onLogData"
       if (instanceName.isNotEmpty()) {
         channelName += ".$instanceName"
       }
-      val internalStreamHandler = LoggingEventChannelPigeonStreamHandler<LogData>(streamHandler)
+      val internalStreamHandler = LoggingEventChannelPigeonStreamHandler<AntplusLogData>(streamHandler)
       EventChannel(messenger, channelName, LoggingEventChannelPigeonMethodCodec).setStreamHandler(internalStreamHandler)
     }
   }
 // Implement methods from LoggingEventChannelPigeonEventChannelWrapper
-override fun onListen(p0: Any?, sink: PigeonEventSink<LogData>) {}
+override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusLogData>) {}
 
 override fun onCancel(p0: Any?) {}
 }

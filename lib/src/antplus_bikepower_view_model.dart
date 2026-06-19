@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter_antplus/src/device_view_model.dart';
+import 'package:flutter_antplus/src/antplus_device_view_model.dart';
 import 'package:flutter_antplus/src/pigeons/bikepower.g.dart';
 import 'package:flutter_antplus/src/pigeons/bikepower_event_channel.g.dart'
     show
-        BatteryStatus,
-        PedalSmoothnessData,
-        TorqueEffectivenessData,
+        AntplusBatteryStatus,
+        AntplusPedalSmoothnessData,
+        AntplusTorqueEffectivenessData,
         onBalanceData,
         onBatteryStatusData,
         onCadenceData,
@@ -15,44 +15,46 @@ import 'package:flutter_antplus/src/pigeons/bikepower_event_channel.g.dart'
         onTorqueEffectivenessData;
 import 'package:flutter_antplus/src/pigeons/device_event_channel.g.dart'
     show
-        Device,
-        DeviceState,
-        DeviceType,
-        RequestAccessResult,
+        AntplusDevice,
+        AntplusDeviceState,
+        AntplusDeviceType,
+        AntplusRequestAccessResult,
         onDeviceStateChange,
         onRequestAccessResult,
         onScanResult;
 
 /// The Bike power view model
-class BikepowerViewModel implements DeviceViewModel {
-  BikepowerViewModel._();
+class AntplusBikepowerViewModel implements AntplusDeviceViewModel {
+  AntplusBikepowerViewModel._();
 
   final BikepowerHostApi _hostApi = BikepowerHostApi();
 
-  static BikepowerViewModel? _instance;
+  static AntplusBikepowerViewModel? _instance;
 
-  /// The singleton instance of [BikepowerViewModel].
+  /// The singleton instance of [AntplusBikepowerViewModel].
   // ignore: prefer_constructors_over_static_methods
-  static BikepowerViewModel get instance =>
-      _instance ??= BikepowerViewModel._();
+  static AntplusBikepowerViewModel get instance =>
+      _instance ??= AntplusBikepowerViewModel._();
 
   /// on scan result stream
   @override
-  Stream<Device> get onScanResultStream =>
-      onScanResult(instanceName: DeviceType.bikepower.name.toUpperCase());
+  Stream<AntplusDevice> get onScanResultStream => onScanResult(
+    instanceName: AntplusDeviceType.bikepower.name.toUpperCase(),
+  );
 
   /// on scan result stream
   @override
-  Stream<RequestAccessResult> get onRequestAccessResultStream =>
+  Stream<AntplusRequestAccessResult> get onRequestAccessResultStream =>
       onRequestAccessResult(
-        instanceName: DeviceType.bikepower.name.toUpperCase(),
+        instanceName: AntplusDeviceType.bikepower.name.toUpperCase(),
       );
 
   /// on device state change stream
   @override
-  Stream<DeviceState> get onDeviceStateChangeStream => onDeviceStateChange(
-    instanceName: DeviceType.bikepower.name.toUpperCase(),
-  );
+  Stream<AntplusDeviceState> get onDeviceStateChangeStream =>
+      onDeviceStateChange(
+        instanceName: AntplusDeviceType.bikepower.name.toUpperCase(),
+      );
 
   /// on data stream
   Stream<int> get onPowerDataStream => onPowerData();
@@ -61,18 +63,19 @@ class BikepowerViewModel implements DeviceViewModel {
   Stream<int> get onBalanceDataStream => onBalanceData();
 
   /// on data stream
-  Stream<PedalSmoothnessData> get onPedalSmoothnessDataStream =>
+  Stream<AntplusPedalSmoothnessData> get onPedalSmoothnessDataStream =>
       onPedalSmoothnessData();
 
   /// on data stream
-  Stream<TorqueEffectivenessData> get onTorqueEffectivenessDataStream =>
+  Stream<AntplusTorqueEffectivenessData> get onTorqueEffectivenessDataStream =>
       onTorqueEffectivenessData();
 
   /// on data stream
   Stream<int> get onCadenceDataStream => onCadenceData();
 
   /// on data stream
-  Stream<BatteryStatus> get onBatteryStatusDataStream => onBatteryStatusData();
+  Stream<AntplusBatteryStatus> get onBatteryStatusDataStream =>
+      onBatteryStatusData();
 
   /// Starts scan.
   @override

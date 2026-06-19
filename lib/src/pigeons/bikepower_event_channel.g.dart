@@ -71,7 +71,7 @@ int _deepHash(Object? value) {
 }
 
 
-enum DataSource {
+enum AntplusDataSource {
   powerOnlyData,
   wheelTorqueData,
   crankTorqueData,
@@ -86,7 +86,7 @@ enum DataSource {
   unrecognized,
 }
 
-enum BatteryStatus {
+enum AntplusBatteryStatus {
   newStatus,
   good,
   ok,
@@ -96,8 +96,8 @@ enum BatteryStatus {
   unrecognized,
 }
 
-class PedalSmoothnessData {
-  PedalSmoothnessData({
+class AntplusPedalSmoothnessData {
+  AntplusPedalSmoothnessData({
     required this.separatePedalSmoothnessSupport,
     this.leftOrCombinedPedalSmoothness,
     required this.rightPedalSmoothness,
@@ -120,9 +120,9 @@ class PedalSmoothnessData {
   Object encode() {
     return _toList();  }
 
-  static PedalSmoothnessData decode(Object result) {
+  static AntplusPedalSmoothnessData decode(Object result) {
     result as List<Object?>;
-    return PedalSmoothnessData(
+    return AntplusPedalSmoothnessData(
       separatePedalSmoothnessSupport: result[0]! as bool,
       leftOrCombinedPedalSmoothness: result[1] as double?,
       rightPedalSmoothness: result[2]! as double,
@@ -132,7 +132,7 @@ class PedalSmoothnessData {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PedalSmoothnessData || other.runtimeType != runtimeType) {
+    if (other is! AntplusPedalSmoothnessData || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -146,8 +146,8 @@ class PedalSmoothnessData {
   int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
 }
 
-class TorqueEffectivenessData {
-  TorqueEffectivenessData({
+class AntplusTorqueEffectivenessData {
+  AntplusTorqueEffectivenessData({
     this.leftTorqueEffectiveness,
     required this.rightTorqueEffectiveness,
   });
@@ -166,9 +166,9 @@ class TorqueEffectivenessData {
   Object encode() {
     return _toList();  }
 
-  static TorqueEffectivenessData decode(Object result) {
+  static AntplusTorqueEffectivenessData decode(Object result) {
     result as List<Object?>;
-    return TorqueEffectivenessData(
+    return AntplusTorqueEffectivenessData(
       leftTorqueEffectiveness: result[0] as double?,
       rightTorqueEffectiveness: result[1]! as double,
     );
@@ -177,7 +177,7 @@ class TorqueEffectivenessData {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! TorqueEffectivenessData || other.runtimeType != runtimeType) {
+    if (other is! AntplusTorqueEffectivenessData || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -199,16 +199,16 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is DataSource) {
+    }    else if (value is AntplusDataSource) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
-    }    else if (value is BatteryStatus) {
+    }    else if (value is AntplusBatteryStatus) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    }    else if (value is PedalSmoothnessData) {
+    }    else if (value is AntplusPedalSmoothnessData) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    }    else if (value is TorqueEffectivenessData) {
+    }    else if (value is AntplusTorqueEffectivenessData) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else {
@@ -221,14 +221,14 @@ class _PigeonCodec extends StandardMessageCodec {
     switch (type) {
       case 129:
         final value = readValue(buffer) as int?;
-        return value == null ? null : DataSource.values[value];
+        return value == null ? null : AntplusDataSource.values[value];
       case 130:
         final value = readValue(buffer) as int?;
-        return value == null ? null : BatteryStatus.values[value];
+        return value == null ? null : AntplusBatteryStatus.values[value];
       case 131:
-        return PedalSmoothnessData.decode(readValue(buffer)!);
+        return AntplusPedalSmoothnessData.decode(readValue(buffer)!);
       case 132:
-        return TorqueEffectivenessData.decode(readValue(buffer)!);
+        return AntplusTorqueEffectivenessData.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -270,36 +270,36 @@ Stream<int> onBalanceData( {String instanceName = ''}) {
   });
 }
     
-Stream<PedalSmoothnessData> onPedalSmoothnessData( {String instanceName = ''}) {
+Stream<AntplusPedalSmoothnessData> onPedalSmoothnessData( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
   final EventChannel onPedalSmoothnessDataChannel =
       EventChannel('dev.flutter.pigeon.bikepower.EventChannelMethods.onPedalSmoothnessData$instanceName', pigeonMethodCodec);
   return onPedalSmoothnessDataChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as PedalSmoothnessData;
+    return event as AntplusPedalSmoothnessData;
   });
 }
     
-Stream<TorqueEffectivenessData> onTorqueEffectivenessData( {String instanceName = ''}) {
+Stream<AntplusTorqueEffectivenessData> onTorqueEffectivenessData( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
   final EventChannel onTorqueEffectivenessDataChannel =
       EventChannel('dev.flutter.pigeon.bikepower.EventChannelMethods.onTorqueEffectivenessData$instanceName', pigeonMethodCodec);
   return onTorqueEffectivenessDataChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as TorqueEffectivenessData;
+    return event as AntplusTorqueEffectivenessData;
   });
 }
     
-Stream<BatteryStatus> onBatteryStatusData( {String instanceName = ''}) {
+Stream<AntplusBatteryStatus> onBatteryStatusData( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
   final EventChannel onBatteryStatusDataChannel =
       EventChannel('dev.flutter.pigeon.bikepower.EventChannelMethods.onBatteryStatusData$instanceName', pigeonMethodCodec);
   return onBatteryStatusDataChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as BatteryStatus;
+    return event as AntplusBatteryStatus;
   });
 }
     

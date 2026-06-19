@@ -1,15 +1,15 @@
 package me.heyteacher.flutter_antplus.bikepower
 
-import me.heyteacher.flutter_antplus.bikepower.pigeons.BatteryStatus
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusBatteryStatus
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBalanceDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBatteryStatusDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnCadenceDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPedalSmoothnessDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPowerDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnTorqueEffectivenessDataStreamHandler
-import me.heyteacher.flutter_antplus.bikepower.pigeons.PedalSmoothnessData
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.PigeonEventSink
-import me.heyteacher.flutter_antplus.bikepower.pigeons.TorqueEffectivenessData
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
 
 class OnPowerDataListener : OnPowerDataStreamHandler() {
     private var eventSink: PigeonEventSink<Long>? = null
@@ -63,13 +63,13 @@ class OnBalanceDataListener : OnBalanceDataStreamHandler() {
 }
 
 class OnPedalSmoothnessDataListener : OnPedalSmoothnessDataStreamHandler() {
-    private var eventSink: PigeonEventSink<PedalSmoothnessData>? = null
+    private var eventSink: PigeonEventSink<AntplusPedalSmoothnessData>? = null
 
-    override fun onListen(p0: Any?, sink: PigeonEventSink<PedalSmoothnessData>) {
+    override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusPedalSmoothnessData>) {
         eventSink = sink
     }
 
-    fun add(pedalSmoothnessData: PedalSmoothnessData) {
+    fun add(pedalSmoothnessData: AntplusPedalSmoothnessData) {
         eventSink?.success(pedalSmoothnessData)
     }
 
@@ -80,13 +80,13 @@ class OnPedalSmoothnessDataListener : OnPedalSmoothnessDataStreamHandler() {
 }
 
 class OnTorqueEffectivenessDataListener : OnTorqueEffectivenessDataStreamHandler() {
-    private var eventSink: PigeonEventSink<TorqueEffectivenessData>? = null
+    private var eventSink: PigeonEventSink<AntplusTorqueEffectivenessData>? = null
 
-    override fun onListen(p0: Any?, sink: PigeonEventSink<TorqueEffectivenessData>) {
+    override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusTorqueEffectivenessData>) {
         eventSink = sink
     }
 
-    fun add(torqueEffectivenessData: TorqueEffectivenessData) {
+    fun add(torqueEffectivenessData: AntplusTorqueEffectivenessData) {
         eventSink?.success(torqueEffectivenessData)
     }
 
@@ -97,13 +97,13 @@ class OnTorqueEffectivenessDataListener : OnTorqueEffectivenessDataStreamHandler
 }
 
 class OnBatteryStatusListener : OnBatteryStatusDataStreamHandler() {
-    private var eventSink: PigeonEventSink<BatteryStatus>? = null
+    private var eventSink: PigeonEventSink<AntplusBatteryStatus>? = null
 
-    override fun onListen(p0: Any?, sink: PigeonEventSink<BatteryStatus>) {
+    override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusBatteryStatus>) {
         eventSink = sink
     }
 
-    fun add(batteryStatus: BatteryStatus) {
+    fun add(batteryStatus: AntplusBatteryStatus) {
         eventSink?.success(batteryStatus)
     }
 

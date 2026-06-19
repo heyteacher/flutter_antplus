@@ -26,7 +26,7 @@ class _HeartrateViewState extends DeviceViewState<HeartrateView> {
   @override
   Future<void> init(_) async {
     await super.init(null);
-    _onHeartRateDataStreamSubscription = HeartrateViewModel
+    _onHeartRateDataStreamSubscription = AntplusHeartrateViewModel
         .instance
         .onHeartRateDataStream
         .listen((bpm) => setState(() => _bpm = bpm));
@@ -44,5 +44,6 @@ class _HeartrateViewState extends DeviceViewState<HeartrateView> {
   ];
 
   @override
-  DeviceViewModel get deviceViewModel => HeartrateViewModel.instance;
+  AntplusDeviceViewModel get deviceViewModel =>
+      AntplusHeartrateViewModel.instance;
 }

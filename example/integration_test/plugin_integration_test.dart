@@ -14,6 +14,6 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('scan test', (tester) async {
-    await HeartrateViewModel.instance.startScan();
+    await AntplusHeartrateViewModel.instance.startScan();
   });
 }
