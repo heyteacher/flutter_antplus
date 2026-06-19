@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.5.1+7] - 2026-06-19
+
+### 🚜 Refactor [0.5.1]
+
+- Add prefix `Antplus` to data objects and view models ([f65cf29](https://codeberg.org/heyteacher/flutter_antplus/commit/f65cf29ff710b02a7a27aa1b5591e65630af126e)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.5.1]
+
+- *(release)* New version 0.5.1+7 which closes ([#12](https://codeberg.org/heyteacher/flutter_antplus/issues/12)) ([0fc6a48](https://codeberg.org/heyteacher/flutter_antplus/commit/0fc6a4852d5f97b20feb8cd60ff190d63a790276)) by **heyteacher**
+
 ## [flutter_antplus-0.5.0+6] - 2026-06-18
 
 ### 🚀 Features [0.5.0]
