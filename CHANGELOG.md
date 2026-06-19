@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.5.2+8] - 2026-06-19
+
+### 🐛 Bug Fixes [0.5.2]
+
+- Don't show snackbar for `userCancelled` status  in example ([6bcd8e8](https://codeberg.org/heyteacher/flutter_antplus/commit/6bcd8e8cc5f7bff5164db8192c35d3f141e75ba2)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.5.2]
+
+- Add VS Code `launch.json` configuration ([a6f9fd9](https://codeberg.org/heyteacher/flutter_antplus/commit/a6f9fd938fcad0ad0c36def5cd2c22d9a3b24bd1)) by **heyteacher**
+- *(release)* New version 0.5.2+8 which closes ([#13](https://codeberg.org/heyteacher/flutter_antplus/issues/13)) ([1a56af9](https://codeberg.org/heyteacher/flutter_antplus/commit/1a56af968fb585f582124b905077dc60608df648)) by **heyteacher**
+
 ## [flutter_antplus-0.5.1+7] - 2026-06-19
 
 ### 🚜 Refactor [0.5.1]
