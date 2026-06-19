@@ -36,7 +36,10 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     _onRequestAccessResultStreamSubscription = deviceViewModel
         .onRequestAccessResultStream
         .listen(
-          (requestAccessResult) => mounted
+          (requestAccessResult) =>
+              mounted &&
+                  requestAccessResult !=
+                      AntplusRequestAccessResult.userCancelled
               ? showSnackBar(
                   context: context,
                   message: requestAccessResult.name,
