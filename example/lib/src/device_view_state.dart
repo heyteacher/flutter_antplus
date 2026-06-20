@@ -128,10 +128,9 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.bodyMedium,
       ),
-      BlinkingText(
+      Text(
         '${value ?? '-'} $unit'.trim(),
         textAlign: TextAlign.center,
-        animated: _deviceState == AntplusDeviceState.tracking,
         style: Theme.of(
           context,
         ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
