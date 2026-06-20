@@ -1,6 +1,6 @@
 name: flutter_antplus
 description: "A new Flutter Ant+ plugin"
-version: 0.5.3+9
+version: 0.6.0+10
 homepage:
 
 environment:
@@ -17,8 +17,8 @@ dev_dependencies:
   flutter_heyteacher_meta: ^7.6.9+178 
   flutter_test:
     sdk: flutter
-  pigeon: ^26.3.4
-  very_good_analysis: ^10.2.0
+  pigeon: ^27.1.0
+  very_good_analysis: ^10.3.0
 
 flutter:
   plugin:
