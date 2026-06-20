@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.5.3+9] - 2026-06-20
+
+### 🐛 Bug Fixes [0.5.3]
+
+- Add `cwd` to `launch.json` configuration ([0f87271](https://codeberg.org/heyteacher/flutter_antplus/commit/0f872711cd7de69f8ce6486a0b19d5dc77b29903)) by **heyteacher**
+
+### 🎨 Styling [0.5.3]
+
+- Remove blinktest on acquired data ([cc5a344](https://codeberg.org/heyteacher/flutter_antplus/commit/cc5a34413dd479b2577c6deb02fc0414df48e03f)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.5.3]
+
+- *(release)* New version 0.5.3+9 which closes ([#16](https://codeberg.org/heyteacher/flutter_antplus/issues/16)) ([46d8a28](https://codeberg.org/heyteacher/flutter_antplus/commit/46d8a2804629e5773863d59605c5ccfc1d59a6ef)) by **heyteacher**
+
 ## [flutter_antplus-0.5.2+8] - 2026-06-19
 
 ### 🐛 Bug Fixes [0.5.2]
