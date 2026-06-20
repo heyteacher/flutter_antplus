@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.0+10] - 2026-06-20
+
+### 🚀 Features [0.6.0]
+
+- Add ` wakelock_plus` disabling lock when tracking to example app ([e1970ba](https://codeberg.org/heyteacher/flutter_antplus/commit/e1970ba9fa57fff3f7dffbcffb3c19ea2034ef47)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.6.0]
+
+- *(release)* New version 0.6.0+10 which closes ([#18](https://codeberg.org/heyteacher/flutter_antplus/issues/18)) ([b52c6db](https://codeberg.org/heyteacher/flutter_antplus/commit/b52c6db1b42a98197be72d2d0da572e75eeed7ff)) by **heyteacher**
+
 ## [flutter_antplus-0.5.3+9] - 2026-06-20
 
 ### 🐛 Bug Fixes [0.5.3]
