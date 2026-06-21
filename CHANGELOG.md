@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.3+13] - 2026-06-21
+
+### ⚙️ Miscellaneous Tasks [0.6.3]
+
+- Fixes errors and warnings raised by `pub.dev` publish validator ([c4b9ba1](https://codeberg.org/heyteacher/flutter_antplus/commit/c4b9ba1e25ebc0164a0a35fd729eb1fc8c8e7e6a)) by **heyteacher**
+- *(release)* New version 0.6.3+13 which closes ([#24](https://codeberg.org/heyteacher/flutter_antplus/issues/24)) ([fd5ce3e](https://codeberg.org/heyteacher/flutter_antplus/commit/fd5ce3e3e4fda44b5860bb166ab3f1a7e5926373)) by **heyteacher**
+
 ## [flutter_antplus-0.6.2+12] - 2026-06-21
 
 ### 📚 Documentation [0.6.2]
