@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.4+14] - 2026-06-21
+
+### ⚙️ Miscellaneous Tasks [0.6.4]
+
+- Remove `org.jetbrains.kotlin.android` plugin ([9db8c1f](https://codeberg.org/heyteacher/flutter_antplus/commit/9db8c1fd0c9ae16172dd55a7dbde6c4d1f601e82)) by **heyteacher**
+- Remove link to flutter.jar ([e5667a4](https://codeberg.org/heyteacher/flutter_antplus/commit/e5667a459c7dc1f7c0cf3e1f6a871ae335daa424)) by **heyteacher**
+- Add `flutter.jar` classes for compileOnly in`Android Studio` ([9cd634b](https://codeberg.org/heyteacher/flutter_antplus/commit/9cd634b634574a06560798f6635f11eed2cd3ec2)) by **heyteacher**
+- *(release)* New version 0.6.4+14 which closes ([#24](https://codeberg.org/heyteacher/flutter_antplus/issues/24)) ([2c68c27](https://codeberg.org/heyteacher/flutter_antplus/commit/2c68c2780243ce8cb43dfcdf1b07bfa083c6312c)) by **heyteacher**
+
 ## [flutter_antplus-0.6.3+13] - 2026-06-21
 
 ### ⚙️ Miscellaneous Tasks [0.6.3]
