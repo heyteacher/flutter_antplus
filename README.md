@@ -10,6 +10,8 @@ A Flutter Ant+ plugin project.
 
 ## Generate pigeons
 
+Commands to generate dart and kotlin artifacts with pigeons:
+
 ```bash
  # bike power
  dart run pigeon --input pigeons/bikepower.dart 
@@ -21,7 +23,6 @@ A Flutter Ant+ plugin project.
  dart run pigeon --input pigeons/cadence.dart 
  dart run pigeon --input pigeons/cadence_event_channel.dart 
  # logging   
- dart run pigeon --input pigeons/logging_event_channel.dart 
  dart run pigeon --input pigeons/logging_event_channel.dart 
  # device
  dart run pigeon --input pigeons/device_event_channel.dart 
