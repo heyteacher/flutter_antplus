@@ -1,3 +1,7 @@
+/// A Flutter plugin for ANT+ integration on Android, supporting Heart Rate
+/// Monitors, Bike Power Meters, and Cadence sensors.
+library;
+
 export 'src/antplus_bikepower_view_model.dart' show AntplusBikepowerViewModel;
 export 'src/antplus_cadence_view_model.dart' show AntplusCadenceViewModel;
 export 'src/antplus_device_view_model.dart' show AntplusDeviceViewModel;

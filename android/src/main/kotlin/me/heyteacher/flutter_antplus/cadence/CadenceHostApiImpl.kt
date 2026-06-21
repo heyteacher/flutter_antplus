@@ -31,6 +31,17 @@ import java.util.EnumSet
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as PigeonDeviceState
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult as PigeonRequestAccessResult
 
+/**
+ * Android implementation of the [CadenceHostApi] Pigeon interface.
+ *
+ * Manages scanning, connection, and cadence data subscriptions for an ANT+ Cadence sensor.
+ * Registers Pigeon event channel stream handlers for scan results, device state, access
+ * results, and cadence data, forwarding all native events to Flutter.
+ *
+ * @param context the Android application context
+ * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
+ * @param onLogDataListener shared log listener to forward native log events to Flutter
+ */
 class CadenceHostApiImpl(
     private val context: Context,
     binaryMessenger: BinaryMessenger,
@@ -122,9 +133,7 @@ class CadenceHostApiImpl(
         }
     private var bcScanCtrl: AsyncScanController<AntPlusBikeCadencePcc>? = null
 
-    /**
-     * Initializes
-     */
+    /** Registers all Pigeon Host APIs and event stream handlers on initialization. */
     init {
         CadenceHostApi.setUp(binaryMessenger, this)
         OnCadenceDataStreamHandler.register(binaryMessenger, onCadenceDataListener)
@@ -139,9 +148,7 @@ class CadenceHostApiImpl(
         )
     }
 
-    /**
-     * Starts the scan
-     */
+    /** Starts an async scan for nearby ANT+ Cadence sensors. */
     override fun startScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -189,9 +196,7 @@ class CadenceHostApiImpl(
             })
     }
 
-    /**
-     * Stops the scan
-     */
+    /** Stops the active async scan for Cadence sensors. */
     override fun stopScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -207,8 +212,8 @@ class CadenceHostApiImpl(
     }
 
     /**
-     * Connects to device with device number specified
-     * @param deviceNumber the device number
+     * Connects to the ANT+ Cadence sensor identified by [deviceNumber].
+     * @param deviceNumber the ANT+ device number of the sensor to connect to
      */
     override fun connect(deviceNumber: Long) {
         Handler(Looper.getMainLooper()).post {
@@ -224,9 +229,7 @@ class CadenceHostApiImpl(
         )
     }
 
-    /**
-     * Disconnects the device
-     */
+    /** Disconnects from the currently connected ANT+ Cadence sensor. */
     override fun disconnect() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -253,9 +256,7 @@ class CadenceHostApiImpl(
         bcPcc = null
     }
 
-    /**
-     * Closes listeners
-     */
+    /** Closes all active event stream listeners. Called when the plugin is detached from the engine. */
     fun close() {
         // closes device listeners
         onScanResultListener.onEventsDone()

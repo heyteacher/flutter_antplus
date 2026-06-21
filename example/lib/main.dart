@@ -7,6 +7,11 @@ import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart'
     show LoggerViewModel;
 import 'package:wakelock_plus/wakelock_plus.dart' show WakelockPlus;
 
+/// The main entry point for the ANT+ Flutter plugin example application.
+///
+/// Initializes dependencies, hooks up the native logging listeners, prevents
+/// screen sleep (wakelock) during sensor streaming, and mounts the root
+/// app widget.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LoggerViewModel.instance.initialize();

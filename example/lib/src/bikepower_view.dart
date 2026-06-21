@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus_example/src/device_view_state.dart';
 
-/// The home page widget.
+/// A widget that displays real-time telemetry from an ANT+ Bike Power Meter.
+///
+/// Displays metrics such as power output (W), cadence (rpm), pedal balance (%),
+/// pedal smoothness (%), torque effectiveness (%), and battery status.
 @visibleForTesting
 class BikepowerView extends StatefulWidget {
   /// Creates a [BikepowerView].

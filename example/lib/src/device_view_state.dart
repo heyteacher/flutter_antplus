@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 
-/// The Ant+ state widget.
+/// An abstract base state class for managing scanning and connection states
+/// across different ANT+ device views.
+///
+/// Coordinates starting/stopping scans, selecting/connecting to devices,
+/// tracking connection/subscription states, and rendering shared UI structures
+/// like device status badges and data tables.
 abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     with AutomaticKeepAliveClientMixin<T> {
   final Map<int, AntplusDevice> _scanDevices = {};
