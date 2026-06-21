@@ -4,7 +4,10 @@ import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart';
 import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 import 'package:go_router/go_router.dart' show GoRoute, GoRouter;
 
-/// The app widget.
+/// The root application widget for the ANT+ plugin example.
+///
+/// Sets up the theme configuration, registers localizations delegates,
+/// and configures declarative routing using [GoRouter].
 class App extends StatefulWidget {
   /// Creates the [App].
   const App({super.key});

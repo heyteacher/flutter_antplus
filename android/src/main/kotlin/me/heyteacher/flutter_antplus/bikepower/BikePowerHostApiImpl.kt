@@ -39,6 +39,17 @@ import java.math.BigDecimal
 import java.util.EnumSet
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as PigeonDeviceState
 
+/**
+ * Android implementation of the [BikepowerHostApi] Pigeon interface.
+ *
+ * Manages scanning, connection, and telemetry subscriptions for an ANT+ Bike Power Meter.
+ * Registers Pigeon event channel stream handlers for power, cadence, balance, pedal smoothness,
+ * torque effectiveness, and battery status, and forwards all native events to Flutter.
+ *
+ * @param context the Android application context
+ * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
+ * @param onLogDataListener shared log listener to forward native log events to Flutter
+ */
 class BikePowerHostApiImpl(
     private val context: Context,
     binaryMessenger: BinaryMessenger,
@@ -238,6 +249,9 @@ class BikePowerHostApiImpl(
             }
         }
 
+    /**
+     * Registers all Pigeon Host APIs and event stream handlers on initialization.
+     */
     init {
         BikepowerHostApi.setUp(binaryMessenger, this)
         OnScanResultStreamHandler.register(
@@ -260,6 +274,7 @@ class BikePowerHostApiImpl(
         )
     }
 
+    /** Starts an async scan for nearby ANT+ Bike Power Meters. */
     override fun startScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -304,6 +319,7 @@ class BikePowerHostApiImpl(
                 }
             })}
 
+    /** Stops the active async scan for Bike Power Meters. */
     override fun stopScan() {
         if (pwrScanCtrl != null) {
             pwrScanCtrl!!.closeScanController()
@@ -311,6 +327,10 @@ class BikePowerHostApiImpl(
         pwrScanCtrl = null
     }
 
+    /**
+     * Connects to the ANT+ Bike Power Meter identified by [deviceNumber].
+     * @param deviceNumber the ANT+ device number of the sensor to connect to
+     */
     override fun connect(deviceNumber: Long) {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -325,6 +345,7 @@ class BikePowerHostApiImpl(
         )
     }
 
+    /** Disconnects from the currently connected ANT+ Bike Power Meter. */
     override fun disconnect() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -353,6 +374,7 @@ class BikePowerHostApiImpl(
         pwrPcc = null
     }
 
+    /** Closes all active event stream listeners. Called when the plugin is detached from the engine. */
     fun close() {
         // close device listeners
         onScanResultListener.onEventsDone()

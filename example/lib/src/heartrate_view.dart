@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus_example/src/device_view_state.dart';
 
-/// The Heartrate view
+/// A widget that displays real-time heart rate telemetry from an ANT+
+/// Heart Rate Monitor (HRM).
+///
+/// Subscribes to the heart rate telemetry stream (bpm) and displays the current
+/// values in a structured table layout.
 class HeartrateView extends StatefulWidget {
   /// Creates a [HeartrateView].
   const HeartrateView({super.key});

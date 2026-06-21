@@ -33,6 +33,17 @@ import java.util.EnumSet
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as PigeonDeviceState
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult as PigeonRequestAccessResult
 
+/**
+ * Android implementation of the [HeartrateHostApi] Pigeon interface.
+ *
+ * Manages scanning, connection, and heart rate data subscriptions for an ANT+ HRM.
+ * Registers Pigeon event channel stream handlers for scan results, device state, access
+ * results, and heart rate data, forwarding all native events to Flutter.
+ *
+ * @param context the Android application context
+ * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
+ * @param onLogDataListener shared log listener to forward native log events to Flutter
+ */
 class HeartrateHostApiImpl(
     private val context: Context,
     binaryMessenger: BinaryMessenger,
@@ -124,9 +135,7 @@ class HeartrateHostApiImpl(
         }
     private var hrScanCtrl: AsyncScanController<AntPlusHeartRatePcc>? = null
 
-    /**
-     * Initializes
-     */
+    /** Registers all Pigeon Host APIs and event stream handlers on initialization. */
     init {
         HeartrateHostApi.setUp(binaryMessenger, this)
         OnHeartRateDataStreamHandler.register(binaryMessenger, onHeartRateDataListener)
@@ -141,9 +150,7 @@ class HeartrateHostApiImpl(
         )
     }
 
-    /**
-     * Starts the scan
-     */
+    /** Starts an async scan for nearby ANT+ Heart Rate Monitors. */
     override fun startScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -189,9 +196,7 @@ class HeartrateHostApiImpl(
             })
     }
 
-    /**
-     * Stops the scan
-     */
+    /** Stops the active async scan for Heart Rate Monitors. */
     override fun stopScan() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -207,8 +212,8 @@ class HeartrateHostApiImpl(
     }
 
     /**
-     * Connects to device with device number specified
-     * @param deviceNumber the device number
+     * Connects to the ANT+ Heart Rate Monitor identified by [deviceNumber].
+     * @param deviceNumber the ANT+ device number of the sensor to connect to
      */
     override fun connect(deviceNumber: Long) {
         Handler(Looper.getMainLooper()).post {
@@ -224,9 +229,7 @@ class HeartrateHostApiImpl(
         )
     }
 
-    /**
-     * Disconnects the device
-     */
+    /** Disconnects from the currently connected ANT+ Heart Rate Monitor. */
     override fun disconnect() {
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
@@ -253,9 +256,7 @@ class HeartrateHostApiImpl(
         hrPcc = null
     }
 
-    /**
-     * Closes listeners
-     */
+    /** Closes all active event stream listeners. Called when the plugin is detached from the engine. */
     fun close() {
         // closes device listeners
         onScanResultListener.onEventsDone()

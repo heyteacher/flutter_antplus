@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus_example/src/device_view_state.dart';
 
-/// The Cadence view
+/// A widget that displays real-time cadence data from an ANT+ Cadence sensor.
+///
+/// Subscribes to the cadence telemetry stream (rpm) and renders the current
+/// value in a structured table layout.
 class CadenceView extends StatefulWidget {
   /// Creates a [CadenceView].
   const CadenceView({super.key});

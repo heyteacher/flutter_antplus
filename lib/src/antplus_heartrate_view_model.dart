@@ -14,7 +14,11 @@ import 'package:flutter_antplus/src/pigeons/heartrate.g.dart';
 import 'package:flutter_antplus/src/pigeons/heartrate_event_channel.g.dart'
     show onHeartRateData;
 
-/// The Heart Rate view model
+/// A view model managing the connection and data stream for an
+/// ANT+ Heart Rate Monitor (HRM).
+///
+/// Implements [AntplusDeviceViewModel] to handle scanning, connection,
+/// and provides the [onHeartRateDataStream] to read heart rate values.
 class AntplusHeartrateViewModel implements AntplusDeviceViewModel {
   AntplusHeartrateViewModel._();
 
@@ -27,42 +31,42 @@ class AntplusHeartrateViewModel implements AntplusDeviceViewModel {
   static AntplusHeartrateViewModel get instance =>
       _instance ??= AntplusHeartrateViewModel._();
 
-  /// on scan result stream
+  /// A stream of discovered ANT+ heart rate devices.
   @override
   Stream<AntplusDevice> get onScanResultStream => onScanResult(
     instanceName: AntplusDeviceType.heartrate.name.toUpperCase(),
   );
 
-  /// on scan result stream
+  /// A stream of access request results specifically for heart rate sensors.
   @override
   Stream<AntplusRequestAccessResult> get onRequestAccessResultStream =>
       onRequestAccessResult(
         instanceName: AntplusDeviceType.heartrate.name.toUpperCase(),
       );
 
-  /// on device state change stream
+  /// A stream of the connection state for the heart rate device.
   @override
   Stream<AntplusDeviceState> get onDeviceStateChangeStream =>
       onDeviceStateChange(
         instanceName: AntplusDeviceType.heartrate.name.toUpperCase(),
       );
 
-  /// on data stream
+  /// A stream of the real-time heart rate value in beats per minute (bpm).
   Stream<int> get onHeartRateDataStream => onHeartRateData();
 
-  /// Starts scan.
+  /// Starts scanning for nearby ANT+ heart rate monitors.
   @override
   Future<void> startScan() => _hostApi.startScan();
 
-  /// Stop scan .
+  /// Stops the active scan for heart rate monitors.
   @override
   Future<void> stopScan() => _hostApi.stopScan();
 
-  /// Connect to device with [deviceNumber].
+  /// Connects to a heart rate monitor with the specified [deviceNumber].
   @override
   Future<void> connect(int deviceNumber) => _hostApi.connect(deviceNumber);
 
-  /// Disconnect to device .
+  /// Disconnects from the current heart rate monitor.
   @override
   Future<void> disconnect() => _hostApi.disconnect();
 }

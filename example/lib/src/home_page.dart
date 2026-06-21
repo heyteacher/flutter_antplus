@@ -4,7 +4,11 @@ import 'package:flutter_antplus_example/src/cadence_view.dart' show CadenceView;
 import 'package:flutter_antplus_example/src/heartrate_view.dart';
 import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart';
 
-/// The home page widget.
+/// The main dashboard page of the ANT+ plugin example app.
+///
+/// Features a tab-based navigation to switch between [CadenceView],
+/// [BikepowerView], and [HeartrateView], and includes a logging widget
+/// list tile for visualizing active ANT+ log streams.
 class HomePage extends StatefulWidget {
   /// Creates a [HomePage].
   const HomePage({
