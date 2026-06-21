@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.2+12] - 2026-06-21
+
+### 📚 Documentation [0.6.2]
+
+- Improve code documentation and comments across Android and Dart modules and add publish `pub.dev` directive ([51e761f](https://codeberg.org/heyteacher/flutter_antplus/commit/51e761f3ec699341f06dcfb6c3d5ac2c0dc55562)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.6.2]
+
+- *(release)* New version 0.6.2+12 which closes ([#21](https://codeberg.org/heyteacher/flutter_antplus/issues/21)) ([a9ee323](https://codeberg.org/heyteacher/flutter_antplus/commit/a9ee323276325269ec382bae225b60a576b403e8)) by **heyteacher**
+
 ## [flutter_antplus-0.6.1+11] - 2026-06-21
 
 ### ⚙️ Miscellaneous Tasks [0.6.1]
