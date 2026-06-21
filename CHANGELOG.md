@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.1+11] - 2026-06-21
+
+### ⚙️ Miscellaneous Tasks [0.6.1]
+
+- Regenerate Pigeon files to v27.1.0 and add toString methods to data classes ([98039db](https://codeberg.org/heyteacher/flutter_antplus/commit/98039dbd096d8d3d8f4c61047dcb75116baa8b97)) by **heyteacher**
+- *(release)* New version 0.6.1+11 which closes ([#20](https://codeberg.org/heyteacher/flutter_antplus/issues/20)) ([cc37934](https://codeberg.org/heyteacher/flutter_antplus/commit/cc379345ef5cf5671a385cc822b52fd568b1cf44)) by **heyteacher**
+
 ## [flutter_antplus-0.6.0+10] - 2026-06-20
 
 ### 🚀 Features [0.6.0]
