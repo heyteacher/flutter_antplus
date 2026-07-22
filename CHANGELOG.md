@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.5+15] - 2026-07-22
+
+### ⚙️ Miscellaneous Tasks [0.6.5]
+
+- Bump pigeon to v27.3.0  and other dependencies ([3fe9602](https://codeberg.org/heyteacher/flutter_antplus/commit/3fe960245c537fa1e9c6ad0ae5bf04f2496d7b6e)) by **heyteacher**
+- *(release)* New version 0.6.5+15 which closes ([#27](https://codeberg.org/heyteacher/flutter_antplus/issues/27)) ([80aa049](https://codeberg.org/heyteacher/flutter_antplus/commit/80aa04958ef23c366a007eef929149170097d7fd)) by **heyteacher**
+
 ## [flutter_antplus-0.6.4+14] - 2026-06-21
 
 ### ⚙️ Miscellaneous Tasks [0.6.4]
