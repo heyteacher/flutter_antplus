@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.6+16] - 2026-07-24
+
+### 🐛 Bug Fixes [0.6.6]
+
+- Prevent null pointer exceptions by adding null-safe calls and default values ([983890e](https://codeberg.org/heyteacher/flutter_antplus/commit/983890e7eb5c849fa55d4ecfca10796a5ebe9924)) by **heyteacher**
+
+### 🧪 Testing [0.6.6]
+
+- Remove dummy tests ([1286e7c](https://codeberg.org/heyteacher/flutter_antplus/commit/1286e7c6ac94dc9a21f62dcf5171af1023f390a9)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.6.6]
+
+- *(release)* New version 0.6.6+16 which closes ([#29](https://codeberg.org/heyteacher/flutter_antplus/issues/29)) ([b18b0e5](https://codeberg.org/heyteacher/flutter_antplus/commit/b18b0e533a12bb8181638dd42b343b4da87df1b5)) by **heyteacher**
+
 ## [flutter_antplus-0.6.5+15] - 2026-07-22
 
 ### ⚙️ Miscellaneous Tasks [0.6.5]
