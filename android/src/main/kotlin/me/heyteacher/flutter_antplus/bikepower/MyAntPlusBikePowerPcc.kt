@@ -83,8 +83,8 @@ class MyAntPlusBikePowerPcc private constructor() : AntPlusCommonPcc() {
                 AntplusLogData(
                     AntplusLogEvent.DEBUG,
                     TAG,
-                    "<handlePluginEvent> arg1 " + eventMsg.arg1 + " keys " + eventMsg.data.keySet()
-                        .toTypedArray().contentToString()
+                    "<handlePluginEvent> arg1 " + eventMsg.arg1 + " keys " + eventMsg.data?.keySet()
+                        ?.toTypedArray().contentToString()
                 )
             )
         }

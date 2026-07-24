@@ -140,7 +140,8 @@ class BikePowerHostApiImpl(
                             calculatedCrankCadence: BigDecimal?
                         ) {
                             Handler(Looper.getMainLooper()).post {
-                                onCadenceDataListener.add(calculatedCrankCadence!!.toLong())
+                                onCadenceDataListener.add(calculatedCrankCadence?.toLong() ?: 0
+                                )
                             }
                         }
 
@@ -172,8 +173,8 @@ class BikePowerHostApiImpl(
                                 onPedalSmoothnessDataListener.add(
                                     AntplusPedalSmoothnessData(
                                         separatePedalSmoothnessSupport,
-                                        leftOrCombinedPedalSmoothness!!.toDouble(),
-                                        rightPedalSmoothness!!.toDouble()
+                                        leftOrCombinedPedalSmoothness?.toDouble() ,
+                                        rightPedalSmoothness?.toDouble() ?: 0.0
                                     )
                                 )
                             }
@@ -191,8 +192,8 @@ class BikePowerHostApiImpl(
                             Handler(Looper.getMainLooper()).post {
                                 onTorqueEffectivenessDataListener.add(
                                     AntplusTorqueEffectivenessData(
-                                        leftTorqueEffectiveness!!.toDouble(),
-                                        rightTorqueEffectiveness!!.toDouble()
+                                        leftTorqueEffectiveness?.toDouble(),
+                                        rightTorqueEffectiveness?.toDouble() ?: 0.0
                                     )
                                 )
                             }
