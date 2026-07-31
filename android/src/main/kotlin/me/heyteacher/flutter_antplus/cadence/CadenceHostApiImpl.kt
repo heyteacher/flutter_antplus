@@ -157,6 +157,7 @@ class CadenceHostApiImpl(
                 )
             )
         }
+        try {
         bcScanCtrl = AntPlusBikeCadencePcc.requestAsyncScanController(
             context,
             0,
@@ -194,6 +195,17 @@ class CadenceHostApiImpl(
                     }
                 }
             })
+        } catch (e: Exception) {
+            Handler(Looper.getMainLooper()).post {
+                onLogDataListener.add(
+                    AntplusLogData(
+                        AntplusLogEvent.ERROR,
+                        TAG,
+                        "(startScan): error on requestAsyncScanController, " + e.message
+                    )
+                )
+            }
+        }
     }
 
     /** Stops the active async scan for Cadence sensors. */
