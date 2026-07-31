@@ -126,7 +126,9 @@ class HeartrateHostApiImpl(
                         )
                         onLogDataListener.add(
                             AntplusLogData(
-                                AntplusLogEvent.WARNING, TAG, "<onResultReceived>: resultCode $resultCode"
+                                AntplusLogEvent.WARNING,
+                                TAG,
+                                "<onResultReceived>: resultCode $resultCode"
                             )
                         )
                     }
@@ -159,41 +161,53 @@ class HeartrateHostApiImpl(
                 )
             )
         }
-        hrScanCtrl = AntPlusHeartRatePcc.requestAsyncScanController(
-            context,
-            0,
-            object : IAsyncScanResultReceiver {
-                override fun onSearchStopped(reasonStopped: RequestAccessResult) {
-                    Handler(Looper.getMainLooper()).post {
-                        onLogDataListener.add(
-                            AntplusLogData(
-                                AntplusLogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+        try {
+            hrScanCtrl = AntPlusHeartRatePcc.requestAsyncScanController(
+                context,
+                0,
+                object : IAsyncScanResultReceiver {
+                    override fun onSearchStopped(reasonStopped: RequestAccessResult) {
+                        Handler(Looper.getMainLooper()).post {
+                            onLogDataListener.add(
+                                AntplusLogData(
+                                    AntplusLogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+                                )
                             )
-                        )
+                        }
+                        //The triggers calling this function use the same codes and require the same actions as those received by the standard access result receiver
+                        accessResultReceiver.onResultReceived(null, reasonStopped, DeviceState.DEAD)
                     }
-                    //The triggers calling this function use the same codes and require the same actions as those received by the standard access result receiver
-                    accessResultReceiver.onResultReceived(null, reasonStopped, DeviceState.DEAD)
-                }
 
-                override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
-                    Handler(Looper.getMainLooper()).post {
-                        onLogDataListener.add(
-                            AntplusLogData(
-                                AntplusLogEvent.VERBOSE,
-                                TAG,
-                                "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
+                    override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
+                        Handler(Looper.getMainLooper()).post {
+                            onLogDataListener.add(
+                                AntplusLogData(
+                                    AntplusLogEvent.VERBOSE,
+                                    TAG,
+                                    "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
+                                )
                             )
-                        )
-                        onScanResultListener.add(
-                            AntplusDevice(
-                                deviceFound.antDeviceNumber.toLong(),
-                                deviceFound.deviceDisplayName,
-                                AntplusDeviceType.HEARTRATE
+                            onScanResultListener.add(
+                                AntplusDevice(
+                                    deviceFound.antDeviceNumber.toLong(),
+                                    deviceFound.deviceDisplayName,
+                                    AntplusDeviceType.HEARTRATE
+                                )
                             )
-                        )
+                        }
                     }
-                }
-            })
+                })
+        } catch (e: Exception) {
+            Handler(Looper.getMainLooper()).post {
+                onLogDataListener.add(
+                    AntplusLogData(
+                        AntplusLogEvent.ERROR,
+                        TAG,
+                        "(startScan): error on requestAsyncScanController, " + e.message
+                    )
+                )
+            }
+        }
     }
 
     /** Stops the active async scan for Heart Rate Monitors. */
@@ -245,7 +259,9 @@ class HeartrateHostApiImpl(
             Handler(Looper.getMainLooper()).post {
                 onLogDataListener.add(
                     AntplusLogData(
-                        AntplusLogEvent.VERBOSE, TAG, "(disconnect): deviceNumber " + hrPcc?.antDeviceNumber
+                        AntplusLogEvent.VERBOSE,
+                        TAG,
+                        "(disconnect): deviceNumber " + hrPcc?.antDeviceNumber
                     )
                 )
             }

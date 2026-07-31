@@ -15,6 +15,8 @@ import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.IAsyncScanResultR
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import io.flutter.plugin.common.BinaryMessenger
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusBatteryStatus
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.BikepowerHostApi
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBalanceDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBatteryStatusDataStreamHandler
@@ -22,8 +24,6 @@ import me.heyteacher.flutter_antplus.bikepower.pigeons.OnCadenceDataStreamHandle
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPedalSmoothnessDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPowerDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnTorqueEffectivenessDataStreamHandler
-import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
-import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
 import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeListener
 import me.heyteacher.flutter_antplus.device.OnRequestAccessResultListener
 import me.heyteacher.flutter_antplus.device.OnScanResultListener
@@ -140,7 +140,8 @@ class BikePowerHostApiImpl(
                             calculatedCrankCadence: BigDecimal?
                         ) {
                             Handler(Looper.getMainLooper()).post {
-                                onCadenceDataListener.add(calculatedCrankCadence?.toLong() ?: 0
+                                onCadenceDataListener.add(
+                                    calculatedCrankCadence?.toLong() ?: 0
                                 )
                             }
                         }
@@ -173,7 +174,7 @@ class BikePowerHostApiImpl(
                                 onPedalSmoothnessDataListener.add(
                                     AntplusPedalSmoothnessData(
                                         separatePedalSmoothnessSupport,
-                                        leftOrCombinedPedalSmoothness?.toDouble() ,
+                                        leftOrCombinedPedalSmoothness?.toDouble(),
                                         rightPedalSmoothness?.toDouble() ?: 0.0
                                     )
                                 )
@@ -284,41 +285,54 @@ class BikePowerHostApiImpl(
                 )
             )
         }
-        pwrScanCtrl = MyAntPlusBikePowerPcc.requestAsyncScanController(
-            context,
-            0,
-            object : IAsyncScanResultReceiver {
-                override fun onSearchStopped(reasonStopped: RequestAccessResult) {
-                    Handler(Looper.getMainLooper()).post {
-                        onLogDataListener.add(
-                            AntplusLogData(
-                                AntplusLogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+        try {
+            pwrScanCtrl = MyAntPlusBikePowerPcc.requestAsyncScanController(
+                context,
+                0,
+                object : IAsyncScanResultReceiver {
+                    override fun onSearchStopped(reasonStopped: RequestAccessResult) {
+                        Handler(Looper.getMainLooper()).post {
+                            onLogDataListener.add(
+                                AntplusLogData(
+                                    AntplusLogEvent.VERBOSE, TAG, "<onSearchStopped>:"
+                                )
                             )
-                        )
+                        }
+                        //The triggers calling this function use the same codes and require the same actions as those received by the standard access result receiver
+                        accessResultReceiver.onResultReceived(null, reasonStopped, DeviceState.DEAD)
                     }
-                    //The triggers calling this function use the same codes and require the same actions as those received by the standard access result receiver
-                    accessResultReceiver.onResultReceived(null, reasonStopped, DeviceState.DEAD)
-                }
 
-                override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
-                    Handler(Looper.getMainLooper()).post {
-                        onLogDataListener.add(
-                            AntplusLogData(
-                                AntplusLogEvent.VERBOSE,
-                                TAG,
-                                "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
+                    override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
+                        Handler(Looper.getMainLooper()).post {
+                            onLogDataListener.add(
+                                AntplusLogData(
+                                    AntplusLogEvent.VERBOSE,
+                                    TAG,
+                                    "<onSearchResult>: number " + deviceFound.antDeviceNumber + " name " + deviceFound.deviceDisplayName + " already connected " + deviceFound.isAlreadyConnected
+                                )
                             )
-                        )
-                        onScanResultListener.add(
-                            AntplusDevice(
-                                deviceFound.antDeviceNumber.toLong(),
-                                deviceFound.deviceDisplayName,
-                                AntplusDeviceType.BIKEPOWER
+                            onScanResultListener.add(
+                                AntplusDevice(
+                                    deviceFound.antDeviceNumber.toLong(),
+                                    deviceFound.deviceDisplayName,
+                                    AntplusDeviceType.BIKEPOWER
+                                )
                             )
-                        )
+                        }
                     }
-                }
-            })}
+                })
+        } catch (e: Exception) {
+            Handler(Looper.getMainLooper()).post {
+                onLogDataListener.add(
+                    AntplusLogData(
+                        AntplusLogEvent.ERROR,
+                        TAG,
+                        "(startScan): error on requestAsyncScanController, " + e.message
+                    )
+                )
+            }
+        }
+    }
 
     /** Stops the active async scan for Bike Power Meters. */
     override fun stopScan() {
