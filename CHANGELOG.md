@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.9+20] - 2026-09-04
+
+### ⚙️ Miscellaneous Tasks [0.6.9]
+
+- Upgrade pigeon to v28.0.0 and update  manifest label ([b5d7a76](https://codeberg.org/heyteacher/flutter_antplus/commit/b5d7a76011867a13c50be196ff29cfd9dc170703)) by **heyteacher**
+- *(release)* New version 0.6.9+20 which closes ([#36](https://codeberg.org/heyteacher/flutter_antplus/issues/36)) ([c663598](https://codeberg.org/heyteacher/flutter_antplus/commit/c6635986d5c6afe5933d0e74fe1772b0718e0e92)) by **heyteacher**
+
 ## [flutter_antplus-0.6.8+19] - 2026-08-04
 
 ### ⚙️ Miscellaneous Tasks [0.6.8]
