@@ -10,5 +10,5 @@ pluginManagement {
 
 plugins {
     id("com.android.library") version "8.3.2" apply false // Match your required AGP version
-    id("org.jetbrains.kotlin.android") version "2.2.20" apply false
+    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
 }
