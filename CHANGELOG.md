@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.10+22] - 2026-09-08
+
+### ⚙️ Miscellaneous Tasks [0.6.10]
+
+- Update dependencies, SDK constraints, and analysis exclusions ([24cf537](https://codeberg.org/heyteacher/flutter_antplus/commit/24cf5374df0ad8c8cb0c734b9e4482443e32d332)) by **heyteacher**
+- *(release)* New version 0.6.10+21 which closes ([#38](https://codeberg.org/heyteacher/flutter_antplus/issues/38)) ([75111a3](https://codeberg.org/heyteacher/flutter_antplus/commit/75111a3e1d86d6a2080a69a005b5507cc9399656)) by **heyteacher**
+- *(release)* New version 0.6.10+22 which closes ([#38](https://codeberg.org/heyteacher/flutter_antplus/issues/38)) ([6ffe984](https://codeberg.org/heyteacher/flutter_antplus/commit/6ffe984971a54dc0daeb4f7f2c1b3363a9497f0d)) by **heyteacher**
+
 ## [flutter_antplus-0.6.9+20] - 2026-09-04
 
 ### ⚙️ Miscellaneous Tasks [0.6.9]
