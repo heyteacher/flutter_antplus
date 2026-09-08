@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.11+23] - 2026-09-08
+
+### 🛠️ Build [0.6.11]
+
+- Upgrade AGP to 9.0.1, Kotlin to 2.3.20, and set JVM target to 24 ([3b9031e](https://codeberg.org/heyteacher/flutter_antplus/commit/3b9031e0a5677b948a46f0cd6e048fe103de7864)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.6.11]
+
+- *(release)* New version 0.6.11+23 which closes ([#40](https://codeberg.org/heyteacher/flutter_antplus/issues/40)) ([8596fad](https://codeberg.org/heyteacher/flutter_antplus/commit/8596fad0c5b6b3fac27233ef420cc713ae1438eb)) by **heyteacher**
+
 ## [flutter_antplus-0.6.10+22] - 2026-09-08
 
 ### ⚙️ Miscellaneous Tasks [0.6.10]
