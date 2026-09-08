@@ -2,7 +2,7 @@ group = "me.heyteacher.flutter_antplus"
 version = "1.0"
 
 buildscript {
-    val kotlinVersion by extra("1.9.24")
+    val kotlinVersion by extra("2.3.20")
     repositories {
         google()
         mavenCentral()
@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.11.2")
+        classpath("com.android.tools.build:gradle:9.0.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }
@@ -51,6 +51,12 @@ android {
                 showStandardStreams = true
             }
         }
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("24"))
     }
 }
 
