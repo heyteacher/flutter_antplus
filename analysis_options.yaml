@@ -1,5 +1,9 @@
 include: package:very_good_analysis/analysis_options.yaml
 
 analyzer:
+  errors:
+    unnecessary_ignore: ignore
   exclude:
-    - '**.g.dart'
+    - "**.g.dart"
+    - build/**
+    - android/**
