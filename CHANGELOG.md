@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.6.12+24] - 2026-10-23
+
+### ⚙️ Miscellaneous Tasks [0.6.12]
+
+- Skip automated release notes commits in git-cliff ([de696c9](https://codeberg.org/heyteacher/flutter_antplus/commit/de696c950f7d04ccc276ddfbdec2e75e3402490a)) by **heyteacher**
+- Update dev dependencies and regenerate pigeon files using Pigeon v29.0.11 ([a4f62a5](https://codeberg.org/heyteacher/flutter_antplus/commit/a4f62a5014f29dd395b0c6186b521cecee3d6270)) by **heyteacher**
+- *(release)* New version 0.6.12+24 which closes ([#42](https://codeberg.org/heyteacher/flutter_antplus/issues/42)) ([9994434](https://codeberg.org/heyteacher/flutter_antplus/commit/9994434c409fcd839eb14eb2eb6fa39964766b1c)) by **heyteacher**
+
 ## [flutter_antplus-0.6.11+23] - 2026-09-08
 
 ### 🛠️ Build [0.6.11]
