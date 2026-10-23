@@ -21,10 +21,10 @@ dependencies:
   plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
-  flutter_heyteacher_meta: ^7.9.3+188
+  flutter_heyteacher_meta: ^7.9.6+191
   flutter_test:
     sdk: flutter
-  pigeon: ^28.0.0
+  pigeon: ^29.0.11
   very_good_analysis: ^11.0.0
 
 flutter:
