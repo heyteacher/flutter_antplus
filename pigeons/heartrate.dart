@@ -20,4 +20,5 @@ abstract class HeartrateHostApi {
   void stopScan();
   void connect(int deviceNumber);
   void disconnect();
+  void requestPermission();
 }

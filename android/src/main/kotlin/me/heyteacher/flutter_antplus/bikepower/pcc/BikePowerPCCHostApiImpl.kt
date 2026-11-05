@@ -1,19 +1,22 @@
-package me.heyteacher.flutter_antplus.bikepower
+package me.heyteacher.flutter_antplus.bikepower.pcc
 
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.dsi.ant.plugins.antplus.pcc.defines.BatteryStatus
 import com.dsi.ant.plugins.antplus.pcc.defines.DeviceState
 import com.dsi.ant.plugins.antplus.pcc.defines.EventFlag
 import com.dsi.ant.plugins.antplus.pcc.defines.RequestAccessResult
 import com.dsi.ant.plugins.antplus.pccbase.AntPluginPcc
-import com.dsi.ant.plugins.antplus.pccbase.AntPluginPcc.IDeviceStateChangeReceiver
-import com.dsi.ant.plugins.antplus.pccbase.AntPluginPcc.IPluginAccessResultReceiver
 import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController
-import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.AsyncScanResultDeviceInfo
-import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.IAsyncScanResultReceiver
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import io.flutter.plugin.common.BinaryMessenger
+import me.heyteacher.flutter_antplus.bikepower.OnBalanceDataListener
+import me.heyteacher.flutter_antplus.bikepower.OnBatteryStatusListener
+import me.heyteacher.flutter_antplus.bikepower.OnCadenceDataListener
+import me.heyteacher.flutter_antplus.bikepower.OnPedalSmoothnessDataListener
+import me.heyteacher.flutter_antplus.bikepower.OnPowerDataListener
+import me.heyteacher.flutter_antplus.bikepower.OnTorqueEffectivenessDataListener
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusBatteryStatus
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
@@ -28,7 +31,9 @@ import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeListener
 import me.heyteacher.flutter_antplus.device.OnRequestAccessResultListener
 import me.heyteacher.flutter_antplus.device.OnScanResultListener
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
@@ -37,10 +42,9 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 import java.math.BigDecimal
 import java.util.EnumSet
-import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as PigeonDeviceState
 
 /**
- * Android implementation of the [BikepowerHostApi] Pigeon interface.
+ * Android implementation of the [me.heyteacher.flutter_antplus.bikepower.pigeons.BikepowerHostApi] Pigeon interface.
  *
  * Manages scanning, connection, and telemetry subscriptions for an ANT+ Bike Power Meter.
  * Registers Pigeon event channel stream handlers for power, cadence, balance, pedal smoothness,
@@ -50,14 +54,14 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState as Pigeon
  * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
  * @param onLogDataListener shared log listener to forward native log events to Flutter
  */
-class BikePowerHostApiImpl(
+class BikePowerPCCHostApiImpl(
     private val context: Context,
     binaryMessenger: BinaryMessenger,
     private var onLogDataListener: OnLogDataListener
 ) : BikepowerHostApi {
 
     companion object {
-        private val TAG: String = BikePowerHostApiImpl::class.java.simpleName
+        private val TAG: String = BikePowerPCCHostApiImpl::class.java.simpleName
     }
 
     private var releaseHandle: PccReleaseHandle<MyAntPlusBikePowerPcc>? = null
@@ -77,7 +81,7 @@ class BikePowerHostApiImpl(
     private var onTorqueEffectivenessDataListener: OnTorqueEffectivenessDataListener =
         OnTorqueEffectivenessDataListener()
     private var onBatteryStatusListener: OnBatteryStatusListener = OnBatteryStatusListener()
-    private val stateChangeReceiver = IDeviceStateChangeReceiver { deviceState ->
+    private val stateChangeReceiver = AntPluginPcc.IDeviceStateChangeReceiver { deviceState ->
         Handler(Looper.getMainLooper()).post {
             onLogDataListener.add(
                 AntplusLogData(
@@ -88,11 +92,11 @@ class BikePowerHostApiImpl(
             )
         }
         Handler(Looper.getMainLooper()).post {
-            onDeviceStateChangeListener.add(PigeonDeviceState.valueOf(deviceState.toString()))
+            onDeviceStateChangeListener.add(AntplusDeviceState.valueOf(deviceState.toString()))
         }
     }
-    private val accessResultReceiver: IPluginAccessResultReceiver<MyAntPlusBikePowerPcc> =
-        IPluginAccessResultReceiver { result, resultCode, initialDeviceState ->
+    private val accessResultReceiver: AntPluginPcc.IPluginAccessResultReceiver<MyAntPlusBikePowerPcc> =
+        AntPluginPcc.IPluginAccessResultReceiver { result, resultCode, initialDeviceState ->
             //Handle the result, connecting to events on success or reporting failure to user.
             when (resultCode) {
                 RequestAccessResult.SUCCESS -> {
@@ -100,12 +104,12 @@ class BikePowerHostApiImpl(
                     pwrPcc!!.setOnLogDataListener(onLogDataListener)
                     Handler(Looper.getMainLooper()).post {
                         onRequestAccessResultListener.add(
-                            me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult.valueOf(
+                            AntplusRequestAccessResult.valueOf(
                                 resultCode.name
                             )
                         )
                         onDeviceStateChangeListener.add(
-                            PigeonDeviceState.valueOf(
+                            AntplusDeviceState.valueOf(
                                 initialDeviceState.toString()
                             )
                         )
@@ -204,7 +208,7 @@ class BikePowerHostApiImpl(
                         Handler(Looper.getMainLooper()).post {
                             onBatteryStatusListener.add(
                                 when (batteryStatus) {
-                                    com.dsi.ant.plugins.antplus.pcc.defines.BatteryStatus.NEW -> AntplusBatteryStatus.NEW_STATUS
+                                    BatteryStatus.NEW -> AntplusBatteryStatus.NEW_STATUS
                                     else -> AntplusBatteryStatus.valueOf(batteryStatus.toString())
                                 }
                             )
@@ -215,7 +219,7 @@ class BikePowerHostApiImpl(
 
                 RequestAccessResult.DEPENDENCY_NOT_INSTALLED -> Handler(Looper.getMainLooper()).post {
                     onRequestAccessResultListener.add(
-                        me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult.valueOf(
+                        AntplusRequestAccessResult.valueOf(
                             resultCode.name
                         )
                     )
@@ -235,7 +239,7 @@ class BikePowerHostApiImpl(
                 else -> {
                     Handler(Looper.getMainLooper()).post {
                         onRequestAccessResultListener.add(
-                            me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult.valueOf(
+                            AntplusRequestAccessResult.valueOf(
                                 resultCode.name
                             )
                         )
@@ -289,7 +293,7 @@ class BikePowerHostApiImpl(
             pwrScanCtrl = MyAntPlusBikePowerPcc.requestAsyncScanController(
                 context,
                 0,
-                object : IAsyncScanResultReceiver {
+                object : AsyncScanController.IAsyncScanResultReceiver {
                     override fun onSearchStopped(reasonStopped: RequestAccessResult) {
                         Handler(Looper.getMainLooper()).post {
                             onLogDataListener.add(
@@ -302,7 +306,7 @@ class BikePowerHostApiImpl(
                         accessResultReceiver.onResultReceived(null, reasonStopped, DeviceState.DEAD)
                     }
 
-                    override fun onSearchResult(deviceFound: AsyncScanResultDeviceInfo) {
+                    override fun onSearchResult(deviceFound: AsyncScanController.AsyncScanResultDeviceInfo) {
                         Handler(Looper.getMainLooper()).post {
                             onLogDataListener.add(
                                 AntplusLogData(
@@ -388,6 +392,10 @@ class BikePowerHostApiImpl(
         releaseHandle = null
         pwrPcc = null
     }
+
+    override fun requestPermission() {
+    }
+
 
     /** Closes all active event stream listeners. Called when the plugin is detached from the engine. */
     fun close() {

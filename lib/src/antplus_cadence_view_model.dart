@@ -68,4 +68,7 @@ class AntplusCadenceViewModel implements AntplusDeviceViewModel {
   /// Disconnects from the current cadence sensor.
   @override
   Future<void> disconnect() => _hostApi.disconnect();
+
+  @override
+  Future<void> requestPermission() => _hostApi.requestPermission();
 }

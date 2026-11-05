@@ -69,4 +69,7 @@ class AntplusHeartrateViewModel implements AntplusDeviceViewModel {
   /// Disconnects from the current heart rate monitor.
   @override
   Future<void> disconnect() => _hostApi.disconnect();
+
+  @override
+  Future<void> requestPermission() => _hostApi.requestPermission();
 }

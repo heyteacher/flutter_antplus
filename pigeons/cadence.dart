@@ -20,4 +20,5 @@ abstract class CadenceHostApi {
   void stopScan();
   void connect(int deviceNumber);
   void disconnect();
+  void requestPermission();
 }

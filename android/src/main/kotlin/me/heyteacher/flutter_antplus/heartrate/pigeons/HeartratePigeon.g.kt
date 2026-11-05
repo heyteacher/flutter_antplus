@@ -62,6 +62,7 @@ interface HeartrateHostApi {
   fun stopScan()
   fun connect(deviceNumber: Long)
   fun disconnect()
+  fun requestPermission()
 
   companion object {
     /** The codec used by HeartrateHostApi. */
@@ -128,6 +129,22 @@ interface HeartrateHostApi {
           channel.setMessageHandler { _, reply ->
             val wrapped: List<Any?> = try {
               api.disconnect()
+              listOf(null)
+            } catch (exception: Throwable) {
+              HeartratePigeonPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.heartrate.HeartrateHostApi.requestPermission$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.requestPermission()
               listOf(null)
             } catch (exception: Throwable) {
               HeartratePigeonPigeonUtils.wrapError(exception)

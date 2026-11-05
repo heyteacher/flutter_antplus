@@ -1,4 +1,4 @@
-package me.heyteacher.flutter_antplus.bikepower
+package me.heyteacher.flutter_antplus.bikepower.pcc
 
 import android.app.Activity
 import android.content.ComponentName
@@ -14,7 +14,6 @@ import com.dsi.ant.plugins.antplus.pcc.defines.EventFlag
 import com.dsi.ant.plugins.antplus.pcc.defines.RequestStatus
 import com.dsi.ant.plugins.antplus.pccbase.AntPlusCommonPcc
 import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController
-import com.dsi.ant.plugins.antplus.pccbase.AsyncScanController.IAsyncScanResultReceiver
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import com.dsi.ant.plugins.utility.log.LogAnt
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
@@ -22,7 +21,6 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 import java.math.BigDecimal
 import java.util.EnumSet
-
 
 class MyAntPlusBikePowerPcc private constructor() : AntPlusCommonPcc() {
     private var mRawPowerOnlyDataReceiver: IRawPowerOnlyDataReceiver? = null
@@ -1228,7 +1226,7 @@ class MyAntPlusBikePowerPcc private constructor() : AntPlusCommonPcc() {
         fun requestAsyncScanController(
             bindToContext: Context?,
             searchProximityThreshold: Int,
-            scanResultReceiver: IAsyncScanResultReceiver?
+            scanResultReceiver: AsyncScanController.IAsyncScanResultReceiver?
         ): AsyncScanController<MyAntPlusBikePowerPcc> {
             val potentialRetObj = MyAntPlusBikePowerPcc()
             return requestAccess_Helper_AsyncScanController(

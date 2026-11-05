@@ -62,6 +62,7 @@ interface BikepowerHostApi {
   fun stopScan()
   fun connect(deviceNumber: Long)
   fun disconnect()
+  fun requestPermission()
 
   companion object {
     /** The codec used by BikepowerHostApi. */
@@ -128,6 +129,22 @@ interface BikepowerHostApi {
           channel.setMessageHandler { _, reply ->
             val wrapped: List<Any?> = try {
               api.disconnect()
+              listOf(null)
+            } catch (exception: Throwable) {
+              BikepowerPigeonPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.bikepower.BikepowerHostApi.requestPermission$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.requestPermission()
               listOf(null)
             } catch (exception: Throwable) {
               BikepowerPigeonPigeonUtils.wrapError(exception)

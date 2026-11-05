@@ -19,6 +19,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         gradlePluginPortal()
     }
 }
@@ -65,6 +66,7 @@ dependencies {
     implementation(fileTree("libs/android-antplus-plugin-lib-release_3.9.0/"))
     implementation(files("libs/fit_21.105.00.jar"))
     implementation("androidx.annotation:annotation:1.10.0")
+    implementation("be.glever:j-antplus:0.0.1-SNAPSHOT")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:5.0.0")
     testCompileOnly(files("libs/flutter.jar"))
