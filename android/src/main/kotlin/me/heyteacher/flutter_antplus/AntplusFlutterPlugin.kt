@@ -5,6 +5,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import me.heyteacher.flutter_antplus.bikepower.jantplus.BikePowerJAntplusHostApiImpl
 import me.heyteacher.flutter_antplus.cadence.CadenceHostApiImpl
 import me.heyteacher.flutter_antplus.heartrate.HeartrateHostApiImpl
+import me.heyteacher.flutter_antplus.jantplus.AbstractJAntplusHostApiImpl
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.pigeons.OnLogDataStreamHandler
 
@@ -25,6 +26,7 @@ class AntplusFlutterPlugin : FlutterPlugin {
      * when the Flutter engine attaches to the Android application.
      */
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        AbstractJAntplusHostApiImpl.initializeUsbDevice(flutterPluginBinding.applicationContext)
         OnLogDataStreamHandler.register(flutterPluginBinding.binaryMessenger, onLogDataListener)
         heartrateHostApiImpl = HeartrateHostApiImpl(
             flutterPluginBinding.applicationContext,
@@ -32,7 +34,6 @@ class AntplusFlutterPlugin : FlutterPlugin {
             onLogDataListener
         )
         bikepowerHostApiImpl = BikePowerJAntplusHostApiImpl(
-            flutterPluginBinding.applicationContext,
             flutterPluginBinding.binaryMessenger,
             onLogDataListener
         )

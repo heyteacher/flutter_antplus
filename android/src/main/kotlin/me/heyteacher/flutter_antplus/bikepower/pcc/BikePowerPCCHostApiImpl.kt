@@ -393,10 +393,6 @@ class BikePowerPCCHostApiImpl(
         pwrPcc = null
     }
 
-    override fun requestPermission() {
-    }
-
-
     /** Closes all active event stream listeners. Called when the plugin is detached from the engine. */
     fun close() {
         // close device listeners
