@@ -100,7 +100,4 @@ class AntplusBikepowerViewModel implements AntplusDeviceViewModel {
   /// Disconnects from the current bike power meter.
   @override
   Future<void> disconnect() => _hostApi.disconnect();
-
-  @override
-  Future<void> requestPermission() => _hostApi.requestPermission();
 }

@@ -281,6 +281,4 @@ class HeartrateHostApiImpl(
         // closes heartrate listener
         onHeartRateDataListener.onEventsDone()
     }
-    override fun requestPermission() {
-    }
 }

@@ -20,5 +20,4 @@ abstract class BikepowerHostApi {
   void stopScan();
   void connect(int deviceNumber);
   void disconnect();
-  void requestPermission();
 }

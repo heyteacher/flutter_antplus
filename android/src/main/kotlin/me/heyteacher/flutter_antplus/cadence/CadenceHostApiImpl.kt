@@ -277,7 +277,4 @@ class CadenceHostApiImpl(
         // closes cadence listener
         onCadenceDataListener.onEventsDone()
     }
-
-    override fun requestPermission() {
-    }
 }

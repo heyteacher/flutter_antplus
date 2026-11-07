@@ -40,7 +40,4 @@ abstract class AntplusDeviceViewModel {
 
   /// Disconnects from the currently connected ANT+ device.
   Future<void> disconnect();
-
-  /// Request persmission
-  Future<void> requestPermission();
 }
