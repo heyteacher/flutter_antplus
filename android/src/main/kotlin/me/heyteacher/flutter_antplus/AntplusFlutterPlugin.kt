@@ -2,10 +2,9 @@
 package me.heyteacher.flutter_antplus
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import me.heyteacher.flutter_antplus.bikepower.jantplus.BikePowerJAntplusHostApiImpl
+import me.heyteacher.flutter_antplus.bikepower.BikePowerHostApiImpl
 import me.heyteacher.flutter_antplus.cadence.CadenceHostApiImpl
 import me.heyteacher.flutter_antplus.heartrate.HeartrateHostApiImpl
-import me.heyteacher.flutter_antplus.jantplus.AbstractJAntplusHostApiImpl
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.pigeons.OnLogDataStreamHandler
 
@@ -18,7 +17,7 @@ import me.heyteacher.flutter_antplus.logging.pigeons.OnLogDataStreamHandler
 class AntplusFlutterPlugin : FlutterPlugin {
     private var onLogDataListener: OnLogDataListener = OnLogDataListener()
     private lateinit var heartrateHostApiImpl: HeartrateHostApiImpl
-    private lateinit var bikepowerHostApiImpl: BikePowerJAntplusHostApiImpl
+    private lateinit var bikepowerHostApiImpl: BikePowerHostApiImpl
     private lateinit var cadenceHostApiImpl: CadenceHostApiImpl
 
     /**
@@ -26,19 +25,17 @@ class AntplusFlutterPlugin : FlutterPlugin {
      * when the Flutter engine attaches to the Android application.
      */
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        AbstractJAntplusHostApiImpl.initializeUsbDevice(flutterPluginBinding.applicationContext)
         OnLogDataStreamHandler.register(flutterPluginBinding.binaryMessenger, onLogDataListener)
+        AbstractHostApi.initializeUsbDevice(flutterPluginBinding.applicationContext, onLogDataListener)
         heartrateHostApiImpl = HeartrateHostApiImpl(
-            flutterPluginBinding.applicationContext,
             flutterPluginBinding.binaryMessenger,
             onLogDataListener
         )
-        bikepowerHostApiImpl = BikePowerJAntplusHostApiImpl(
+        bikepowerHostApiImpl = BikePowerHostApiImpl(
             flutterPluginBinding.binaryMessenger,
             onLogDataListener
         )
         cadenceHostApiImpl = CadenceHostApiImpl(
-            flutterPluginBinding.applicationContext,
             flutterPluginBinding.binaryMessenger,
             onLogDataListener
         )
@@ -55,3 +52,4 @@ class AntplusFlutterPlugin : FlutterPlugin {
         cadenceHostApiImpl.close()
     }
 }
+
