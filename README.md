@@ -3,11 +3,42 @@
 [![pub package](https://img.shields.io/pub/v/flutter_antplus.svg)](https://pub.dev/packages/flutter_antplus)
 [![license](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/heyteacher/flutter_antplus/blob/main/LICENSE)
 
-A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices__ on Android using the official [ANT-Android-SDKs](https://github.com/ant-wireless/ANT-Android-SDKs). It allows seamless scanning, connection, and data acquisition from multiple fitness sensors like __heart rate monitors__, __bike power meters__, and __speed/cadence sensors__.
+> [!IMPORTANT]
+> __BREAKING CHANGE__ starting from version `7.0.0` the ANT+ plugin is not required anymore, so:
+>
+> - uninstall `ANT Radio Service` and `ANT+ USB Service` apps from your device.
+> - change the `androidManifest.xml` in your app as describe in [Requirements](#requirements)
+
+A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices__ on Android. It allows seamless scanning, connection, and data acquisition from multiple fitness sensors like __heart rate monitors__, __bike power meters__, and __speed/cadence sensors__.
 
 ---
 
-## 🚀 Features
+## Table of Contents
+<!-- TOC -->
+
+- [flutter_antplus](#flutter_antplus)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Android Setup](#android-setup)
+  - [Quick Start](#quick-start)
+    - [Initialize Logging (Optional)](#initialize-logging-optional)
+    - [Scanning and Connecting](#scanning-and-connecting)
+      - [Start Scanning](#start-scanning)
+      - [Connect to a Device](#connect-to-a-device)
+      - [Monitor Device Connection State](#monitor-device-connection-state)
+  - [Reading Sensor Data](#reading-sensor-data)
+    - [Heart Rate](#heart-rate)
+    - [Bike Power](#bike-power)
+    - [Cadence](#cadence)
+  - [For developers](#for-developers)
+    - [Setup Dev Environment](#setup-dev-environment)
+    - [Pigeon Code Generation](#pigeon-code-generation)
+  - [License](#license)
+
+<!-- /TOC -->
+
+## Features
 
 - __Heart Rate Monitor (HRM)__
   - Real-time Heart Rate (bpm) stream
@@ -29,41 +60,46 @@ A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices
 
 ---
 
-## 🛠️ Requirements
+## Requirements
 
 - Ant+ USB Stick Receiver Adapter like [this](https://www.amazon.co.uk/s?k=Ant%2B+USB+Stick+Adapter&crid=JJ10ZB811E2K&sprefix=ant%2B+usb+stick+adapter%2Caps%2C150&ref=nb_sb_noss)
 
 - USB C to USB adapter like [this](https://www.amazon.co.uk/s?k=usbc+to+usb+adapter&crid=158X5B00VLVEC&sprefix=usbc+to+usb+adapte%2Caps%2C158&ref=nb_sb_noss_2)
-
-- Install [ANT Radio Service](https://play.google.com/store/apps/details?id=com.dsi.ant.service.socket) and [ANT+ Plugins](https://play.google.com/store/apps/details?id=com.dsi.ant.plugins.antplus) from the Play Store
   
 ---
 
-## 🛠️ Android Setup
+## Android Setup
 
-To run ANT+ communication on Android (especially on Android 11+ / API 30+), you must declare package visibility for the ANT+ background services.
+- Add the action `USB_DEVICE_ATTACHED`  tag (outside `<activity>`) in your `android/app/src/main/AndroidManifest.xml`:
 
-Add the following inside the `<manifest>` tag (outside `<application>`) in your `android/app/src/main/AndroidManifest.xml`:
+  ```xml
+    <intent-filter>
+        .
+        .
+        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+    </intent-filter>
+    <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+        android:resource="@xml/device_filter" />
+  ```
 
-```xml
-<queries>
-  <!-- Declares dependency on the ANT+ Plugin Service -->
-  <package android:name="com.dsi.ant.plugins.antplus" />
-  <!-- Declares dependency on the ANT Radio Service -->
-  <package android:name="com.dsi.ant.service.socket" />
-  <intent>
-    <action android:name="com.dsi.ant.plugins.antplus.queryalreadyconnecteddevices" />
-  </intent>
-</queries>
-```
+- add file `android/app/src/main/res/xml/device_filter.xml` with this content:
+
+  ```xml
+  <?xml version="1.0" encoding="utf-8"?>
+
+  <resources>
+      <usb-device vendor-id="4047" product-id="4104" />
+      <usb-device vendor-id="4047" product-id="4105" />
+  </resources>
+  ```
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 A comprehensive example app can be found in [example](example).
 
-### 1. Initialize Logging (Optional)
+### Initialize Logging (Optional)
 
 It is recommended to initialize the logging interface at app startup:
 
@@ -77,7 +113,7 @@ void main() {
 }
 ```
 
-### 2. Scanning and Connecting
+### Scanning and Connecting
 
 Each device type has its own view model implementing the `AntplusDeviceViewModel` interface:
 
@@ -122,9 +158,9 @@ final stateSubscription = hrViewModel.onDeviceStateChangeStream.listen((state) {
 
 ---
 
-## 📊 Reading Sensor Data
+## Reading Sensor Data
 
-### 💓 Heart Rate
+### Heart Rate
 
 ```dart
 final hrSubscription = AntplusHeartrateViewModel.instance.onHeartRateDataStream.listen((bpm) {
@@ -132,7 +168,7 @@ final hrSubscription = AntplusHeartrateViewModel.instance.onHeartRateDataStream.
 });
 ```
 
-### 🚴 Bike Power
+### Bike Power
 
 The bike power view model offers multiple specialized telemetry streams:
 
@@ -170,7 +206,7 @@ powerModel.onBatteryStatusDataStream.listen((status) {
 });
 ```
 
-### 🔄 Cadence
+### Cadence
 
 ```dart
 final cadenceSubscription = AntplusCadenceViewModel.instance.onCadenceDataStream.listen((rpm) {
@@ -180,7 +216,43 @@ final cadenceSubscription = AntplusCadenceViewModel.instance.onCadenceDataStream
 
 ---
 
-## 🛠️ For developers
+## For developers
+
+### Setup Dev Environment
+
+In order to setup developper environment you need to install `Android 14 SDK`, `maven`, `@heyteacher/j-antplus` from GitHub.
+
+Following these instructions:
+
+1. install `Android 14 SDK` following [Set up the Android 14 SDK](https://developer.android.com/about/versions/14/setup-sdk)
+
+2. clone `j-antplus` from [@heyteacher/j-antplus](https://github.com/heyteacher/j-antplus)
+
+   ```bash
+   git clone https://github.com/heyteacher/j-antplus.git
+   ```
+
+3. install `maven`
+
+   i.e. `Ubuntu`
+
+   ```bash
+   sudo apt install maven
+   ```
+
+4. install `j-antplus` in your local maven repository
+
+   ```bash
+   cd j-antplus
+   mvn clean install
+   ```
+
+5. go to `flutter_antplus` and run example application
+
+   ```bash
+   cd example
+   flutter run
+   ```
 
 ### Pigeon Code Generation
 
@@ -208,6 +280,6 @@ dart run pigeon --input pigeons/device_event_channel.dart
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the BSD-3-Clause License - see the [LICENSE](LICENSE) file for details.
