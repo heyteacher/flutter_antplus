@@ -62,11 +62,11 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
-    compileOnly(files("libs/flutter.jar"))
     implementation(fileTree("libs/android-antplus-plugin-lib-release_3.9.0/"))
     implementation(files("libs/fit_21.105.00.jar"))
-    implementation("androidx.annotation:annotation:1.10.0")
     implementation("be.glever:j-antplus:0.0.1-SNAPSHOT")
+    compileOnly(files("libs/flutter.jar"))
+    compileOnly("androidx.annotation:annotation:1.10.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:5.0.0")
     testCompileOnly(files("libs/flutter.jar"))
