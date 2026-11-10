@@ -96,11 +96,13 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     try {
       setState(() {
         _loading = true;
+        _scanning = false;
       });
       await deviceViewModel.connect(deviceNumber);
       setState(() {
         _connectedDevice = _scanDevices[deviceNumber];
         _scanDevices.remove(deviceNumber);
+        _scanning = false;
       });
     } on Exception catch (e) {
       if (mounted) {
@@ -119,6 +121,7 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     try {
       setState(() {
         _loading = true;
+        _scanning = false;
       });
       await deviceViewModel.disconnect();
       setState(() {
