@@ -5,11 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Android",
+            "name": "D",
             "program": "lib/main.dart",
             "cwd": "example",
             "request": "launch",
             "type": "dart",
+        },
+        {
+            "name": "R",
+            "program": "lib/main.dart",
+            "cwd": "example",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
         }
     ]
 }
