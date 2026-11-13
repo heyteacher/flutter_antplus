@@ -256,7 +256,13 @@ Following these instructions:
 
 ### Pigeon Code Generation
 
-The pigeon definition files are located in the `pigeons/` folder. If you edit these definitions, regenerate the pigeon platform channel implementations using the following commands:
+The pigeon definition files are located in the `pigeons/` folder. If you edit these definitions, regenerate the pigeon platform channel implementations calling:
+
+```bash
+tool/run_pigeon.sh
+```
+
+script which is calling the following commands:
 
 ```bash
 # Bike Power
