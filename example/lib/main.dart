@@ -14,7 +14,11 @@ import 'package:wakelock_plus/wakelock_plus.dart' show WakelockPlus;
 /// app widget.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LoggerViewModel.instance.initialize();
+  await LoggerViewModel.instance.initialize(
+    clearTemporaryLogToDateTime: DateTime.now().subtract(
+      const Duration(minutes: 5),
+    ),
+  );
   AntplusLogging.instance.initLog();
   unawaited(WakelockPlus.enable());
   runApp(const App());
