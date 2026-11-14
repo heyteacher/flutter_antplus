@@ -61,10 +61,18 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     }
 }
 
+/**
+ * set the system property "platform" as "android" for j-antplus
+ */
+tasks.withType<JavaExec> {
+    systemProperty("platform", "android")
+}
+
 dependencies {
     implementation(fileTree("libs/android-antplus-plugin-lib-release_3.9.0/"))
     implementation(files("libs/fit_21.105.00.jar"))
     implementation("be.glever:j-antplus:0.0.1-SNAPSHOT")
+    implementation("com.github.tony19:logback-android:3.0.0")
     compileOnly(files("libs/flutter.jar"))
     compileOnly("androidx.annotation:annotation:1.10.0")
     testImplementation("junit:junit:4.13.2")
