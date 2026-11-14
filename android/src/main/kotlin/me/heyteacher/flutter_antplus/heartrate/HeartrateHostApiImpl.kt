@@ -16,7 +16,6 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi
 import me.heyteacher.flutter_antplus.heartrate.pigeons.OnHeartRateDataStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 
 /**
@@ -69,9 +68,9 @@ class HeartrateHostApiImpl(
                 )
             }
         }
-        else {
-            log(TAG,AntplusLogEvent.DEBUG, "(handleScanDataPage): page number ${dataPage.pageNumber}")
-        }
+        //else {
+        //    log(TAG,AntplusLogEvent.DEBUG, "(handleScanDataPage): page number ${dataPage.pageNumber}")
+        //}
     }
 
     override fun handleConnectedDataPage(dataPage: AbstractAntPlusDataPage) {
@@ -80,9 +79,9 @@ class HeartrateHostApiImpl(
                 onHeartRateDataListener.add(dataPage.computedHeartRateInBpm.toLong())
             }
         }
-        else {
-            log(TAG,AntplusLogEvent.DEBUG, "(handleConnectedDataPage): page number ${dataPage.pageNumber}")
-        }
+        //else {
+        //    log(TAG,AntplusLogEvent.DEBUG, "(handleConnectedDataPage): page number ${dataPage.pageNumber}")
+        //}
     }
 
     override fun close() {

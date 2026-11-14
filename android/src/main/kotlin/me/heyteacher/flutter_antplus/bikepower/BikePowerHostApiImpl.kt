@@ -29,7 +29,6 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
-import me.heyteacher.flutter_antplus.heartrate.HeartrateHostApiImpl
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
@@ -110,9 +109,9 @@ class BikePowerHostApiImpl(
                 )
             }
         }
-        else {
-            log(TAG,AntplusLogEvent.DEBUG, "(handleScanDataPage): page number ${dataPage.pageNumber}")
-        }
+        //else {
+        //    log(TAG,AntplusLogEvent.DEBUG, "(handleScanDataPage): page number ${dataPage.pageNumber}")
+        //}
     }
 
     override fun handleConnectedDataPage(dataPage: AbstractAntPlusDataPage) {
