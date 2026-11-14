@@ -29,7 +29,6 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
-import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 
@@ -41,12 +40,10 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
  * torque effectiveness, and battery status, and forwards all native events to Flutter.
  *
  * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
- * @param onLogDataListener shared log listener to forward native log events to Flutter
  */
 class BikePowerHostApiImpl(
     binaryMessenger: BinaryMessenger,
-    val onLogDataListener: OnLogDataListener
-) : AbstractHostApi(binaryMessenger, onLogDataListener), BikepowerHostApi {
+) : AbstractHostApi(binaryMessenger), BikepowerHostApi {
 
     companion object {
         private val TAG: String = BikePowerHostApiImpl::class.java.simpleName
@@ -150,7 +147,7 @@ class BikePowerHostApiImpl(
             }
             is PowerDataPage02GetSetParameters -> {
                 Handler(Looper.getMainLooper()).post {
-                    onLogDataListener.add(
+                    onLogDataListener?.add(
                         AntplusLogData(
                             AntplusLogEvent.VERBOSE,
                             TAG,

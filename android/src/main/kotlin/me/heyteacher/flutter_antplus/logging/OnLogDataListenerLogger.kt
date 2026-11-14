@@ -10,14 +10,7 @@ import org.slf4j.helpers.MessageFormatter
 import java.io.PrintWriter
 import java.io.StringWriter
 
-class OnLogDataListenerLogger: Logger {
-
-    companion object {
-        private var onLogDataListener: OnLogDataListener? = null
-        fun setOnLogDataListener(newOnLogDataListener: OnLogDataListener) {
-            onLogDataListener = newOnLogDataListener
-        }
-    }
+class OnLogDataListenerLogger(val onLogDataListener: OnLogDataListener) : Logger {
 
     override fun getName(): String {
         return "j-antplus"
@@ -27,7 +20,7 @@ class OnLogDataListenerLogger: Logger {
         val sw = StringWriter()
         throwable?.printStackTrace(PrintWriter(sw))
         Handler(Looper.getMainLooper()).post {
-            onLogDataListener?.add(
+            onLogDataListener.add(
                 AntplusLogData(
                     level,
                     name,
@@ -41,7 +34,7 @@ class OnLogDataListenerLogger: Logger {
     }
 
     override fun isTraceEnabled(): Boolean {
-        return true
+        TODO("Not yet implemented")
     }
 
     override fun trace(msg: String?) {
@@ -98,7 +91,7 @@ class OnLogDataListenerLogger: Logger {
     }
 
     override fun isDebugEnabled(): Boolean {
-        return true
+        TODO("Not yet implemented")
     }
 
     override fun debug(msg: String?) {
@@ -155,7 +148,7 @@ class OnLogDataListenerLogger: Logger {
     }
 
     override fun isInfoEnabled(): Boolean {
-        return true
+        TODO("Not yet implemented")
     }
 
     override fun info(msg: String?) {
@@ -213,7 +206,7 @@ class OnLogDataListenerLogger: Logger {
 
 
     override fun isWarnEnabled(): Boolean {
-        return true
+        TODO("Not yet implemented")
     }
 
     override fun warn(msg: String?) {
@@ -271,7 +264,7 @@ class OnLogDataListenerLogger: Logger {
     }
 
     override fun isErrorEnabled(): Boolean {
-        return true
+        TODO("Not yet implemented")
     }
 
     override fun error(msg: String?) {
@@ -291,7 +284,7 @@ class OnLogDataListenerLogger: Logger {
     }
 
     override fun error(msg: String?, t: Throwable?) {
-            add(AntplusLogEvent.ERROR, msg, throwable = t)
+        add(AntplusLogEvent.ERROR, msg, throwable = t)
     }
 
     override fun isErrorEnabled(marker: Marker?): Boolean {

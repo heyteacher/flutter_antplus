@@ -18,7 +18,6 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
-import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 
@@ -30,12 +29,10 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
  * results, and heart rate data, forwarding all native events to Flutter.
  *
  * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
- * @param onLogDataListener shared log listener to forward native log events to Flutter
  */
 class CadenceHostApiImpl(
     binaryMessenger: BinaryMessenger,
-    private var onLogDataListener: OnLogDataListener
-) : AbstractHostApi(binaryMessenger,onLogDataListener), CadenceHostApi {
+) : AbstractHostApi(binaryMessenger), CadenceHostApi {
 
     companion object {
         private val TAG: String = CadenceHostApiImpl::class.java.simpleName
@@ -76,7 +73,7 @@ class CadenceHostApiImpl(
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is SpeedCadenceDataPage2ManufacturerInformation) {
             Handler(Looper.getMainLooper()).post {
-                onLogDataListener.add(
+                onLogDataListener?.add(
                     AntplusLogData(
                         AntplusLogEvent.INFO,
                         TAG,

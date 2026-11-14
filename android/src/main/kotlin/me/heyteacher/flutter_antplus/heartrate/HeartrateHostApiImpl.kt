@@ -15,7 +15,6 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi
 import me.heyteacher.flutter_antplus.heartrate.pigeons.OnHeartRateDataStreamHandler
-import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 
 /**
@@ -26,12 +25,10 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
  * results, and heart rate data, forwarding all native events to Flutter.
  *
  * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
- * @param onLogDataListener shared log listener to forward native log events to Flutter
  */
 class HeartrateHostApiImpl(
     binaryMessenger: BinaryMessenger,
-    private var onLogDataListener: OnLogDataListener
-) : AbstractHostApi(binaryMessenger,onLogDataListener), HeartrateHostApi {
+) : AbstractHostApi(binaryMessenger), HeartrateHostApi {
 
     private val hrmDataPageRegistry: HrmDataPageRegistry = HrmDataPageRegistry()
     private var onHeartRateDataListener: OnHeartRateDataListener = OnHeartRateDataListener()

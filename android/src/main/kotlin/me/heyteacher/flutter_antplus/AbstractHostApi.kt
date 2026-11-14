@@ -47,17 +47,20 @@ import kotlin.jvm.optionals.getOrElse
  * and logging.
  *
  * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
- * @param onLogDataListener shared log listener to forward native log events to Flutter
  */
 abstract class AbstractHostApi(
     binaryMessenger: BinaryMessenger,
-    private val onLogDataListener: OnLogDataListener
 )  {
 
     companion object {
         private lateinit var antUsbDevice: AntUsbDevice
         private val TAG: String = AbstractHostApi::class.java.simpleName
+        var onLogDataListener: OnLogDataListener? = null
+        var onLogDataListenerLogger: OnLogDataListenerLogger? = null
+
         fun initializeUsbDevice(context: Context, onLogDataListener: OnLogDataListener) {
+            AbstractHostApi.onLogDataListener = onLogDataListener
+            onLogDataListenerLogger = OnLogDataListenerLogger(onLogDataListener)
             antUsbDevice = AntUsbDeviceFactory.getAvailableAntDevices(context).stream().findFirst().getOrElse {
                 Handler(Looper.getMainLooper()).post {
                     /*
@@ -71,17 +74,17 @@ abstract class AbstractHostApi(
                 return
             }
             Handler(Looper.getMainLooper()).postDelayed({
-                requestPermission(context, onLogDataListener)
+                requestPermission(context)
             }, 3000)
         }
         @SuppressLint("UnspecifiedRegisterReceiverFlag")
-        private fun requestPermission(context: Context, onLogDataListener: OnLogDataListener) {
+        private fun requestPermission(context: Context) {
             try {
                 val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
                 val androidDevice = antUsbDevice.androidDevice
                 val hasPermission = usbManager.hasPermission(androidDevice)
                 Handler(Looper.getMainLooper()).post {
-                    onLogDataListener.add(AntplusLogData(
+                    onLogDataListener?.add(AntplusLogData(
                         AntplusLogEvent.DEBUG,
                         TAG,
                         "(requestPermission): device ${androidDevice.productName?.trim()} " +
@@ -101,11 +104,11 @@ abstract class AbstractHostApi(
                             PendingIntent.FLAG_IMMUTABLE)
                     )
                 } else {
-                    antUsbDevice.initialize(context, OnLogDataListenerLogger())
+                    antUsbDevice.initialize(context, onLogDataListenerLogger)
                 }
             } catch (t: Throwable) {
                 Handler(Looper.getMainLooper()).post {
-                    onLogDataListener.add(AntplusLogData(AntplusLogEvent.ERROR, TAG, "(requestPermission): ${t.message}"))
+                    onLogDataListener?.add(AntplusLogData(AntplusLogEvent.ERROR, TAG, "(requestPermission): ${t.message}"))
                 }
                 Log.e(TAG, "(requestPermission):", t)
                 throw t
@@ -124,7 +127,7 @@ abstract class AbstractHostApi(
                                         "has ${usbPermission(context)} true")
                                 antUsbDevice.androidDevice.apply {
                                     Log.i(TAG,"(BroadcastReceiver.onReceive): initialize ant usb device")
-                                    antUsbDevice.initialize(context, OnLogDataListenerLogger())
+                                    antUsbDevice.initialize(context,onLogDataListenerLogger)
                                 }
                             }
                             else {
@@ -332,13 +335,13 @@ abstract class AbstractHostApi(
             val sw = StringWriter()
             throwable.printStackTrace(PrintWriter(sw))
             Handler(Looper.getMainLooper()).post {
-                onLogDataListener.add(AntplusLogData(level, tag, "$message $sw"))
+                onLogDataListener?.add(AntplusLogData(level, tag, "$message $sw"))
             }
             Log.e(tag, message, throwable)
         }
         else {
             Handler(Looper.getMainLooper()).post {
-                onLogDataListener.add(AntplusLogData(level, tag, message))
+                onLogDataListener?.add(AntplusLogData(level, tag, message))
             }
         }
     }
@@ -349,7 +352,7 @@ abstract class AbstractHostApi(
         onScanResultListener.onEventsDone()
         onRequestAccessResultListener.onEventsDone()
         onDeviceStateChangeListener.onEventsDone()
-        onLogDataListener.onEventsDone()
+        onLogDataListener?.onEventsDone()
         closeConnectChannel()
         closeScanChannel()
         antUsbDevice.close()
