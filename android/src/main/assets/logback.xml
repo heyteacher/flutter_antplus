@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration
+    xmlns="https://tony19.github.io/logback-android/xml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://tony19.github.io/logback-android/xml https://cdn.jsdelivr.net/gh/tony19/logback-android/logback.xsd"
+>
+    <appender name="LOGCAT" class="ch.qos.logback.classic.android.LogcatAppender">
+        <tagEncoder>
+            <pattern>%d{HH:mm:ss.SSS}</pattern>
+        </tagEncoder>
+        <encoder>
+            <pattern>%logger{20} %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 
+    <logger name="be.glever" level="INFO" />
+    <logger name="be.glever.ant.usb.AntUsbWriter" level="INFO" />
+    <logger name="be.glever.ant.usb.AntUsbReader" level="INFO" />
+    <logger name="be.glever.ant.message.AntMessageRegistry" level="INFO" />
+    <logger name="be.glever.ant.usb.AntUsbDevice" level="INFO" />
+    -->
+
+    <root level="WARN">
+        <appender-ref ref="LOGCAT" />
+    </root>
+</configuration>
