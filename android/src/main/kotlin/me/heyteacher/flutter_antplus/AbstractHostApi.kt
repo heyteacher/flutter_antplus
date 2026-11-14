@@ -28,9 +28,12 @@ import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHan
 import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
+import me.heyteacher.flutter_antplus.logging.OnLogDataListenerLogger
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 import reactor.core.Disposable
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrElse
 
@@ -79,26 +82,26 @@ abstract class AbstractHostApi(
                 val hasPermission = usbManager.hasPermission(androidDevice)
                 Handler(Looper.getMainLooper()).post {
                     onLogDataListener.add(AntplusLogData(
-                        AntplusLogEvent.INFO,
+                        AntplusLogEvent.DEBUG,
                         TAG,
                         "(requestPermission): device ${androidDevice.productName?.trim()} " +
-                            "has permission $hasPermission"))
+                            "has ${usbPermission(context)} $hasPermission"))
                 }
                 if (!hasPermission) {
                     context.registerReceiver(
                         usbReceiver,
-                        IntentFilter("${context.packageName}.USB_PERMISSION")
+                        IntentFilter(usbPermission(context))
                     )
                     usbManager.requestPermission(
                         androidDevice,
                         PendingIntent.getBroadcast(
                             context,
                             0,
-                            Intent("${context.packageName}.USB_PERMISSION"),
+                            Intent(usbPermission(context)),
                             PendingIntent.FLAG_IMMUTABLE)
                     )
                 } else {
-                    antUsbDevice.initialize(context)
+                    antUsbDevice.initialize(context, OnLogDataListenerLogger())
                 }
             } catch (t: Throwable) {
                 Handler(Looper.getMainLooper()).post {
@@ -108,25 +111,26 @@ abstract class AbstractHostApi(
                 throw t
             }
         }
+
         private val usbReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 try {
-                    if ("${context.packageName}.USB_PERMISSION" == intent.action) {
+                    if (usbPermission(context) == intent.action) {
                         synchronized(this) {
                             val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
                             if (usbManager.hasPermission(antUsbDevice.androidDevice)) {
-                                Log.i(TAG,"(BroadcastReceiver.onReceive): " +
+                                Log.d(TAG,"(BroadcastReceiver.onReceive): " +
                                         "device ${antUsbDevice.androidDevice.productName?.trim()} " +
-                                        "has permission true")
+                                        "has ${usbPermission(context)} true")
                                 antUsbDevice.androidDevice.apply {
                                     Log.i(TAG,"(BroadcastReceiver.onReceive): initialize ant usb device")
-                                    antUsbDevice.initialize(context)
+                                    antUsbDevice.initialize(context, OnLogDataListenerLogger())
                                 }
                             }
                             else {
                                 Log.w(TAG,"(BroadcastReceiver.onReceive): " +
                                         "device ${antUsbDevice.androidDevice.productName?.trim()} " +
-                                        "has permission false")
+                                        "has ${usbPermission(context)} false")
                             }
                         }
                     }
@@ -135,6 +139,7 @@ abstract class AbstractHostApi(
                 }
             }
         }
+        private fun usbPermission(context: Context): String = "${context.packageName}.USB_PERMISSION"
     }
 
     private var connectChannelNumber: Byte? = null
@@ -324,8 +329,10 @@ abstract class AbstractHostApi(
      */
     protected fun log(tag: String, level: AntplusLogEvent, message: String, throwable: Throwable? = null) {
         if (throwable != null) {
+            val sw = StringWriter()
+            throwable.printStackTrace(PrintWriter(sw))
             Handler(Looper.getMainLooper()).post {
-                onLogDataListener.add(AntplusLogData(level, tag, "$message ${throwable.message}"))
+                onLogDataListener.add(AntplusLogData(level, tag, "$message $sw"))
             }
             Log.e(tag, message, throwable)
         }
