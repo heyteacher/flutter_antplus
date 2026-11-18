@@ -19,7 +19,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        mavenLocal()
         gradlePluginPortal()
     }
 }
@@ -71,7 +70,7 @@ tasks.withType<JavaExec> {
 dependencies {
     implementation(fileTree("libs/android-antplus-plugin-lib-release_3.9.0/"))
     implementation(files("libs/fit_21.105.00.jar"))
-    implementation("be.glever:j-antplus:0.0.1-SNAPSHOT")
+    implementation("io.github.heyteacher:j-antplus:0.2.0")
     implementation("com.github.tony19:logback-android:3.0.0")
     compileOnly(files("libs/flutter.jar"))
     compileOnly("androidx.annotation:annotation:1.10.0")
