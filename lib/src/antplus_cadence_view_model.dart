@@ -9,9 +9,7 @@ import 'package:flutter_antplus/src/pigeons/device_event_channel.g.dart'
         AntplusDevice,
         AntplusDeviceState,
         AntplusDeviceType,
-        AntplusRequestAccessResult,
         onDeviceStateChange,
-        onRequestAccessResult,
         onScanResult;
 
 /// A view model managing the connection and data stream for an
@@ -35,13 +33,6 @@ class AntplusCadenceViewModel implements AntplusDeviceViewModel {
   @override
   Stream<AntplusDevice> get onScanResultStream =>
       onScanResult(instanceName: AntplusDeviceType.cadence.name.toUpperCase());
-
-  /// A stream of access request results specifically for cadence sensors.
-  @override
-  Stream<AntplusRequestAccessResult> get onRequestAccessResultStream =>
-      onRequestAccessResult(
-        instanceName: AntplusDeviceType.cadence.name.toUpperCase(),
-      );
 
   /// A stream of the connection state for the cadence device.
   @override

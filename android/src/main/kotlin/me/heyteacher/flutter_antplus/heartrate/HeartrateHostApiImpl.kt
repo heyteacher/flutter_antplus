@@ -1,5 +1,6 @@
 package me.heyteacher.flutter_antplus.heartrate
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import be.glever.ant.channel.AntChannel
@@ -28,7 +29,8 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
  */
 class HeartrateHostApiImpl(
     binaryMessenger: BinaryMessenger,
-) : AbstractHostApi(binaryMessenger), HeartrateHostApi {
+    context: Context,
+) : AbstractHostApi(binaryMessenger, context), HeartrateHostApi {
 
     private val hrmDataPageRegistry: HrmDataPageRegistry = HrmDataPageRegistry()
     private var onHeartRateDataListener: OnHeartRateDataListener = OnHeartRateDataListener()

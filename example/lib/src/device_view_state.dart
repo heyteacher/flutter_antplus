@@ -20,8 +20,6 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   StreamSubscription<AntplusDevice>? _onScanResultStreamSubscription;
   StreamSubscription<AntplusDeviceState>?
   _onDeviceStateChangeStreamSubscription;
-  StreamSubscription<AntplusRequestAccessResult>?
-  _onRequestAccessResultStreamSubscription;
 
   bool _loading = false;
 
@@ -41,23 +39,6 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     _onScanResultStreamSubscription = deviceViewModel.onScanResultStream.listen(
       (event) => setState(() => _scanDevices[event.number] = event),
     );
-    _onRequestAccessResultStreamSubscription = deviceViewModel
-        .onRequestAccessResultStream
-        .listen(
-          (requestAccessResult) =>
-              mounted &&
-                  requestAccessResult !=
-                      AntplusRequestAccessResult.userCancelled
-              ? showSnackBar(
-                  context: context,
-                  message: requestAccessResult.name,
-                  error:
-                      requestAccessResult != AntplusRequestAccessResult.success,
-                  persist:
-                      requestAccessResult != AntplusRequestAccessResult.success,
-                )
-              : null,
-        );
     _onDeviceStateChangeStreamSubscription = deviceViewModel
         .onDeviceStateChangeStream
         .listen((event) => setState(() => _deviceState = event));
@@ -67,7 +48,6 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   void dispose() {
     unawaited(_onScanResultStreamSubscription?.cancel());
     unawaited(_onDeviceStateChangeStreamSubscription?.cancel());
-    unawaited(_onRequestAccessResultStreamSubscription?.cancel());
     super.dispose();
   }
 

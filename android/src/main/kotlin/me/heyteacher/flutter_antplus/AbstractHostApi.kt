@@ -14,18 +14,18 @@ import be.glever.ant.AntException
 import be.glever.ant.channel.AntChannel
 import be.glever.ant.message.AntMessage
 import be.glever.ant.message.data.BroadcastDataMessage
-import be.glever.ant.usb.AntUsbDevice
-import be.glever.ant.usb.AntUsbDeviceFactory
+import be.glever.ant.usb.impl.AndroidAntUsbDevice
+import be.glever.ant.usb.AndroidAntUsbDeviceFactory
 import be.glever.antplus.common.datapage.AbstractAntPlusDataPage
 import be.glever.antplus.common.datapage.registry.AbstractDataPageRegistry
 import io.flutter.plugin.common.BinaryMessenger
 import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeListener
-import me.heyteacher.flutter_antplus.device.OnRequestAccessResultListener
+import me.heyteacher.flutter_antplus.device.OnRequestAccessListener
 import me.heyteacher.flutter_antplus.device.OnScanResultListener
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusRequestAccessResult
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
-import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.OnLogDataListenerLogger
@@ -50,38 +50,46 @@ import kotlin.jvm.optionals.getOrElse
  */
 abstract class AbstractHostApi(
     binaryMessenger: BinaryMessenger,
+    val context: Context,
 )  {
 
     companion object {
-        private lateinit var antUsbDevice: AntUsbDevice
+        private var antUsbDevice: AndroidAntUsbDevice? = null
         private val TAG: String = AbstractHostApi::class.java.simpleName
         var onLogDataListener: OnLogDataListener? = null
-        var onLogDataListenerLogger: OnLogDataListenerLogger? = null
 
-        fun initializeUsbDevice(context: Context, onLogDataListener: OnLogDataListener) {
+        var onRequestAccessListener: OnRequestAccessListener? = null
+
+        fun initializeUsbDevice(
+            context: Context,
+            onLogDataListener: OnLogDataListener,
+            onRequestAccessListener: OnRequestAccessListener
+        ) {
             AbstractHostApi.onLogDataListener = onLogDataListener
-            onLogDataListenerLogger = OnLogDataListenerLogger(onLogDataListener)
-            antUsbDevice = AntUsbDeviceFactory.getAvailableAntDevices(context).stream().findFirst().getOrElse {
-                Handler(Looper.getMainLooper()).post {
-                    /*
-                    onRequestAccessResultListener.add(
-                        AntplusRequestAccessResult.ADAPTER_NOT_DETECTED
-                    )
-
-                     */
-                    Log.e(TAG, "(initializeUsbDevice): adapter not detected")
-                }
+            AbstractHostApi.onRequestAccessListener = onRequestAccessListener
+            antUsbDevice = AndroidAntUsbDeviceFactory.getAvailableAntDevices(
+                context,
+                OnLogDataListenerLogger(onLogDataListener))
+                .stream().findFirst().getOrElse {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        onRequestAccessListener.add(
+                            AntplusRequestAccessResult.ADAPTER_NOT_DETECTED
+                        )
+                        Log.e(TAG, "(initializeUsbDevice): adapter not detected")
+                    }, 3000)
                 return
             }
             Handler(Looper.getMainLooper()).postDelayed({
                 requestPermission(context)
             }, 3000)
         }
+
+        var requestPermissionCallback: (()->Unit)? = null
         @SuppressLint("UnspecifiedRegisterReceiverFlag")
         private fun requestPermission(context: Context) {
             try {
+                val androidDevice = antUsbDevice!!.androidDevice
                 val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
-                val androidDevice = antUsbDevice.androidDevice
                 val hasPermission = usbManager.hasPermission(androidDevice)
                 Handler(Looper.getMainLooper()).post {
                     onLogDataListener?.add(AntplusLogData(
@@ -104,7 +112,9 @@ abstract class AbstractHostApi(
                             PendingIntent.FLAG_IMMUTABLE)
                     )
                 } else {
-                    antUsbDevice.initialize(context, onLogDataListenerLogger)
+                    antUsbDevice!!.initialize()
+                    requestPermissionCallback?.invoke()
+                    requestPermissionCallback = null
                 }
             } catch (t: Throwable) {
                 Handler(Looper.getMainLooper()).post {
@@ -115,30 +125,58 @@ abstract class AbstractHostApi(
             }
         }
 
+        private fun hasPermission(context: Context): Boolean {
+            if (antUsbDevice != null) {
+                val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
+                return usbManager.hasPermission(antUsbDevice!!.androidDevice)
+            } else {
+                return false
+            }
+        }
+
         private val usbReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 try {
                     if (usbPermission(context) == intent.action) {
                         synchronized(this) {
                             val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
-                            if (usbManager.hasPermission(antUsbDevice.androidDevice)) {
+                            if (usbManager.hasPermission(antUsbDevice!!.androidDevice)) {
                                 Log.d(TAG,"(BroadcastReceiver.onReceive): " +
-                                        "device ${antUsbDevice.androidDevice.productName?.trim()} " +
+                                        "device ${antUsbDevice!!.androidDevice.productName?.trim()} " +
                                         "has ${usbPermission(context)} true")
-                                antUsbDevice.androidDevice.apply {
+                                antUsbDevice!!.androidDevice.apply {
                                     Log.i(TAG,"(BroadcastReceiver.onReceive): initialize ant usb device")
-                                    antUsbDevice.initialize(context,onLogDataListenerLogger)
+                                    antUsbDevice!!.initialize()
+                                    requestPermissionCallback?.invoke()
+                                    requestPermissionCallback = null
                                 }
                             }
                             else {
-                                Log.w(TAG,"(BroadcastReceiver.onReceive): " +
-                                        "device ${antUsbDevice.androidDevice.productName?.trim()} " +
-                                        "has ${usbPermission(context)} false")
+                                Handler(Looper.getMainLooper()).post {
+                                    onRequestAccessListener?.add(
+                                        AntplusRequestAccessResult.USER_CANCELLED
+                                    )
+                                    onLogDataListener?.add(AntplusLogData(
+                                        AntplusLogEvent.WARNING,
+                                        TAG,
+                                        "(BroadcastReceiver.onReceive): " +
+                                            "permission NOT granted for device ${antUsbDevice!!.androidDevice.productName?.trim()}"))
+                                }
                             }
                         }
                     }
                 } catch (e: AntException) {
-                    Log.e(TAG,"(BroadcastReceiver.onReceive):", e)
+                    Handler(Looper.getMainLooper()).post {
+                        onRequestAccessListener?.add(
+                            AntplusRequestAccessResult.USER_CANCELLED
+                        )
+                        onLogDataListener?.add(AntplusLogData(
+                            AntplusLogEvent.ERROR,
+                            TAG,
+                            "(BroadcastReceiver.onReceive): " +
+                                    "error ${e.message}"))
+                    }
+                    Log.e(TAG, "(BroadcastReceiver.onReceive):", e)
                 }
             }
         }
@@ -150,8 +188,6 @@ abstract class AbstractHostApi(
     private var scanSubscription: Disposable? = null
     private var connectSubscription: Disposable? = null
     protected val onScanResultListener: OnScanResultListener = OnScanResultListener()
-    protected val onRequestAccessResultListener: OnRequestAccessResultListener =
-        OnRequestAccessResultListener()
     protected val onDeviceStateChangeListener: OnDeviceStateChangeListener =
         OnDeviceStateChangeListener()
 
@@ -165,9 +201,6 @@ abstract class AbstractHostApi(
         OnDeviceStateChangeStreamHandler.register(
             binaryMessenger, onDeviceStateChangeListener, deviceType().name
         )
-        OnRequestAccessResultStreamHandler.register(
-            binaryMessenger, onRequestAccessResultListener, deviceType().name
-        )
     }
 
     /**
@@ -180,7 +213,7 @@ abstract class AbstractHostApi(
      * Gets the Ant+ Stick USB device.
      * @return the Ant+ Stick USB device
      */
-    protected fun getAntUsbDevice(): AntUsbDevice { return antUsbDevice }
+    protected fun getAntUsbDevice(): AndroidAntUsbDevice? { return antUsbDevice }
 
     /**
      * Handles data page from the connected device.
@@ -223,8 +256,13 @@ abstract class AbstractHostApi(
 
     /** Starts an async scan for nearby ANT+ Bike Power Meters. */
     fun startScan() {
-        log(tag = TAG, level = AntplusLogEvent.VERBOSE, message = "<startScan>:")
+        log(tag = TAG, level = AntplusLogEvent.DEBUG, message = "<startScan>:")
         try {
+            if (!hasPermission(context)) {
+                requestPermissionCallback = { startScan() }
+                requestPermission(context)
+                return
+            }
             closeScanChannel()
             val scanChannel = deviceChannel()
             scanChannelNumber = scanChannel.channelNumber
@@ -247,9 +285,14 @@ abstract class AbstractHostApi(
      * @param deviceNumber the ANT+ device number of the sensor to connect to
      */
     open fun connect(deviceNumber: Long) {
-        log(tag = TAG, level = AntplusLogEvent.VERBOSE, message = "<connect>: deviceNumber $deviceNumber")
+        log(tag = TAG, level = AntplusLogEvent.DEBUG, message = "<connect>: deviceNumber $deviceNumber")
         // stop scan
         try {
+            if (!hasPermission(context)) {
+                requestPermissionCallback = { connect(deviceNumber) }
+                requestPermission(context)
+                return
+            }
             closeScanChannel()
             closeConnectChannel()
             val deviceChannel = deviceChannel()
@@ -298,7 +341,7 @@ abstract class AbstractHostApi(
         try {
             scanSubscription?.dispose()
             if (scanChannelNumber != null) {
-                antUsbDevice.closeChannel(scanChannelNumber!!)
+                antUsbDevice?.closeChannel(scanChannelNumber!!)
                 scanChannelNumber = null
             }
         } catch (t: Throwable) {
@@ -313,7 +356,7 @@ abstract class AbstractHostApi(
         try {
             connectSubscription?.dispose()
             if (connectChannelNumber != null) {
-                antUsbDevice.closeChannel(connectChannelNumber!!)
+                antUsbDevice?.closeChannel(connectChannelNumber!!)
                 connectChannelNumber = null
             }
         } catch (t: Exception) {
@@ -350,12 +393,12 @@ abstract class AbstractHostApi(
     open fun close() {
         // close device listeners
         onScanResultListener.onEventsDone()
-        onRequestAccessResultListener.onEventsDone()
         onDeviceStateChangeListener.onEventsDone()
+        onRequestAccessListener?.onEventsDone()
         onLogDataListener?.onEventsDone()
         closeConnectChannel()
         closeScanChannel()
-        antUsbDevice.close()
+        antUsbDevice?.close()
         scanSubscription?.dispose()
         connectSubscription?.dispose()
     }

@@ -219,19 +219,19 @@ Stream<AntplusDevice> onScanResult( {String instanceName = ''}) {
   });
 }
     
-/// Returns a broadcast [Stream] of events from the `onRequestAccessResult` event channel.
+/// Returns a broadcast [Stream] of events from the `onRequestAccess` event channel.
 ///
 /// Each call to this method creates a new [EventChannel], so it should
 /// not be called multiple times for the same `instanceName`. To deliver
 /// events to multiple listeners, call this method once and listen to the
 /// returned broadcast stream multiple times instead.
-Stream<AntplusRequestAccessResult> onRequestAccessResult( {String instanceName = ''}) {
+Stream<AntplusRequestAccessResult> onRequestAccess( {String instanceName = ''}) {
   if (instanceName.isNotEmpty) {
     instanceName = '.$instanceName';
   }
-  final EventChannel onRequestAccessResultChannel =
-      EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onRequestAccessResult$instanceName', pigeonMethodCodec);
-  return onRequestAccessResultChannel.receiveBroadcastStream().map((dynamic event) {
+  final EventChannel onRequestAccessChannel =
+      EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onRequestAccess$instanceName', pigeonMethodCodec);
+  return onRequestAccessChannel.receiveBroadcastStream().map((dynamic event) {
     return event as AntplusRequestAccessResult;
   });
 }

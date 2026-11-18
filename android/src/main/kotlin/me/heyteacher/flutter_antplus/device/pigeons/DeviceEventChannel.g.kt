@@ -391,11 +391,11 @@ abstract class OnScanResultStreamHandler : DeviceEventChannelPigeonEventChannelW
 }
       
 /** A typed channel for communicating with the Flutter application using asynchronous event streams. */
-class OnRequestAccessResultEventChannel(messenger: BinaryMessenger, instanceName: String = "") {
+class OnRequestAccessEventChannel(messenger: BinaryMessenger, instanceName: String = "") {
   private val channel: EventChannel
 
   init {
-    var channelName = "dev.flutter.pigeon.device.EventChannelMethods.onRequestAccessResult"
+    var channelName = "dev.flutter.pigeon.device.EventChannelMethods.onRequestAccess"
     if (instanceName.isNotEmpty()) {
       channelName += ".$instanceName"
     }
@@ -407,13 +407,13 @@ class OnRequestAccessResultEventChannel(messenger: BinaryMessenger, instanceName
    *
    * Pass `null` to remove the event channel registration.
    */
-  fun setStreamHandler(streamHandler: OnRequestAccessResultStreamHandler?) {
+  fun setStreamHandler(streamHandler: OnRequestAccessStreamHandler?) {
     val internalHandler = streamHandler?.let { DeviceEventChannelPigeonStreamHandler<AntplusRequestAccessResult>(it) }
     channel.setStreamHandler(internalHandler)
   }
 }
 
-abstract class OnRequestAccessResultStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<AntplusRequestAccessResult> {
+abstract class OnRequestAccessStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<AntplusRequestAccessResult> {
   companion object {
     /**
      * Creates and returns a new event channel that calls the provided stream handler.
@@ -422,8 +422,8 @@ abstract class OnRequestAccessResultStreamHandler : DeviceEventChannelPigeonEven
      * If the handler will not be changed for the lifetime of the engine associated with the messenger,
      * the return value can be ignored.
      */
-    fun register(messenger: BinaryMessenger, streamHandler: OnRequestAccessResultStreamHandler, instanceName: String = ""): OnRequestAccessResultEventChannel {
-      val channel = OnRequestAccessResultEventChannel(messenger, instanceName)
+    fun register(messenger: BinaryMessenger, streamHandler: OnRequestAccessStreamHandler, instanceName: String = ""): OnRequestAccessEventChannel {
+      val channel = OnRequestAccessEventChannel(messenger, instanceName)
       channel.setStreamHandler(streamHandler)
       return channel
     }

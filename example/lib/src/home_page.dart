@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus_example/src/bikepower_view.dart';
 import 'package:flutter_antplus_example/src/cadence_view.dart' show CadenceView;
 import 'package:flutter_antplus_example/src/heartrate_view.dart';
 import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart';
+import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 
 /// The main dashboard page of the ANT+ plugin example app.
 ///
@@ -20,15 +24,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late TabController _tabController;
 
+  StreamSubscription<AntplusRequestAccessResult>?
+  _onRequestAccessStreamSubscription;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    unawaited(_onRequestAccessStreamSubscription?.cancel());
+    _onRequestAccessStreamSubscription = AntplusRequestAccessViewModel
+        .instance
+        .onRequestAccessStream
+        .listen(
+          (requestAccessResult) => mounted
+              ? showSnackBar(
+                  context: context,
+                  message: requestAccessResult.name,
+                  error:
+                      requestAccessResult != AntplusRequestAccessResult.success,
+                  persist:
+                      requestAccessResult != AntplusRequestAccessResult.success,
+                  showClose: true,
+                )
+              : null,
+        );
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    unawaited(_onRequestAccessStreamSubscription?.cancel());
     super.dispose();
   }
 

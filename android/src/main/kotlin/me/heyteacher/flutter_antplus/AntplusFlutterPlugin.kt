@@ -4,6 +4,8 @@ package me.heyteacher.flutter_antplus
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import me.heyteacher.flutter_antplus.bikepower.BikePowerHostApiImpl
 import me.heyteacher.flutter_antplus.cadence.CadenceHostApiImpl
+import me.heyteacher.flutter_antplus.device.OnRequestAccessListener
+import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessStreamHandler
 import me.heyteacher.flutter_antplus.heartrate.HeartrateHostApiImpl
 import me.heyteacher.flutter_antplus.logging.OnLogDataListener
 import me.heyteacher.flutter_antplus.logging.pigeons.OnLogDataStreamHandler
@@ -16,6 +18,9 @@ import me.heyteacher.flutter_antplus.logging.pigeons.OnLogDataStreamHandler
  */
 class AntplusFlutterPlugin : FlutterPlugin {
     private var onLogDataListener: OnLogDataListener = OnLogDataListener()
+
+    private var onRequestAccessListener: OnRequestAccessListener = OnRequestAccessListener()
+
     private lateinit var heartrateHostApiImpl: HeartrateHostApiImpl
     private lateinit var bikepowerHostApiImpl: BikePowerHostApiImpl
     private lateinit var cadenceHostApiImpl: CadenceHostApiImpl
@@ -26,10 +31,11 @@ class AntplusFlutterPlugin : FlutterPlugin {
      */
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         OnLogDataStreamHandler.register(flutterPluginBinding.binaryMessenger, onLogDataListener)
-        AbstractHostApi.initializeUsbDevice(flutterPluginBinding.applicationContext, onLogDataListener)
-        heartrateHostApiImpl = HeartrateHostApiImpl(flutterPluginBinding.binaryMessenger)
-        bikepowerHostApiImpl = BikePowerHostApiImpl(flutterPluginBinding.binaryMessenger)
-        cadenceHostApiImpl = CadenceHostApiImpl(flutterPluginBinding.binaryMessenger)
+        OnRequestAccessStreamHandler.register(flutterPluginBinding.binaryMessenger, onRequestAccessListener)
+        AbstractHostApi.initializeUsbDevice(flutterPluginBinding.applicationContext, onLogDataListener, onRequestAccessListener)
+        heartrateHostApiImpl = HeartrateHostApiImpl(flutterPluginBinding.binaryMessenger, flutterPluginBinding.applicationContext)
+        bikepowerHostApiImpl = BikePowerHostApiImpl(flutterPluginBinding.binaryMessenger, flutterPluginBinding.applicationContext)
+        cadenceHostApiImpl = CadenceHostApiImpl(flutterPluginBinding.binaryMessenger, flutterPluginBinding.applicationContext)
     }
 
     /**

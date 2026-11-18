@@ -1,5 +1,6 @@
 package me.heyteacher.flutter_antplus.bikepower
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import be.glever.ant.channel.AntChannel
@@ -27,7 +28,6 @@ import me.heyteacher.flutter_antplus.bikepower.pigeons.OnTorqueEffectivenessData
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
-import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
@@ -43,7 +43,8 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
  */
 class BikePowerHostApiImpl(
     binaryMessenger: BinaryMessenger,
-) : AbstractHostApi(binaryMessenger), BikepowerHostApi {
+    context: Context,
+) : AbstractHostApi(binaryMessenger, context), BikepowerHostApi {
 
     companion object {
         private val TAG: String = BikePowerHostApiImpl::class.java.simpleName
@@ -68,9 +69,6 @@ class BikePowerHostApiImpl(
         )
         OnDeviceStateChangeStreamHandler.register(
             binaryMessenger, onDeviceStateChangeListener, AntplusDeviceType.BIKEPOWER.name
-        )
-        OnRequestAccessResultStreamHandler.register(
-            binaryMessenger, onRequestAccessResultListener, AntplusDeviceType.BIKEPOWER.name
         )
         OnPowerDataStreamHandler.register(binaryMessenger, onPowerDataListener)
         OnPedalSmoothnessDataStreamHandler.register(binaryMessenger, onPedalSmoothnessDataListener)

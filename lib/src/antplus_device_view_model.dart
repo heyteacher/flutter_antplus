@@ -13,13 +13,6 @@ abstract class AntplusDeviceViewModel {
   /// Emits [AntplusDevice] objects representing nearby sensors.
   Stream<AntplusDevice> get onScanResultStream;
 
-  /// A stream of access request results.
-  ///
-  /// Emits [AntplusRequestAccessResult] which indicates whether access
-  /// to the ANT+ channel was granted or failed (e.g. user cancelled,
-  /// already in use, etc.).
-  Stream<AntplusRequestAccessResult> get onRequestAccessResultStream;
-
   /// A stream of the current device connection state.
   ///
   /// Emits [AntplusDeviceState] representing whether the device is searching,

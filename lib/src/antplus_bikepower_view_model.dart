@@ -18,9 +18,7 @@ import 'package:flutter_antplus/src/pigeons/device_event_channel.g.dart'
         AntplusDevice,
         AntplusDeviceState,
         AntplusDeviceType,
-        AntplusRequestAccessResult,
         onDeviceStateChange,
-        onRequestAccessResult,
         onScanResult;
 
 /// A view model managing the connection and telemetry streams for an
@@ -46,13 +44,6 @@ class AntplusBikepowerViewModel implements AntplusDeviceViewModel {
   Stream<AntplusDevice> get onScanResultStream => onScanResult(
     instanceName: AntplusDeviceType.bikepower.name.toUpperCase(),
   );
-
-  /// A stream of access request results specifically for bike power sensors.
-  @override
-  Stream<AntplusRequestAccessResult> get onRequestAccessResultStream =>
-      onRequestAccessResult(
-        instanceName: AntplusDeviceType.bikepower.name.toUpperCase(),
-      );
 
   /// A stream of the connection state for the bike power device.
   @override

@@ -1,5 +1,6 @@
 package me.heyteacher.flutter_antplus.cadence
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import be.glever.ant.channel.AntChannel
@@ -16,7 +17,6 @@ import me.heyteacher.flutter_antplus.cadence.pigeons.OnCadenceDataStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
-import me.heyteacher.flutter_antplus.device.pigeons.OnRequestAccessResultStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
@@ -32,7 +32,8 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
  */
 class CadenceHostApiImpl(
     binaryMessenger: BinaryMessenger,
-) : AbstractHostApi(binaryMessenger), CadenceHostApi {
+    context: Context,
+) : AbstractHostApi(binaryMessenger, context), CadenceHostApi {
 
     companion object {
         private val TAG: String = CadenceHostApiImpl::class.java.simpleName
@@ -51,9 +52,6 @@ class CadenceHostApiImpl(
         )
         OnDeviceStateChangeStreamHandler.register(
             binaryMessenger, onDeviceStateChangeListener, AntplusDeviceType.CADENCE.name
-        )
-        OnRequestAccessResultStreamHandler.register(
-            binaryMessenger, onRequestAccessResultListener, AntplusDeviceType.CADENCE.name
         )
         OnCadenceDataStreamHandler.register(binaryMessenger, onCadenceDataListener)
     }
