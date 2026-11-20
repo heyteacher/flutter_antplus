@@ -70,11 +70,7 @@ class CadenceHostApiImpl(
     }
 
     override fun deviceChannel(deviceNumber: Long?): AntChannel {
-        return if (deviceNumber != null) {
-            CadenceChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
-        } else {
-            CadenceChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter())
-        }
+        return CadenceChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
     }
 
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {

@@ -64,11 +64,7 @@ class HeartrateHostApiImpl(
     }
 
     override fun deviceChannel(deviceNumber: Long?): AntChannel {
-        return if (deviceNumber != null) {
-            HRMChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
-        } else {
-            HRMChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter())
-        }
+        return HRMChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
     }
 
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {

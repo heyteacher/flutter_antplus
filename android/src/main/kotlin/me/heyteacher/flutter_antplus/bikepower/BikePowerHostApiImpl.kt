@@ -90,11 +90,7 @@ class BikePowerHostApiImpl(
     }
 
     override fun deviceChannel(deviceNumber: Long? ): AntChannel {
-        return if (deviceNumber != null) {
-            PowerChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
-        } else {
-            PowerChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter())
-        }
+        return PowerChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
     }
 
     override fun dataRegistry(): AbstractDataPageRegistry {
