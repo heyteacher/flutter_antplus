@@ -191,28 +191,6 @@ enum class AntplusDeviceState(val raw: Int) {
   }
 }
 
-enum class AntplusRequestAccessResult(val raw: Int) {
-  SUCCESS(0),
-  USER_CANCELLED(1),
-  CHANNEL_NOT_AVAILABLE(2),
-  OTHER_FAILURE(3),
-  DEPENDENCY_NOT_INSTALLED(4),
-  DEVICE_ALREADY_IN_USE(5),
-  SEARCH_TIMEOUT(6),
-  ALREADY_SUBSCRIBED(7),
-  BAD_PARAMS(8),
-  ADAPTER_NOT_DETECTED(9),
-  UNRECOGNIZED(10);
-
-  companion object {
-    private val pigeonValues = values()
-
-    fun ofRaw(raw: Int): AntplusRequestAccessResult? {
-      return pigeonValues.getOrNull(raw)
-    }
-  }
-}
-
 /** Generated class from Pigeon that represents data sent in messages. */
 data class AntplusDevice (
   val number: Long,
@@ -271,11 +249,6 @@ private open class DeviceEventChannelPigeonCodec : StandardMessageCodec() {
         }
       }
       131.toByte() -> {
-        (readValue(buffer) as Long?)?.let {
-          AntplusRequestAccessResult.ofRaw(it.toInt())
-        }
-      }
-      132.toByte() -> {
         (readValue(buffer) as? List<Any?>)?.let {
           AntplusDevice.fromList(it)
         }
@@ -293,12 +266,8 @@ private open class DeviceEventChannelPigeonCodec : StandardMessageCodec() {
         stream.write(130)
         writeValue(stream, value.raw.toLong())
       }
-      is AntplusRequestAccessResult -> {
-        stream.write(131)
-        writeValue(stream, value.raw.toLong())
-      }
       is AntplusDevice -> {
-        stream.write(132)
+        stream.write(131)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -386,51 +355,6 @@ abstract class OnScanResultStreamHandler : DeviceEventChannelPigeonEventChannelW
 
   // Implement methods from DeviceEventChannelPigeonEventChannelWrapper
   override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusDevice>) {}
-
-  override fun onCancel(p0: Any?) {}
-}
-      
-/** A typed channel for communicating with the Flutter application using asynchronous event streams. */
-class OnRequestAccessEventChannel(messenger: BinaryMessenger, instanceName: String = "") {
-  private val channel: EventChannel
-
-  init {
-    var channelName = "dev.flutter.pigeon.device.EventChannelMethods.onRequestAccess"
-    if (instanceName.isNotEmpty()) {
-      channelName += ".$instanceName"
-    }
-    channel = EventChannel(messenger, channelName, DeviceEventChannelPigeonMethodCodec)
-  }
-
-  /**
-   * Sets the stream handler for this channel, replacing any previous handler.
-   *
-   * Pass `null` to remove the event channel registration.
-   */
-  fun setStreamHandler(streamHandler: OnRequestAccessStreamHandler?) {
-    val internalHandler = streamHandler?.let { DeviceEventChannelPigeonStreamHandler<AntplusRequestAccessResult>(it) }
-    channel.setStreamHandler(internalHandler)
-  }
-}
-
-abstract class OnRequestAccessStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<AntplusRequestAccessResult> {
-  companion object {
-    /**
-     * Creates and returns a new event channel that calls the provided stream handler.
-     *
-     * The returned channel can be stored to allow changing or removing the stream handler.
-     * If the handler will not be changed for the lifetime of the engine associated with the messenger,
-     * the return value can be ignored.
-     */
-    fun register(messenger: BinaryMessenger, streamHandler: OnRequestAccessStreamHandler, instanceName: String = ""): OnRequestAccessEventChannel {
-      val channel = OnRequestAccessEventChannel(messenger, instanceName)
-      channel.setStreamHandler(streamHandler)
-      return channel
-    }
-  }
-
-  // Implement methods from DeviceEventChannelPigeonEventChannelWrapper
-  override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusRequestAccessResult>) {}
 
   override fun onCancel(p0: Any?) {}
 }

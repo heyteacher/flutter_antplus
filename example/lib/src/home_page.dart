@@ -24,26 +24,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late TabController _tabController;
 
-  StreamSubscription<AntplusRequestAccessResult>?
-  _onRequestAccessStreamSubscription;
+  StreamSubscription<AntplusUsbAdapterState>?
+  _onAdapterStateChangeStreamSubscription;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    unawaited(_onRequestAccessStreamSubscription?.cancel());
-    _onRequestAccessStreamSubscription = AntplusRequestAccessViewModel
+    unawaited(_onAdapterStateChangeStreamSubscription?.cancel());
+    _onAdapterStateChangeStreamSubscription = AntplusAdapterViewModel
         .instance
-        .onRequestAccessStream
+        .usbAdapterStateChangeStream
         .listen(
-          (requestAccessResult) => mounted
+          (adapterState) => mounted
               ? showSnackBar(
                   context: context,
-                  message: requestAccessResult.name,
-                  error:
-                      requestAccessResult != AntplusRequestAccessResult.success,
-                  persist:
-                      requestAccessResult != AntplusRequestAccessResult.success,
+                  message: 'Usb Adapter ${adapterState.name}',
+                  error: adapterState != AntplusUsbAdapterState.attached,
+                  persist: adapterState != AntplusUsbAdapterState.attached,
                   showClose: true,
                 )
               : null,
@@ -53,7 +51,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _tabController.dispose();
-    unawaited(_onRequestAccessStreamSubscription?.cancel());
+    unawaited(_onAdapterStateChangeStreamSubscription?.cancel());
     super.dispose();
   }
 

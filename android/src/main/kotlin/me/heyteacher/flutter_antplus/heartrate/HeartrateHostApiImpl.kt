@@ -12,10 +12,13 @@ import be.glever.antplus.hrm.datapage.background.HrmDataPage2ManufacturerInforma
 import be.glever.antplus.hrm.datapage.main.HrmDataPage0Default
 import io.flutter.plugin.common.BinaryMessenger
 import me.heyteacher.flutter_antplus.AbstractHostApi
+import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
+import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi
 import me.heyteacher.flutter_antplus.heartrate.pigeons.OnHeartRateDataStreamHandler
+import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 
 /**
@@ -30,10 +33,18 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 class HeartrateHostApiImpl(
     binaryMessenger: BinaryMessenger,
     context: Context,
-) : AbstractHostApi(binaryMessenger, context), HeartrateHostApi {
+    onLogDataStreamHandler: OnLogDataStreamHandlerImpl,
+    onUsbAdapterStateChangeHandler: OnUsbAdapterStateChangeStreamHandlerImpl
+) : AbstractHostApi(
+    binaryMessenger,
+    context,
+    onLogDataStreamHandler,
+    onUsbAdapterStateChangeHandler
+), HeartrateHostApi {
 
-    private val hrmDataPageRegistry: HrmDataPageRegistry = HrmDataPageRegistry()
-    private var onHeartRateDataListener: OnHeartRateDataListener = OnHeartRateDataListener()
+    private val _hrmDataPageRegistry: HrmDataPageRegistry = HrmDataPageRegistry()
+    private var _onHeartRateDataStreamHandlerImpl: OnHeartRateDataStreamHandlerImpl =
+        OnHeartRateDataStreamHandlerImpl()
 
     companion object {
         private val TAG: String = HeartrateHostApiImpl::class.java.simpleName
@@ -41,7 +52,7 @@ class HeartrateHostApiImpl(
 
     init {
         HeartrateHostApi.setUp(binaryMessenger, this)
-        OnHeartRateDataStreamHandler.register(binaryMessenger, onHeartRateDataListener)
+        OnHeartRateDataStreamHandler.register(binaryMessenger, _onHeartRateDataStreamHandlerImpl)
     }
 
     override fun deviceType(): AntplusDeviceType {
@@ -49,43 +60,46 @@ class HeartrateHostApiImpl(
     }
 
     override fun dataRegistry(): AbstractDataPageRegistry {
-        return hrmDataPageRegistry
+        return _hrmDataPageRegistry
     }
 
-    override fun deviceChannel(): AntChannel {
-        return HRMChannel(getAntUsbDevice())
+    override fun deviceChannel(deviceNumber: Long?): AntChannel {
+        return if (deviceNumber != null) {
+            HRMChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
+        } else {
+            HRMChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter())
+        }
     }
 
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is HrmDataPage2ManufacturerInformation) {
             Handler(Looper.getMainLooper()).post {
-                log(TAG,AntplusLogEvent.INFO, "(handleScanDataPage): " +
-                        "found device ${dataPage.deviceNumber} (${dataPage.deviceNumberAsString})"
+                log(
+                    TAG, AntplusLogEvent.INFO, "(handleScanDataPage): " +
+                            "found device ${dataPage.deviceNumber} (${dataPage.deviceNumberAsString})"
                 )
-                onScanResultListener.add(
-                    AntplusDevice(dataPage.deviceNumber,dataPage.deviceNumberAsString,deviceType())
+                onScanResultStreamHandler.add(
+                    AntplusDevice(
+                        dataPage.deviceNumber,
+                        dataPage.deviceNumberAsString,
+                        deviceType()
+                    )
                 )
             }
         }
-        //else {
-        //    log(TAG,AntplusLogEvent.DEBUG, "(handleScanDataPage): page number ${dataPage.pageNumber}")
-        //}
     }
 
     override fun handleConnectedDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is HrmDataPage0Default) {
             Handler(Looper.getMainLooper()).post {
-                onHeartRateDataListener.add(dataPage.computedHeartRateInBpm.toLong())
+                _onHeartRateDataStreamHandlerImpl.add(dataPage.computedHeartRateInBpm.toLong())
             }
         }
-        //else {
-        //    log(TAG,AntplusLogEvent.DEBUG, "(handleConnectedDataPage): page number ${dataPage.pageNumber}")
-        //}
     }
 
     override fun close() {
         super.close()
         // closes heartrate listener
-        onHeartRateDataListener.onEventsDone()
+        _onHeartRateDataStreamHandlerImpl.onEventsDone()
     }
 }

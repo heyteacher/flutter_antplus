@@ -11,7 +11,7 @@ import me.heyteacher.flutter_antplus.logging.pigeons.PigeonEventSink
  * Log levels are mapped to Android logcat methods:
  * DEBUG/VERBOSE -> Log.d, INFO -> Log.i, WARNING -> Log.w, ERROR -> Log.e
  */
-class OnLogDataListener : OnLogDataStreamHandler() {
+class OnLogDataStreamHandlerImpl : OnLogDataStreamHandler() {
     private var eventSink: PigeonEventSink<AntplusLogData>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */

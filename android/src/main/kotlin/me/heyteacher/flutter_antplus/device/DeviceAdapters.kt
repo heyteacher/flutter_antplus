@@ -10,7 +10,7 @@ import me.heyteacher.flutter_antplus.device.pigeons.PigeonEventSink
  * A Pigeon event stream handler that emits [AntplusDevice] objects discovered
  * during an ANT+ device scan to the Flutter side.
  */
-class OnScanResultListener : OnScanResultStreamHandler() {
+class OnScanResultStreamHandlerImpl : OnScanResultStreamHandler() {
     private var eventSink: PigeonEventSink<AntplusDevice>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
@@ -40,7 +40,7 @@ class OnScanResultListener : OnScanResultStreamHandler() {
  * A Pigeon event stream handler that emits [AntplusDeviceState] changes
  * to the Flutter side whenever the connected ANT+ device changes state.
  */
-class OnDeviceStateChangeListener : OnDeviceStateChangeStreamHandler() {
+class OnDeviceStateChangeStreamHandlerImpl : OnDeviceStateChangeStreamHandler() {
     private var eventSink: PigeonEventSink<AntplusDeviceState>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */

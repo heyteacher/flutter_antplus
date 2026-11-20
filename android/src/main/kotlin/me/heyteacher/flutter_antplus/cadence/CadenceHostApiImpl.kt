@@ -11,13 +11,16 @@ import be.glever.antplus.speedcadence.datapage.AbstractSpeedCadenceDataPage
 import be.glever.antplus.speedcadence.datapage.SpeedAndCadenceDataPageRegistry
 import be.glever.antplus.speedcadence.datapage.background.SpeedCadenceDataPage2ManufacturerInformation
 import io.flutter.plugin.common.BinaryMessenger
-import me.heyteacher.flutter_antplus.AbstractHostApi
 import me.heyteacher.flutter_antplus.cadence.pigeons.CadenceHostApi
 import me.heyteacher.flutter_antplus.cadence.pigeons.OnCadenceDataStreamHandler
+import me.heyteacher.flutter_antplus.AbstractHostApi
+import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
+import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
+import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 
@@ -33,14 +36,16 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 class CadenceHostApiImpl(
     binaryMessenger: BinaryMessenger,
     context: Context,
-) : AbstractHostApi(binaryMessenger, context), CadenceHostApi {
+    onLogDataStreamHandler: OnLogDataStreamHandlerImpl,
+    onUsbAdapterStateChangeHandler: OnUsbAdapterStateChangeStreamHandlerImpl
+) : AbstractHostApi(binaryMessenger, context,onLogDataStreamHandler,onUsbAdapterStateChangeHandler), CadenceHostApi {
 
     companion object {
         private val TAG: String = CadenceHostApiImpl::class.java.simpleName
     }
 
     private val speedAndCadenceDataPageRegistry: SpeedAndCadenceDataPageRegistry = SpeedAndCadenceDataPageRegistry()
-    private var onCadenceDataListener: OnCadenceDataListener = OnCadenceDataListener()
+    private var _onCadenceDataStreamHandler: OnCadenceDataStreamHandlerImpl = OnCadenceDataStreamHandlerImpl()
     private var prevRevCount = 0
     private var prevEventTime = 0L
     private var cycles = 0
@@ -48,12 +53,12 @@ class CadenceHostApiImpl(
     init {
         CadenceHostApi.setUp(binaryMessenger, this)
         OnScanResultStreamHandler.register(
-            binaryMessenger, onScanResultListener, AntplusDeviceType.CADENCE.name
+            binaryMessenger, onScanResultStreamHandler, AntplusDeviceType.CADENCE.name
         )
         OnDeviceStateChangeStreamHandler.register(
-            binaryMessenger, onDeviceStateChangeListener, AntplusDeviceType.CADENCE.name
+            binaryMessenger, onDeviceStateChangeStreamHandler, AntplusDeviceType.CADENCE.name
         )
-        OnCadenceDataStreamHandler.register(binaryMessenger, onCadenceDataListener)
+        OnCadenceDataStreamHandler.register(binaryMessenger, _onCadenceDataStreamHandler)
     }
 
     override fun deviceType(): AntplusDeviceType {
@@ -64,21 +69,26 @@ class CadenceHostApiImpl(
         return speedAndCadenceDataPageRegistry
     }
 
-    override fun deviceChannel(): AntChannel {
-        return CadenceChannel(getAntUsbDevice())
+    override fun deviceChannel(deviceNumber: Long?): AntChannel {
+        return if (deviceNumber != null) {
+            CadenceChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
+        } else {
+            CadenceChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter())
+        }
     }
 
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is SpeedCadenceDataPage2ManufacturerInformation) {
             Handler(Looper.getMainLooper()).post {
-                onLogDataListener?.add(
+                this@CadenceHostApiImpl.onLogDataStreamHandler.add(
                     AntplusLogData(
                         AntplusLogEvent.INFO,
                         TAG,
-                        "(handleScanDataPage): found device ${dataPage.deviceNumber} (${dataPage.deviceNumberAsString})"
+                        "(handleScanDataPage): found device ${dataPage.deviceNumber} " +
+                                "(${dataPage.deviceNumberAsString})"
                     )
                 )
-                onScanResultListener.add(
+                onScanResultStreamHandler.add(
                     AntplusDevice(
                         dataPage.deviceNumber,
                         dataPage.deviceNumberAsString,
@@ -87,20 +97,14 @@ class CadenceHostApiImpl(
                 )
             }
         }
-        //else {
-        //    log(TAG,AntplusLogEvent.DEBUG, "(handleScanDataPage): page number ${dataPage.pageNumber}")
-        //}
     }
 
     override fun handleConnectedDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is AbstractSpeedCadenceDataPage) {
             Handler(Looper.getMainLooper()).post {
-                onCadenceDataListener.add(calcCadence(dataPage))
+                _onCadenceDataStreamHandler.add(calcCadence(dataPage))
             }
         }
-        //else {
-        //    log(TAG,AntplusLogEvent.DEBUG, "(handleConnectedDataPage): page number ${dataPage.pageNumber}")
-        //}
     }
 
     override fun connect(deviceNumber: Long) {
@@ -132,6 +136,6 @@ class CadenceHostApiImpl(
     override fun close() {
         super.close()
         // closes heartrate listener
-        onCadenceDataListener.onEventsDone()
+        _onCadenceDataStreamHandler.onEventsDone()
     }
 }

@@ -38,23 +38,8 @@ class AntplusDevice {
   final AntplusDeviceType type;
 }
 
-enum AntplusRequestAccessResult {
-  success,
-  userCancelled,
-  channelNotAvailable,
-  otherFailure,
-  dependencyNotInstalled,
-  deviceAlreadyInUse,
-  searchTimeout,
-  alreadySubscribed,
-  badParams,
-  adapterNotDetected,
-  unrecognized,
-}
-
 @EventChannelApi()
 abstract class EventChannelMethods {
   AntplusDevice onScanResult();
-  AntplusRequestAccessResult onRequestAccess();
   AntplusDeviceState onDeviceStateChange();
 }

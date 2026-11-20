@@ -86,20 +86,6 @@ enum AntplusDeviceState {
   unrecognized;
 }
 
-enum AntplusRequestAccessResult {
-  success,
-  userCancelled,
-  channelNotAvailable,
-  otherFailure,
-  dependencyNotInstalled,
-  deviceAlreadyInUse,
-  searchTimeout,
-  alreadySubscribed,
-  badParams,
-  adapterNotDetected,
-  unrecognized;
-}
-
 class AntplusDevice {
   AntplusDevice({
     required this.number,
@@ -169,11 +155,8 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is AntplusDeviceState) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    }    else if (value is AntplusRequestAccessResult) {
-      buffer.putUint8(131);
-      writeValue(buffer, value.index);
     }    else if (value is AntplusDevice) {
-      buffer.putUint8(132);
+      buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -190,9 +173,6 @@ class _PigeonCodec extends StandardMessageCodec {
         final value = readValue(buffer) as int?;
         return value == null ? null : AntplusDeviceState.values[value];
       case 131:
-        final value = readValue(buffer) as int?;
-        return value == null ? null : AntplusRequestAccessResult.values[value];
-      case 132:
         return AntplusDevice.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -216,23 +196,6 @@ Stream<AntplusDevice> onScanResult( {String instanceName = ''}) {
       EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onScanResult$instanceName', pigeonMethodCodec);
   return onScanResultChannel.receiveBroadcastStream().map((dynamic event) {
     return event as AntplusDevice;
-  });
-}
-    
-/// Returns a broadcast [Stream] of events from the `onRequestAccess` event channel.
-///
-/// Each call to this method creates a new [EventChannel], so it should
-/// not be called multiple times for the same `instanceName`. To deliver
-/// events to multiple listeners, call this method once and listen to the
-/// returned broadcast stream multiple times instead.
-Stream<AntplusRequestAccessResult> onRequestAccess( {String instanceName = ''}) {
-  if (instanceName.isNotEmpty) {
-    instanceName = '.$instanceName';
-  }
-  final EventChannel onRequestAccessChannel =
-      EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onRequestAccess$instanceName', pigeonMethodCodec);
-  return onRequestAccessChannel.receiveBroadcastStream().map((dynamic event) {
-    return event as AntplusRequestAccessResult;
   });
 }
     

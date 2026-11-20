@@ -15,7 +15,7 @@ import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenes
  * A Pigeon event stream handler that emits real-time power values (watts)
  * from the ANT+ Bike Power Meter to the Flutter event channel.
  */
-class OnPowerDataListener : OnPowerDataStreamHandler() {
+class OnPowerDataStreamHandlerImpl : OnPowerDataStreamHandler() {
     private var eventSink: PigeonEventSink<Long>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
@@ -42,7 +42,7 @@ class OnPowerDataListener : OnPowerDataStreamHandler() {
  * A Pigeon event stream handler that emits real-time crank cadence values (rpm)
  * from the ANT+ Bike Power Meter to the Flutter event channel.
  */
-class OnCadenceDataListener : OnCadenceDataStreamHandler() {
+class OnCadenceDataStreamHandlerImpl : OnCadenceDataStreamHandler() {
     private var eventSink: PigeonEventSink<Long>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
@@ -69,7 +69,7 @@ class OnCadenceDataListener : OnCadenceDataStreamHandler() {
  * A Pigeon event stream handler that emits real-time pedal power balance (%)
  * from the ANT+ Bike Power Meter to the Flutter event channel.
  */
-class OnBalanceDataListener : OnBalanceDataStreamHandler() {
+class OnBalanceDataStreamHandlerImpl : OnBalanceDataStreamHandler() {
     private var eventSink: PigeonEventSink<Long>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
@@ -99,7 +99,7 @@ class OnBalanceDataListener : OnBalanceDataStreamHandler() {
  * Pedal smoothness represents the percentage of time within a pedal stroke that
  * force is applied effectively.
  */
-class OnPedalSmoothnessDataListener : OnPedalSmoothnessDataStreamHandler() {
+class OnPedalSmoothnessDataStreamHandlerImpl : OnPedalSmoothnessDataStreamHandler() {
     private var eventSink: PigeonEventSink<AntplusPedalSmoothnessData>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
@@ -128,7 +128,7 @@ class OnPedalSmoothnessDataListener : OnPedalSmoothnessDataStreamHandler() {
  *
  * Torque effectiveness represents how efficiently force is applied during a pedal stroke.
  */
-class OnTorqueEffectivenessDataListener : OnTorqueEffectivenessDataStreamHandler() {
+class OnTorqueEffectivenessDataStreamHandlerImpl : OnTorqueEffectivenessDataStreamHandler() {
     private var eventSink: PigeonEventSink<AntplusTorqueEffectivenessData>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
@@ -155,7 +155,7 @@ class OnTorqueEffectivenessDataListener : OnTorqueEffectivenessDataStreamHandler
  * A Pigeon event stream handler that emits [AntplusBatteryStatus] values
  * from the ANT+ Bike Power Meter sensor to the Flutter event channel.
  */
-class OnBatteryStatusListener : OnBatteryStatusDataStreamHandler() {
+class OnBatteryStatusDataStreamHandlerImpl : OnBatteryStatusDataStreamHandler() {
     private var eventSink: PigeonEventSink<AntplusBatteryStatus>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */

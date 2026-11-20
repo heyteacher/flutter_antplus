@@ -10,17 +10,17 @@ import org.slf4j.helpers.MessageFormatter
 import java.io.PrintWriter
 import java.io.StringWriter
 
-class OnLogDataListenerLogger(val onLogDataListener: OnLogDataListener) : Logger {
+class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerImpl, val loggerName:String) : Logger {
 
     override fun getName(): String {
-        return "j-antplus"
+        return loggerName
     }
 
     private fun add(level: AntplusLogEvent, msg: String?, argArray: Array<Any?>? = null, throwable: Throwable? = null) {
         val sw = StringWriter()
         throwable?.printStackTrace(PrintWriter(sw))
         Handler(Looper.getMainLooper()).post {
-            onLogDataListener.add(
+            onLogDataStreamHandler.add(
                 AntplusLogData(
                     level,
                     name,

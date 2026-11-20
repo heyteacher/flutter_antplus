@@ -68,11 +68,11 @@ tasks.withType<JavaExec> {
 }
 
 dependencies {
-    implementation("io.github.heyteacher:j-antplus:0.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+    implementation("io.github.heyteacher:j-antplus:0.3.0")
     implementation("com.github.tony19:logback-android:3.0.0")
     compileOnly(files("libs/flutter.jar"))
     compileOnly("androidx.annotation:annotation:1.10.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:5.0.0")
-    testCompileOnly(files("libs/flutter.jar"))
 }

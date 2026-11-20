@@ -14,7 +14,6 @@ import be.glever.antplus.power.datapage.main.PowerDataPage02GetSetParameters
 import be.glever.antplus.power.datapage.main.PowerDataPage10PowerOnly
 import be.glever.antplus.power.datapage.main.PowerDataPage13TorqueEffectivenessPedalSmoothness
 import io.flutter.plugin.common.BinaryMessenger
-import me.heyteacher.flutter_antplus.AbstractHostApi
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusBatteryStatus
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
@@ -25,10 +24,14 @@ import me.heyteacher.flutter_antplus.bikepower.pigeons.OnCadenceDataStreamHandle
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPedalSmoothnessDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPowerDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnTorqueEffectivenessDataStreamHandler
+import me.heyteacher.flutter_antplus.AbstractHostApi
+import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
+import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
+import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 
@@ -44,39 +47,41 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
 class BikePowerHostApiImpl(
     binaryMessenger: BinaryMessenger,
     context: Context,
-) : AbstractHostApi(binaryMessenger, context), BikepowerHostApi {
+    onLogDataStreamHandler: OnLogDataStreamHandlerImpl,
+    onUsbAdapterStateChangeHandler: OnUsbAdapterStateChangeStreamHandlerImpl
+) : AbstractHostApi(binaryMessenger, context, onLogDataStreamHandler, onUsbAdapterStateChangeHandler), BikepowerHostApi {
 
     companion object {
         private val TAG: String = BikePowerHostApiImpl::class.java.simpleName
     }
 
-    private val powerDataPageRegistry = PowerDataPageRegistry()
-    private val onPowerDataListener: OnPowerDataListener = OnPowerDataListener()
-    private val onBalanceDataListener: OnBalanceDataListener = OnBalanceDataListener()
-    private val onCadenceDataListener: OnCadenceDataListener = OnCadenceDataListener()
-    private val onPedalSmoothnessDataListener: OnPedalSmoothnessDataListener =
-        OnPedalSmoothnessDataListener()
-    private val onTorqueEffectivenessDataListener: OnTorqueEffectivenessDataListener =
-        OnTorqueEffectivenessDataListener()
-    private val onBatteryStatusListener: OnBatteryStatusListener = OnBatteryStatusListener()
+    private val _powerDataPageRegistry = PowerDataPageRegistry()
+    private val _onPowerDataStreamHandler: OnPowerDataStreamHandlerImpl = OnPowerDataStreamHandlerImpl()
+    private val _onBalanceDataStreamHandler: OnBalanceDataStreamHandlerImpl = OnBalanceDataStreamHandlerImpl()
+    private val _onCadenceDataStreamHandler: OnCadenceDataStreamHandlerImpl = OnCadenceDataStreamHandlerImpl()
+    private val _onPedalSmoothnessDataStreamHandler: OnPedalSmoothnessDataStreamHandlerImpl =
+        OnPedalSmoothnessDataStreamHandlerImpl()
+    private val _onTorqueEffectivenessDataStreamHandler: OnTorqueEffectivenessDataStreamHandlerImpl =
+        OnTorqueEffectivenessDataStreamHandlerImpl()
+    private val _onBatteryStatusDataStreamHandler: OnBatteryStatusDataStreamHandlerImpl = OnBatteryStatusDataStreamHandlerImpl()
     /**
      * Registers all Pigeon Host APIs and event stream handlers on initialization.
      */
     init {
         BikepowerHostApi.setUp(binaryMessenger, this)
         OnScanResultStreamHandler.register(
-            binaryMessenger, onScanResultListener, AntplusDeviceType.BIKEPOWER.name
+            binaryMessenger, onScanResultStreamHandler, AntplusDeviceType.BIKEPOWER.name
         )
         OnDeviceStateChangeStreamHandler.register(
-            binaryMessenger, onDeviceStateChangeListener, AntplusDeviceType.BIKEPOWER.name
+            binaryMessenger, onDeviceStateChangeStreamHandler, AntplusDeviceType.BIKEPOWER.name
         )
-        OnPowerDataStreamHandler.register(binaryMessenger, onPowerDataListener)
-        OnPedalSmoothnessDataStreamHandler.register(binaryMessenger, onPedalSmoothnessDataListener)
-        OnBatteryStatusDataStreamHandler.register(binaryMessenger, onBatteryStatusListener)
-        OnBalanceDataStreamHandler.register(binaryMessenger, onBalanceDataListener)
-        OnCadenceDataStreamHandler.register(binaryMessenger, onCadenceDataListener)
+        OnPowerDataStreamHandler.register(binaryMessenger, _onPowerDataStreamHandler)
+        OnPedalSmoothnessDataStreamHandler.register(binaryMessenger, _onPedalSmoothnessDataStreamHandler)
+        OnBatteryStatusDataStreamHandler.register(binaryMessenger, _onBatteryStatusDataStreamHandler)
+        OnBalanceDataStreamHandler.register(binaryMessenger, _onBalanceDataStreamHandler)
+        OnCadenceDataStreamHandler.register(binaryMessenger, _onCadenceDataStreamHandler)
         OnTorqueEffectivenessDataStreamHandler.register(
-            binaryMessenger, onTorqueEffectivenessDataListener
+            binaryMessenger, _onTorqueEffectivenessDataStreamHandler
         )
     }
 
@@ -84,18 +89,22 @@ class BikePowerHostApiImpl(
         return AntplusDeviceType.BIKEPOWER
     }
 
-    override fun deviceChannel(): AntChannel {
-        return PowerChannel(getAntUsbDevice())
+    override fun deviceChannel(deviceNumber: Long? ): AntChannel {
+        return if (deviceNumber != null) {
+            PowerChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
+        } else {
+            PowerChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter())
+        }
     }
 
     override fun dataRegistry(): AbstractDataPageRegistry {
-        return powerDataPageRegistry
+        return _powerDataPageRegistry
     }
 
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is DataPage81ProductInformation) {
             Handler(Looper.getMainLooper()).post {
-                onScanResultListener.add(
+                onScanResultStreamHandler.add(
                     AntplusDevice(
                         dataPage.deviceNumber,
                         dataPage.deviceNumberAsString,
@@ -104,29 +113,26 @@ class BikePowerHostApiImpl(
                 )
             }
         }
-        //else {
-        //    log(TAG,AntplusLogEvent.DEBUG, "(handleScanDataPage): page number ${dataPage.pageNumber}")
-        //}
     }
 
     override fun handleConnectedDataPage(dataPage: AbstractAntPlusDataPage) {
         when (dataPage) {
             is PowerDataPage10PowerOnly -> {
                 Handler(Looper.getMainLooper()).post {
-                    onPowerDataListener.add(dataPage.instantaneousPower.toLong())
-                    onCadenceDataListener.add(dataPage.instantaneousCadence.toLong())
-                    onBalanceDataListener.add(dataPage.pedalPowerDistribution.percentage.toLong())
+                    _onPowerDataStreamHandler.add(dataPage.instantaneousPower.toLong())
+                    _onCadenceDataStreamHandler.add(dataPage.instantaneousCadence.toLong())
+                    _onBalanceDataStreamHandler.add(dataPage.pedalPowerDistribution.percentage.toLong())
                 }
             }
             is PowerDataPage13TorqueEffectivenessPedalSmoothness -> {
                 Handler(Looper.getMainLooper()).post {
-                    onTorqueEffectivenessDataListener.add(
+                    _onTorqueEffectivenessDataStreamHandler.add(
                         AntplusTorqueEffectivenessData(
                             dataPage.leftTorqueEffectiveness.toDouble(),
                             dataPage.rightTorqueEffectiveness.toDouble()
                         )
                     )
-                    onPedalSmoothnessDataListener.add(
+                    _onPedalSmoothnessDataStreamHandler.add(
                         AntplusPedalSmoothnessData(
                             dataPage.combinedPedalSmoothness == 0,
                             dataPage.leftPedalSmoothness.toDouble(),
@@ -137,7 +143,7 @@ class BikePowerHostApiImpl(
             }
             is DataPage82BatteryStatus -> {
                 Handler(Looper.getMainLooper()).post {
-                    onBatteryStatusListener.add(
+                    _onBatteryStatusDataStreamHandler.add(
                         AntplusBatteryStatus.ofRaw(dataPage.batteryStatus.value)
                             ?: AntplusBatteryStatus.INVALID
                     )
@@ -145,7 +151,7 @@ class BikePowerHostApiImpl(
             }
             is PowerDataPage02GetSetParameters -> {
                 Handler(Looper.getMainLooper()).post {
-                    onLogDataListener?.add(
+                    this@BikePowerHostApiImpl.onLogDataStreamHandler.add(
                         AntplusLogData(
                             AntplusLogEvent.VERBOSE,
                             TAG,
@@ -154,9 +160,6 @@ class BikePowerHostApiImpl(
                     )
                 }
             }
-            else -> {
-                log(TAG,AntplusLogEvent.DEBUG, "(handleConnectedDataPage): page number ${dataPage.pageNumber}")
-            }
         }
     }
 
@@ -164,11 +167,11 @@ class BikePowerHostApiImpl(
     override fun close() {
         super.close()
         // close bikepower listeners
-        onPowerDataListener.onEventsDone()
-        onBalanceDataListener.onEventsDone()
-        onBatteryStatusListener.onEventsDone()
-        onCadenceDataListener.onEventsDone()
-        onTorqueEffectivenessDataListener.onEventsDone()
-        onPedalSmoothnessDataListener.onEventsDone()
+        _onPowerDataStreamHandler.onEventsDone()
+        _onBalanceDataStreamHandler.onEventsDone()
+        _onBatteryStatusDataStreamHandler.onEventsDone()
+        _onCadenceDataStreamHandler.onEventsDone()
+        _onTorqueEffectivenessDataStreamHandler.onEventsDone()
+        _onPedalSmoothnessDataStreamHandler.onEventsDone()
     }
 }

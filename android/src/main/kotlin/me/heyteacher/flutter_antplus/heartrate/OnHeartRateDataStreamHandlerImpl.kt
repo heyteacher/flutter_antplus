@@ -7,7 +7,7 @@ import me.heyteacher.flutter_antplus.heartrate.pigeons.PigeonEventSink
  * A Pigeon event stream handler that emits real-time heart rate values (bpm)
  * from the ANT+ Heart Rate Monitor to the Flutter event channel.
  */
-class OnHeartRateDataListener : OnHeartRateDataStreamHandler() {
+class OnHeartRateDataStreamHandlerImpl : OnHeartRateDataStreamHandler() {
     private var eventSink: PigeonEventSink<Long>? = null
 
     /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */

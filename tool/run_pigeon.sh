@@ -18,3 +18,6 @@ dart run pigeon --input pigeons/logging_event_channel.dart
 
 # Device
 dart run pigeon --input pigeons/device_event_channel.dart 
+
+# USB Adapter
+dart run pigeon --input pigeons/usb_adapter_event_channel.dart

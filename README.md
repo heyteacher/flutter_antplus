@@ -77,8 +77,11 @@ A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices
         .
         .
         <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+        <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
     </intent-filter>
     <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+        android:resource="@xml/device_filter" />
+    <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
         android:resource="@xml/device_filter" />
   ```
 
@@ -282,6 +285,9 @@ dart run pigeon --input pigeons/logging_event_channel.dart
 
 # Device
 dart run pigeon --input pigeons/device_event_channel.dart 
+
+# USB Adapter
+dart run pigeon --input pigeons/usb_adapter_event_channel.dart
 ```
 
 ---
