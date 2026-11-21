@@ -7,6 +7,7 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
+        mavenLocal()
     }
 
     dependencies {
@@ -30,8 +31,8 @@ plugins {
 android {
 
     namespace = "me.heyteacher.flutter_antplus"
-
-    compileSdk = 34
+    compileSdk =  37 //flutter.compileSdkVersion
+    ndkVersion = "28.2.13676358" //flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
@@ -69,10 +70,10 @@ tasks.withType<JavaExec> {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
-    implementation("io.github.heyteacher:j-antplus:0.3.0")
+    implementation("io.github.heyteacher:j-antplus:0.3.1")
     implementation("com.github.tony19:logback-android:3.0.0")
     compileOnly(files("libs/flutter.jar"))
-    compileOnly("androidx.annotation:annotation:1.10.0")
+    compileOnly("androidx.annotation:annotation:1.11.0")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:5.0.0")
+    testImplementation("org.mockito:mockito-core:5.24.0")
 }

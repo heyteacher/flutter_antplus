@@ -6,8 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.flutter_antplus_example"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk =  37 //flutter.compileSdkVersion
+    ndkVersion = "28.2.13676358" //flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
