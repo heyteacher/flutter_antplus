@@ -1,15 +1,13 @@
 package me.heyteacher.flutter_antplus.bikepower
 
-import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusBatteryStatus
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBalanceDataStreamHandler
-import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBatteryStatusDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnCadenceDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPedalSmoothnessDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPowerDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnTorqueEffectivenessDataStreamHandler
-import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.PigeonEventSink
-import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
 
 /**
  * A Pigeon event stream handler that emits real-time power values (watts)
@@ -142,33 +140,6 @@ class OnTorqueEffectivenessDataStreamHandlerImpl : OnTorqueEffectivenessDataStre
      */
     fun add(torqueEffectivenessData: AntplusTorqueEffectivenessData) {
         eventSink?.success(torqueEffectivenessData)
-    }
-
-    /** Signals end of stream and releases the event sink. */
-    fun onEventsDone() {
-        eventSink?.endOfStream()
-        eventSink = null
-    }
-}
-
-/**
- * A Pigeon event stream handler that emits [AntplusBatteryStatus] values
- * from the ANT+ Bike Power Meter sensor to the Flutter event channel.
- */
-class OnBatteryStatusDataStreamHandlerImpl : OnBatteryStatusDataStreamHandler() {
-    private var eventSink: PigeonEventSink<AntplusBatteryStatus>? = null
-
-    /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
-    override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusBatteryStatus>) {
-        eventSink = sink
-    }
-
-    /**
-     * Emits the sensor [batteryStatus] to the Flutter battery status stream.
-     * @param batteryStatus the current battery status to emit
-     */
-    fun add(batteryStatus: AntplusBatteryStatus) {
-        eventSink?.success(batteryStatus)
     }
 
     /** Signals end of stream and releases the event sink. */

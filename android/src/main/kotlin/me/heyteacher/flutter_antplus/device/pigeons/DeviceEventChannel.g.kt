@@ -191,6 +191,24 @@ enum class AntplusDeviceState(val raw: Int) {
   }
 }
 
+enum class AntplusBatteryStatus(val raw: Int) {
+  NEW_STATUS(0),
+  GOOD(1),
+  OK(2),
+  LOW(3),
+  CRITICAL(4),
+  INVALID(5),
+  UNRECOGNIZED(6);
+
+  companion object {
+    private val pigeonValues = values()
+
+    fun ofRaw(raw: Int): AntplusBatteryStatus? {
+      return pigeonValues.getOrNull(raw)
+    }
+  }
+}
+
 /** Generated class from Pigeon that represents data sent in messages. */
 data class AntplusDevice (
   val number: Long,
@@ -249,6 +267,11 @@ private open class DeviceEventChannelPigeonCodec : StandardMessageCodec() {
         }
       }
       131.toByte() -> {
+        (readValue(buffer) as Long?)?.let {
+          AntplusBatteryStatus.ofRaw(it.toInt())
+        }
+      }
+      132.toByte() -> {
         (readValue(buffer) as? List<Any?>)?.let {
           AntplusDevice.fromList(it)
         }
@@ -266,8 +289,12 @@ private open class DeviceEventChannelPigeonCodec : StandardMessageCodec() {
         stream.write(130)
         writeValue(stream, value.raw.toLong())
       }
-      is AntplusDevice -> {
+      is AntplusBatteryStatus -> {
         stream.write(131)
+        writeValue(stream, value.raw.toLong())
+      }
+      is AntplusDevice -> {
+        stream.write(132)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -400,6 +427,51 @@ abstract class OnDeviceStateChangeStreamHandler : DeviceEventChannelPigeonEventC
 
   // Implement methods from DeviceEventChannelPigeonEventChannelWrapper
   override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusDeviceState>) {}
+
+  override fun onCancel(p0: Any?) {}
+}
+      
+/** A typed channel for communicating with the Flutter application using asynchronous event streams. */
+class OnBatteryStatusDataEventChannel(messenger: BinaryMessenger, instanceName: String = "") {
+  private val channel: EventChannel
+
+  init {
+    var channelName = "dev.flutter.pigeon.device.EventChannelMethods.onBatteryStatusData"
+    if (instanceName.isNotEmpty()) {
+      channelName += ".$instanceName"
+    }
+    channel = EventChannel(messenger, channelName, DeviceEventChannelPigeonMethodCodec)
+  }
+
+  /**
+   * Sets the stream handler for this channel, replacing any previous handler.
+   *
+   * Pass `null` to remove the event channel registration.
+   */
+  fun setStreamHandler(streamHandler: OnBatteryStatusDataStreamHandler?) {
+    val internalHandler = streamHandler?.let { DeviceEventChannelPigeonStreamHandler<AntplusBatteryStatus>(it) }
+    channel.setStreamHandler(internalHandler)
+  }
+}
+
+abstract class OnBatteryStatusDataStreamHandler : DeviceEventChannelPigeonEventChannelWrapper<AntplusBatteryStatus> {
+  companion object {
+    /**
+     * Creates and returns a new event channel that calls the provided stream handler.
+     *
+     * The returned channel can be stored to allow changing or removing the stream handler.
+     * If the handler will not be changed for the lifetime of the engine associated with the messenger,
+     * the return value can be ignored.
+     */
+    fun register(messenger: BinaryMessenger, streamHandler: OnBatteryStatusDataStreamHandler, instanceName: String = ""): OnBatteryStatusDataEventChannel {
+      val channel = OnBatteryStatusDataEventChannel(messenger, instanceName)
+      channel.setStreamHandler(streamHandler)
+      return channel
+    }
+  }
+
+  // Implement methods from DeviceEventChannelPigeonEventChannelWrapper
+  override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusBatteryStatus>) {}
 
   override fun onCancel(p0: Any?) {}
 }

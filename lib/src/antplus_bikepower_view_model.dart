@@ -1,14 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter_antplus/src/antplus_device_view_model.dart';
+import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus/src/pigeons/bikepower.g.dart';
 import 'package:flutter_antplus/src/pigeons/bikepower_event_channel.g.dart'
     show
-        AntplusBatteryStatus,
         AntplusPedalSmoothnessData,
         AntplusTorqueEffectivenessData,
         onBalanceData,
-        onBatteryStatusData,
         onCadenceData,
         onPedalSmoothnessData,
         onPowerData,
@@ -18,6 +16,7 @@ import 'package:flutter_antplus/src/pigeons/device_event_channel.g.dart'
         AntplusDevice,
         AntplusDeviceState,
         AntplusDeviceType,
+        onBatteryStatusData,
         onDeviceStateChange,
         onScanResult;
 
@@ -52,6 +51,13 @@ class AntplusBikepowerViewModel implements AntplusDeviceViewModel {
         instanceName: AntplusDeviceType.bikepower.name.toUpperCase(),
       );
 
+  /// A stream of the battery status of the bike power sensor.
+  @override
+  Stream<AntplusBatteryStatus> get onBatteryStatusDataStream =>
+      onBatteryStatusData(
+        instanceName: AntplusDeviceType.bikepower.name.toUpperCase(),
+      );
+
   /// A stream of the real-time power value in watts (W).
   Stream<int> get onPowerDataStream => onPowerData();
 
@@ -71,10 +77,6 @@ class AntplusBikepowerViewModel implements AntplusDeviceViewModel {
   /// A stream of the real-time cadence value in revolutions per minute (rpm)
   /// calculated by the power meter.
   Stream<int> get onCadenceDataStream => onCadenceData();
-
-  /// A stream of the battery status of the bike power sensor.
-  Stream<AntplusBatteryStatus> get onBatteryStatusDataStream =>
-      onBatteryStatusData();
 
   /// Starts scanning for nearby ANT+ bike power meters.
   @override

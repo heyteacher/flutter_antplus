@@ -45,6 +45,7 @@ class _HeartrateViewState extends DeviceViewState<HeartrateView> {
   @override
   List<TableRow> get tableRows => [
     tableRow('Heart Rate', _bpm, unit: 'bpm'),
+    tableRow('Battery Status', batteryStatus?.name),
   ];
 
   @override

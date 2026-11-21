@@ -19,20 +19,6 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-enum AntplusDataSource {
-  powerOnlyData,
-  wheelTorqueData,
-  crankTorqueData,
-  ctfData,
-  coastOrStopDetected,
-  initialValuePowerOnlyData,
-  initialValueWheelTorqueData,
-  initialValueCrankTorqueData,
-  initialValueCtfData,
-  invalid,
-  invalidCtfCalReq,
-  unrecognized,
-}
 
 class AntplusPedalSmoothnessData {
   const AntplusPedalSmoothnessData({
@@ -56,16 +42,6 @@ class AntplusTorqueEffectivenessData {
   final double rightTorqueEffectiveness;
 }
 
-enum AntplusBatteryStatus {
-  newStatus,
-  good,
-  ok,
-  low,
-  critical,
-  invalid,
-  unrecognized,
-}
-
 @EventChannelApi()
 abstract class EventChannelMethods {
   int onPowerData();
@@ -73,5 +49,4 @@ abstract class EventChannelMethods {
   int onBalanceData();
   AntplusPedalSmoothnessData onPedalSmoothnessData();
   AntplusTorqueEffectivenessData onTorqueEffectivenessData();
-  AntplusBatteryStatus onBatteryStatusData();
 }

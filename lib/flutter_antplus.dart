@@ -8,11 +8,12 @@ export 'src/antplus_device_view_model.dart' show AntplusDeviceViewModel;
 export 'src/antplus_heartrate_view_model.dart' show AntplusHeartrateViewModel;
 export 'src/antplus_usb_adapter_view_model.dart' show AntplusAdapterViewModel;
 export 'src/pigeons/bikepower_event_channel.g.dart'
+    show AntplusPedalSmoothnessData, AntplusTorqueEffectivenessData;
+export 'src/pigeons/device_event_channel.g.dart'
     show
         AntplusBatteryStatus,
-        AntplusPedalSmoothnessData,
-        AntplusTorqueEffectivenessData;
-export 'src/pigeons/device_event_channel.g.dart'
-    show AntplusDevice, AntplusDeviceState, AntplusDeviceType;
+        AntplusDevice,
+        AntplusDeviceState,
+        AntplusDeviceType;
 export 'src/pigeons/usb_adapter_event_channel.g.dart'
     show AntplusUsbAdapterState;

@@ -19,6 +19,10 @@ abstract class AntplusDeviceViewModel {
   /// tracking, closed, etc.
   Stream<AntplusDeviceState> get onDeviceStateChangeStream;
 
+  /// A stream of the battery status of the bike power sensor.
+  Stream<AntplusBatteryStatus> get onBatteryStatusDataStream =>
+      onBatteryStatusData();
+
   /// Initiates a scan for nearby ANT+ devices of the matching device type.
   Future<void> startScan();
 

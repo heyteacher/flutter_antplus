@@ -23,7 +23,6 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
   int? _balance;
   AntplusPedalSmoothnessData? _pedalSmoothnessData;
   AntplusTorqueEffectivenessData? _torqueEffectivenessData;
-  AntplusBatteryStatus? _batteryStatus;
   StreamSubscription<int>? _onPowerDataStreamSubscription;
   StreamSubscription<int>? _onCadenceDataStreamSubscription;
   StreamSubscription<int>? _onBalanceDataStreamSubscription;
@@ -31,8 +30,6 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
   _onPedalSmoothnessDataStreamSubscription;
   StreamSubscription<AntplusTorqueEffectivenessData>?
   _onTorqueEffectivenessDataStreamSubscription;
-  StreamSubscription<AntplusBatteryStatus>?
-  _onBatteryStatusDataStreamSubscription;
 
   @override
   AntplusDeviceViewModel get deviceViewModel =>
@@ -45,7 +42,6 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
     unawaited(_onBalanceDataStreamSubscription?.cancel());
     unawaited(_onPedalSmoothnessDataStreamSubscription?.cancel());
     unawaited(_onTorqueEffectivenessDataStreamSubscription?.cancel());
-    unawaited(_onBatteryStatusDataStreamSubscription?.cancel());
     super.dispose();
   }
 
@@ -55,39 +51,23 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
     _onPowerDataStreamSubscription = AntplusBikepowerViewModel
         .instance
         .onPowerDataStream
-        .listen(
-          (watt) => setState(() => _watt = watt),
-        );
+        .listen((watt) => setState(() => _watt = watt));
     _onBalanceDataStreamSubscription = AntplusBikepowerViewModel
         .instance
         .onBalanceDataStream
-        .listen(
-          (balance) => setState(() => _balance = balance),
-        );
-    _onBatteryStatusDataStreamSubscription = AntplusBikepowerViewModel
-        .instance
-        .onBatteryStatusDataStream
-        .listen(
-          (event) => setState(() => _batteryStatus = event),
-        );
+        .listen((balance) => setState(() => _balance = balance));
     _onCadenceDataStreamSubscription = AntplusBikepowerViewModel
         .instance
         .onCadenceDataStream
-        .listen(
-          (event) => setState(() => _cadence = event),
-        );
+        .listen((event) => setState(() => _cadence = event));
     _onPedalSmoothnessDataStreamSubscription = AntplusBikepowerViewModel
         .instance
         .onPedalSmoothnessDataStream
-        .listen(
-          (event) => setState(() => _pedalSmoothnessData = event),
-        );
+        .listen((event) => setState(() => _pedalSmoothnessData = event));
     _onTorqueEffectivenessDataStreamSubscription = AntplusBikepowerViewModel
         .instance
         .onTorqueEffectivenessDataStream
-        .listen(
-          (event) => setState(() => _torqueEffectivenessData = event),
-        );
+        .listen((event) => setState(() => _torqueEffectivenessData = event));
   }
 
   @override
@@ -97,7 +77,6 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
     _cadence = null;
     _pedalSmoothnessData = null;
     _torqueEffectivenessData = null;
-    _batteryStatus = null;
     await super.disconnect();
   }
 
@@ -130,6 +109,6 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
       _torqueEffectivenessData?.rightTorqueEffectiveness,
       unit: '%',
     ),
-    tableRow('batteryStatus', _batteryStatus?.name),
+    tableRow('Battery Status', batteryStatus?.name),
   ];
 }

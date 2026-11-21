@@ -3,6 +3,7 @@ package me.heyteacher.flutter_antplus.cadence
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import be.glever.ant.channel.AntChannel
 import be.glever.antplus.common.datapage.AbstractAntPlusDataPage
 import be.glever.antplus.common.datapage.registry.AbstractDataPageRegistry
@@ -10,10 +11,13 @@ import be.glever.antplus.speedcadence.CadenceChannel
 import be.glever.antplus.speedcadence.datapage.AbstractSpeedCadenceDataPage
 import be.glever.antplus.speedcadence.datapage.SpeedAndCadenceDataPageRegistry
 import be.glever.antplus.speedcadence.datapage.background.SpeedCadenceDataPage2ManufacturerInformation
+import be.glever.antplus.speedcadence.datapage.background.SpeedCadenceDataPage4BatteryStatus
+import be.glever.antplus.speedcadence.datapage.main.SpeedCadenceDataPage0Default
 import io.flutter.plugin.common.BinaryMessenger
 import me.heyteacher.flutter_antplus.cadence.pigeons.CadenceHostApi
 import me.heyteacher.flutter_antplus.cadence.pigeons.OnCadenceDataStreamHandler
 import me.heyteacher.flutter_antplus.AbstractHostApi
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusBatteryStatus
 import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
 import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
@@ -96,9 +100,18 @@ class CadenceHostApiImpl(
     }
 
     override fun handleConnectedDataPage(dataPage: AbstractAntPlusDataPage) {
-        if (dataPage is AbstractSpeedCadenceDataPage) {
+        if (dataPage is SpeedCadenceDataPage0Default) {
             Handler(Looper.getMainLooper()).post {
                 _onCadenceDataStreamHandler.add(calcCadence(dataPage))
+            }
+        }
+        else if (dataPage is SpeedCadenceDataPage4BatteryStatus) {
+            Handler(Looper.getMainLooper()).post {
+                onBatteryStatusDataStreamHandler.add(
+                    AntplusBatteryStatus.ofRaw(dataPage.batteryVoltageDescription.value)
+                        ?: AntplusBatteryStatus.INVALID
+                )
+                Log.d(TAG, "batteryVoltageDescription ${dataPage.batteryVoltageDescription}")
             }
         }
     }

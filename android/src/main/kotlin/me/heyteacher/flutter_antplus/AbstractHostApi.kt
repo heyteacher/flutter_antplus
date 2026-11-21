@@ -14,12 +14,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import me.heyteacher.flutter_antplus.device.OnBatteryStatusDataStreamHandlerImpl
 import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
 import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeStreamHandlerImpl
 import me.heyteacher.flutter_antplus.device.OnScanResultStreamHandlerImpl
 import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
+import me.heyteacher.flutter_antplus.device.pigeons.OnBatteryStatusDataStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
@@ -60,6 +62,8 @@ abstract class AbstractHostApi(
     protected val onDeviceStateChangeStreamHandler: OnDeviceStateChangeStreamHandlerImpl =
         OnDeviceStateChangeStreamHandlerImpl()
 
+    protected val onBatteryStatusDataStreamHandler: OnBatteryStatusDataStreamHandlerImpl = OnBatteryStatusDataStreamHandlerImpl()
+
     private val _scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     /**
@@ -74,6 +78,8 @@ abstract class AbstractHostApi(
         OnDeviceStateChangeStreamHandler.register(
             binaryMessenger, onDeviceStateChangeStreamHandler, deviceType().name
         )
+        OnBatteryStatusDataStreamHandler.register(binaryMessenger, onBatteryStatusDataStreamHandler, deviceType().name)
+
         // listen adapter detection
         _scope.launch {
             onUsbAdapterStateChangeHandler.flow.collect { antplusRequestAccessResult ->

@@ -3,15 +3,18 @@ package me.heyteacher.flutter_antplus.heartrate
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import be.glever.ant.channel.AntChannel
 import be.glever.antplus.common.datapage.AbstractAntPlusDataPage
 import be.glever.antplus.common.datapage.registry.AbstractDataPageRegistry
 import be.glever.antplus.hrm.HRMChannel
 import be.glever.antplus.hrm.datapage.HrmDataPageRegistry
 import be.glever.antplus.hrm.datapage.background.HrmDataPage2ManufacturerInformation
+import be.glever.antplus.hrm.datapage.background.HrmDataPage7BatteryStatus
 import be.glever.antplus.hrm.datapage.main.HrmDataPage0Default
 import io.flutter.plugin.common.BinaryMessenger
 import me.heyteacher.flutter_antplus.AbstractHostApi
+import me.heyteacher.flutter_antplus.device.pigeons.AntplusBatteryStatus
 import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
 import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDevice
@@ -89,6 +92,15 @@ class HeartrateHostApiImpl(
         if (dataPage is HrmDataPage0Default) {
             Handler(Looper.getMainLooper()).post {
                 _onHeartRateDataStreamHandlerImpl.add(dataPage.computedHeartRateInBpm.toLong())
+            }
+        }
+        else if (dataPage is HrmDataPage7BatteryStatus) {
+            Handler(Looper.getMainLooper()).post {
+                onBatteryStatusDataStreamHandler.add(
+                    AntplusBatteryStatus.ofRaw(dataPage.batteryVoltageDescription.value)
+                        ?: AntplusBatteryStatus.INVALID
+                )
+                Log.d(TAG, "batteryVoltageDescription ${dataPage.batteryVoltageDescription}")
             }
         }
     }

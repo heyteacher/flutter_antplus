@@ -38,8 +38,19 @@ class AntplusDevice {
   final AntplusDeviceType type;
 }
 
+enum AntplusBatteryStatus {
+  newStatus,
+  good,
+  ok,
+  low,
+  critical,
+  invalid,
+  unrecognized,
+}
+
 @EventChannelApi()
 abstract class EventChannelMethods {
   AntplusDevice onScanResult();
   AntplusDeviceState onDeviceStateChange();
+  AntplusBatteryStatus onBatteryStatusData();
 }

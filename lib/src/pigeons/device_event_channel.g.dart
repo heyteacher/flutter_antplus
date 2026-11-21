@@ -86,6 +86,16 @@ enum AntplusDeviceState {
   unrecognized;
 }
 
+enum AntplusBatteryStatus {
+  newStatus,
+  good,
+  ok,
+  low,
+  critical,
+  invalid,
+  unrecognized;
+}
+
 class AntplusDevice {
   AntplusDevice({
     required this.number,
@@ -155,8 +165,11 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is AntplusDeviceState) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    }    else if (value is AntplusDevice) {
+    }    else if (value is AntplusBatteryStatus) {
       buffer.putUint8(131);
+      writeValue(buffer, value.index);
+    }    else if (value is AntplusDevice) {
+      buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -173,6 +186,9 @@ class _PigeonCodec extends StandardMessageCodec {
         final value = readValue(buffer) as int?;
         return value == null ? null : AntplusDeviceState.values[value];
       case 131:
+        final value = readValue(buffer) as int?;
+        return value == null ? null : AntplusBatteryStatus.values[value];
+      case 132:
         return AntplusDevice.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -213,6 +229,23 @@ Stream<AntplusDeviceState> onDeviceStateChange( {String instanceName = ''}) {
       EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onDeviceStateChange$instanceName', pigeonMethodCodec);
   return onDeviceStateChangeChannel.receiveBroadcastStream().map((dynamic event) {
     return event as AntplusDeviceState;
+  });
+}
+    
+/// Returns a broadcast [Stream] of events from the `onBatteryStatusData` event channel.
+///
+/// Each call to this method creates a new [EventChannel], so it should
+/// not be called multiple times for the same `instanceName`. To deliver
+/// events to multiple listeners, call this method once and listen to the
+/// returned broadcast stream multiple times instead.
+Stream<AntplusBatteryStatus> onBatteryStatusData( {String instanceName = ''}) {
+  if (instanceName.isNotEmpty) {
+    instanceName = '.$instanceName';
+  }
+  final EventChannel onBatteryStatusDataChannel =
+      EventChannel('dev.flutter.pigeon.device.EventChannelMethods.onBatteryStatusData$instanceName', pigeonMethodCodec);
+  return onBatteryStatusDataChannel.receiveBroadcastStream().map((dynamic event) {
+    return event as AntplusBatteryStatus;
   });
 }
     

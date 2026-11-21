@@ -160,47 +160,6 @@ private object BikepowerEventChannelPigeonUtils {
 
 }
 
-enum class AntplusDataSource(val raw: Int) {
-  POWER_ONLY_DATA(0),
-  WHEEL_TORQUE_DATA(1),
-  CRANK_TORQUE_DATA(2),
-  CTF_DATA(3),
-  COAST_OR_STOP_DETECTED(4),
-  INITIAL_VALUE_POWER_ONLY_DATA(5),
-  INITIAL_VALUE_WHEEL_TORQUE_DATA(6),
-  INITIAL_VALUE_CRANK_TORQUE_DATA(7),
-  INITIAL_VALUE_CTF_DATA(8),
-  INVALID(9),
-  INVALID_CTF_CAL_REQ(10),
-  UNRECOGNIZED(11);
-
-  companion object {
-    private val pigeonValues = values()
-
-    fun ofRaw(raw: Int): AntplusDataSource? {
-      return pigeonValues.getOrNull(raw)
-    }
-  }
-}
-
-enum class AntplusBatteryStatus(val raw: Int) {
-  NEW_STATUS(0),
-  GOOD(1),
-  OK(2),
-  LOW(3),
-  CRITICAL(4),
-  INVALID(5),
-  UNRECOGNIZED(6);
-
-  companion object {
-    private val pigeonValues = values()
-
-    fun ofRaw(raw: Int): AntplusBatteryStatus? {
-      return pigeonValues.getOrNull(raw)
-    }
-  }
-}
-
 /** Generated class from Pigeon that represents data sent in messages. */
 data class AntplusPedalSmoothnessData (
   val separatePedalSmoothnessSupport: Boolean,
@@ -290,21 +249,11 @@ private open class BikepowerEventChannelPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
       129.toByte() -> {
-        (readValue(buffer) as Long?)?.let {
-          AntplusDataSource.ofRaw(it.toInt())
-        }
-      }
-      130.toByte() -> {
-        (readValue(buffer) as Long?)?.let {
-          AntplusBatteryStatus.ofRaw(it.toInt())
-        }
-      }
-      131.toByte() -> {
         (readValue(buffer) as? List<Any?>)?.let {
           AntplusPedalSmoothnessData.fromList(it)
         }
       }
-      132.toByte() -> {
+      130.toByte() -> {
         (readValue(buffer) as? List<Any?>)?.let {
           AntplusTorqueEffectivenessData.fromList(it)
         }
@@ -314,20 +263,12 @@ private open class BikepowerEventChannelPigeonCodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is AntplusDataSource -> {
-        stream.write(129)
-        writeValue(stream, value.raw.toLong())
-      }
-      is AntplusBatteryStatus -> {
-        stream.write(130)
-        writeValue(stream, value.raw.toLong())
-      }
       is AntplusPedalSmoothnessData -> {
-        stream.write(131)
+        stream.write(129)
         writeValue(stream, value.toList())
       }
       is AntplusTorqueEffectivenessData -> {
-        stream.write(132)
+        stream.write(130)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -595,51 +536,6 @@ abstract class OnTorqueEffectivenessDataStreamHandler : BikepowerEventChannelPig
 
   // Implement methods from BikepowerEventChannelPigeonEventChannelWrapper
   override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusTorqueEffectivenessData>) {}
-
-  override fun onCancel(p0: Any?) {}
-}
-      
-/** A typed channel for communicating with the Flutter application using asynchronous event streams. */
-class OnBatteryStatusDataEventChannel(messenger: BinaryMessenger, instanceName: String = "") {
-  private val channel: EventChannel
-
-  init {
-    var channelName = "dev.flutter.pigeon.bikepower.EventChannelMethods.onBatteryStatusData"
-    if (instanceName.isNotEmpty()) {
-      channelName += ".$instanceName"
-    }
-    channel = EventChannel(messenger, channelName, BikepowerEventChannelPigeonMethodCodec)
-  }
-
-  /**
-   * Sets the stream handler for this channel, replacing any previous handler.
-   *
-   * Pass `null` to remove the event channel registration.
-   */
-  fun setStreamHandler(streamHandler: OnBatteryStatusDataStreamHandler?) {
-    val internalHandler = streamHandler?.let { BikepowerEventChannelPigeonStreamHandler<AntplusBatteryStatus>(it) }
-    channel.setStreamHandler(internalHandler)
-  }
-}
-
-abstract class OnBatteryStatusDataStreamHandler : BikepowerEventChannelPigeonEventChannelWrapper<AntplusBatteryStatus> {
-  companion object {
-    /**
-     * Creates and returns a new event channel that calls the provided stream handler.
-     *
-     * The returned channel can be stored to allow changing or removing the stream handler.
-     * If the handler will not be changed for the lifetime of the engine associated with the messenger,
-     * the return value can be ignored.
-     */
-    fun register(messenger: BinaryMessenger, streamHandler: OnBatteryStatusDataStreamHandler, instanceName: String = ""): OnBatteryStatusDataEventChannel {
-      val channel = OnBatteryStatusDataEventChannel(messenger, instanceName)
-      channel.setStreamHandler(streamHandler)
-      return channel
-    }
-  }
-
-  // Implement methods from BikepowerEventChannelPigeonEventChannelWrapper
-  override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusBatteryStatus>) {}
 
   override fun onCancel(p0: Any?) {}
 }

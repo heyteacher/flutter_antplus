@@ -17,9 +17,15 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   AntplusDevice? _connectedDevice;
   bool _scanning = false;
 
+  /// the battery status of the connected device
+  @protected
+  AntplusBatteryStatus? batteryStatus;
+
   StreamSubscription<AntplusDevice>? _onScanResultStreamSubscription;
   StreamSubscription<AntplusDeviceState>?
   _onDeviceStateChangeStreamSubscription;
+  StreamSubscription<AntplusBatteryStatus>?
+  _onBatteryStatusDataStreamSubscription;
 
   bool _loading = false;
 
@@ -42,12 +48,16 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     _onDeviceStateChangeStreamSubscription = deviceViewModel
         .onDeviceStateChangeStream
         .listen((event) => setState(() => _deviceState = event));
+    _onBatteryStatusDataStreamSubscription = deviceViewModel
+        .onBatteryStatusDataStream
+        .listen((event) => setState(() => batteryStatus = event));
   }
 
   @override
   void dispose() {
     unawaited(_onScanResultStreamSubscription?.cancel());
     unawaited(_onDeviceStateChangeStreamSubscription?.cancel());
+    unawaited(_onBatteryStatusDataStreamSubscription?.cancel());
     super.dispose();
   }
 
@@ -108,6 +118,7 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
         _scanDevices[_connectedDevice!.number] = _connectedDevice!;
         _connectedDevice = null;
         _deviceState = null;
+        batteryStatus = null;
       });
     } on Exception catch (e) {
       if (mounted) {

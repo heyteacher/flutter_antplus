@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_antplus/src/antplus_device_view_model.dart';
+import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus/src/pigeons/cadence.g.dart';
 import 'package:flutter_antplus/src/pigeons/cadence_event_channel.g.dart'
     show onCadenceData;
@@ -9,6 +9,7 @@ import 'package:flutter_antplus/src/pigeons/device_event_channel.g.dart'
         AntplusDevice,
         AntplusDeviceState,
         AntplusDeviceType,
+        onBatteryStatusData,
         onDeviceStateChange,
         onScanResult;
 
@@ -38,6 +39,13 @@ class AntplusCadenceViewModel implements AntplusDeviceViewModel {
   @override
   Stream<AntplusDeviceState> get onDeviceStateChangeStream =>
       onDeviceStateChange(
+        instanceName: AntplusDeviceType.cadence.name.toUpperCase(),
+      );
+
+  /// A stream of the battery status of the bike power sensor.
+  @override
+  Stream<AntplusBatteryStatus> get onBatteryStatusDataStream =>
+      onBatteryStatusData(
         instanceName: AntplusDeviceType.cadence.name.toUpperCase(),
       );
 
