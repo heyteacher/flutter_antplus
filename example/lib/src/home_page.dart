@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
-import 'package:flutter_antplus_example/src/bikepower_view.dart';
-import 'package:flutter_antplus_example/src/cadence_view.dart' show CadenceView;
-import 'package:flutter_antplus_example/src/heartrate_view.dart';
+import 'package:flutter_antplus_demo/src/bikepower_view.dart';
+import 'package:flutter_antplus_demo/src/cadence_view.dart' show CadenceView;
+import 'package:flutter_antplus_demo/src/heartrate_view.dart';
 import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart';
 import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 
-/// The main dashboard page of the ANT+ plugin example app.
+/// The main dashboard page of Flutter ANT+ demp app.
 ///
 /// Features a tab-based navigation to switch between [CadenceView],
 /// [BikepowerView], and [HeartrateView], and includes a logging widget
@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Flutter Ant+ Example')),
+    appBar: AppBar(title: const Text('Flutter Ant+ Demo')),
     body: ListView(
       children: [
         const Divider(),

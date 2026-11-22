@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
-import 'package:flutter_antplus_example/src/device_view_state.dart';
+import 'package:flutter_antplus_demo/src/device_view_state.dart';
 
 /// A widget that displays real-time telemetry from an ANT+ Bike Power Meter.
 ///

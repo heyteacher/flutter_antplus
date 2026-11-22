@@ -1,4 +1,4 @@
-package com.example.flutter_antplus_example;
+package me.heyteacher.flutter_antplus_demo;
 
 import io.flutter.embedding.android.FlutterActivity;
 

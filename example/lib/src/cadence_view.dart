@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
-import 'package:flutter_antplus_example/src/device_view_state.dart';
+import 'package:flutter_antplus_demo/src/device_view_state.dart';
 
 /// A widget that displays real-time cadence data from an ANT+ Cadence sensor.
 ///
@@ -42,9 +42,7 @@ class _CadenceViewState extends DeviceViewState<CadenceView> {
   }
 
   @override
-  List<TableRow> get tableRows => [
-    tableRow('Cadence', _rpm, unit: 'rpm'),
-  ];
+  List<TableRow> get tableRows => [tableRow('Cadence', _rpm, unit: 'rpm')];
 
   @override
   AntplusDeviceViewModel get deviceViewModel =>
