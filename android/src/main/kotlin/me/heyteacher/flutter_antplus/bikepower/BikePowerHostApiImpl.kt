@@ -31,8 +31,7 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
 
 /**
  * Android implementation of the [me.heyteacher.flutter_antplus.bikepower.pigeons.BikepowerHostApi] Pigeon interface with j-antplus Java library
@@ -143,15 +142,10 @@ class BikePowerHostApiImpl(
                 }
             }
             is PowerDataPage02GetSetParameters -> {
-                Handler(Looper.getMainLooper()).post {
-                    this@BikePowerHostApiImpl.onLogDataStreamHandler.add(
-                        AntplusLogData(
-                            AntplusLogEvent.VERBOSE,
-                            TAG,
-                            "(handleDataPage): PowerDataPage02GetSetParameters ${dataPage.subPage}"
-                        )
-                    )
-                }
+               log(
+                   TAG,
+                   AntplusLogLevel.DEBUG,
+                   "(handleDataPage): PowerDataPage02GetSetParameters ${dataPage.subPage}")
             }
         }
     }

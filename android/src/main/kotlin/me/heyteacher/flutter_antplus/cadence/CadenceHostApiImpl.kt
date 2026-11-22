@@ -25,8 +25,7 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHandler
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
 
 /**
  * Android implementation of the [me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi] Pigeon interface.
@@ -42,14 +41,21 @@ class CadenceHostApiImpl(
     context: Context,
     onLogDataStreamHandler: OnLogDataStreamHandlerImpl,
     onUsbAdapterStateChangeHandler: OnUsbAdapterStateChangeStreamHandlerImpl
-) : AbstractHostApi(binaryMessenger, context,onLogDataStreamHandler,onUsbAdapterStateChangeHandler), CadenceHostApi {
+) : AbstractHostApi(
+    binaryMessenger,
+    context,
+    onLogDataStreamHandler,
+    onUsbAdapterStateChangeHandler
+), CadenceHostApi {
 
     companion object {
         private val TAG: String = CadenceHostApiImpl::class.java.simpleName
     }
 
-    private val speedAndCadenceDataPageRegistry: SpeedAndCadenceDataPageRegistry = SpeedAndCadenceDataPageRegistry()
-    private var _onCadenceDataStreamHandler: OnCadenceDataStreamHandlerImpl = OnCadenceDataStreamHandlerImpl()
+    private val speedAndCadenceDataPageRegistry: SpeedAndCadenceDataPageRegistry =
+        SpeedAndCadenceDataPageRegistry()
+    private var _onCadenceDataStreamHandler: OnCadenceDataStreamHandlerImpl =
+        OnCadenceDataStreamHandlerImpl()
     private var prevRevCount = 0
     private var prevEventTime = 0L
     private var cycles = 0
@@ -74,19 +80,20 @@ class CadenceHostApiImpl(
     }
 
     override fun deviceChannel(deviceNumber: Long?): AntChannel {
-        return CadenceChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
+        return CadenceChannel(
+            UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(),
+            deviceNumber
+        )
     }
 
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is SpeedCadenceDataPage2ManufacturerInformation) {
             Handler(Looper.getMainLooper()).post {
-                this@CadenceHostApiImpl.onLogDataStreamHandler.add(
-                    AntplusLogData(
-                        AntplusLogEvent.INFO,
-                        TAG,
-                        "(handleScanDataPage): found device ${dataPage.deviceNumber} " +
-                                "(${dataPage.deviceNumberAsString})"
-                    )
+                log(
+                    TAG,
+                    AntplusLogLevel.INFO,
+                    "(handleScanDataPage): found device ${dataPage.deviceNumber} " +
+                            "(${dataPage.deviceNumberAsString})"
                 )
                 onScanResultStreamHandler.add(
                     AntplusDevice(
@@ -104,8 +111,7 @@ class CadenceHostApiImpl(
             Handler(Looper.getMainLooper()).post {
                 _onCadenceDataStreamHandler.add(calcCadence(dataPage))
             }
-        }
-        else if (dataPage is SpeedCadenceDataPage4BatteryStatus) {
+        } else if (dataPage is SpeedCadenceDataPage4BatteryStatus) {
             Handler(Looper.getMainLooper()).post {
                 onBatteryStatusDataStreamHandler.add(
                     AntplusBatteryStatus.ofRaw(dataPage.batteryVoltageDescription.value)
@@ -129,14 +135,15 @@ class CadenceHostApiImpl(
         if (currRevCount == prevRevCount) return 0
         // cycle end, add 256 and increment cycles count
         if (currRevCount < prevRevCount) {
-           cycles++
-           currRevCount += (cycles * 256)
+            cycles++
+            currRevCount += (cycles * 256)
         }
         val currEventTime = dataPage.eventTime
         // no new current time, return 0
         if (currEventTime <= prevEventTime) return 0
-        if (prevEventTime == 0L)  return 0
-        val cadence = (1000 * 60 * ( (currRevCount - prevRevCount) / (currEventTime - prevEventTime).toDouble())).toLong()
+        if (prevEventTime == 0L) return 0
+        val cadence =
+            (1000 * 60 * ((currRevCount - prevRevCount) / (currEventTime - prevEventTime).toDouble())).toLong()
         prevRevCount = currRevCount
         prevEventTime = currEventTime
         return cadence

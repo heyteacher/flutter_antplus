@@ -22,7 +22,7 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi
 import me.heyteacher.flutter_antplus.heartrate.pigeons.OnHeartRateDataStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
 
 /**
  * Android implementation of the [me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi] Pigeon interface.
@@ -74,7 +74,7 @@ class HeartrateHostApiImpl(
         if (dataPage is HrmDataPage2ManufacturerInformation) {
             Handler(Looper.getMainLooper()).post {
                 log(
-                    TAG, AntplusLogEvent.INFO, "(handleScanDataPage): " +
+                    TAG, AntplusLogLevel.INFO, "(handleScanDataPage): " +
                             "found device ${dataPage.deviceNumber} (${dataPage.deviceNumberAsString})"
                 )
                 onScanResultStreamHandler.add(

@@ -1,14 +1,10 @@
 package me.heyteacher.flutter_antplus.logging
 
-import android.os.Handler
-import android.os.Looper
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
+import me.heyteacher.flutter_antplus.AbstractHostApi
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
 import org.slf4j.Logger
 import org.slf4j.Marker
 import org.slf4j.helpers.MessageFormatter
-import java.io.PrintWriter
-import java.io.StringWriter
 
 class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerImpl, val loggerName:String) : Logger {
 
@@ -16,17 +12,13 @@ class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerIm
         return loggerName
     }
 
-    private fun add(level: AntplusLogEvent, msg: String?, argArray: Array<Any?>? = null, throwable: Throwable? = null) {
-        val sw = StringWriter()
-        throwable?.printStackTrace(PrintWriter(sw))
-        Handler(Looper.getMainLooper()).post {
-            onLogDataStreamHandler.add(
-                AntplusLogData(
-                    level,
-                    name,
-                    "${format(msg, argArray)} $sw")
-            )
-        }
+    private fun add(level: AntplusLogLevel, msg: String?, argArray: Array<Any?>? = null, throwable: Throwable? = null) {
+        AbstractHostApi.log(
+            name,
+            level,
+            "${format(msg, argArray)}",
+            throwable,
+            onLogDataStreamHandler)
     }
 
     private fun format(messagePattern: String?, argArray: Array<Any?>?): String? {
@@ -38,23 +30,23 @@ class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerIm
     }
 
     override fun trace(msg: String?) {
-        add(AntplusLogEvent.VERBOSE, msg)
+        add(AntplusLogLevel.VERBOSE, msg)
     }
 
     override fun trace(format: String?, arg: Any?) {
-        add(AntplusLogEvent.VERBOSE, format, arrayOf(arg))
+        add(AntplusLogLevel.VERBOSE, format, arrayOf(arg))
     }
 
     override fun trace(format: String?, arg1: Any?, arg2: Any?) {
-        add(AntplusLogEvent.VERBOSE, format, arrayOf(arg1, arg2))
+        add(AntplusLogLevel.VERBOSE, format, arrayOf(arg1, arg2))
     }
 
     override fun trace(format: String?, vararg arguments: Any?) {
-        add(AntplusLogEvent.VERBOSE, format, arguments.toList().toTypedArray())
+        add(AntplusLogLevel.VERBOSE, format, arguments.toList().toTypedArray())
     }
 
     override fun trace(msg: String?, t: Throwable?) {
-        add(AntplusLogEvent.VERBOSE, msg, throwable = t)
+        add(AntplusLogLevel.VERBOSE, msg, throwable = t)
     }
 
     override fun isTraceEnabled(marker: Marker?): Boolean {
@@ -95,23 +87,23 @@ class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerIm
     }
 
     override fun debug(msg: String?) {
-        add(AntplusLogEvent.DEBUG, msg)
+        add(AntplusLogLevel.DEBUG, msg)
     }
 
     override fun debug(format: String?, arg: Any?) {
-        add(AntplusLogEvent.DEBUG, format, arrayOf(arg))
+        add(AntplusLogLevel.DEBUG, format, arrayOf(arg))
     }
 
     override fun debug(format: String?, arg1: Any?, arg2: Any?) {
-        add(AntplusLogEvent.DEBUG, format, arrayOf(arg1, arg2))
+        add(AntplusLogLevel.DEBUG, format, arrayOf(arg1, arg2))
     }
 
     override fun debug(format: String?, vararg arguments: Any?) {
-        add(AntplusLogEvent.DEBUG, format, arguments.toList().toTypedArray())
+        add(AntplusLogLevel.DEBUG, format, arguments.toList().toTypedArray())
     }
 
     override fun debug(msg: String?, t: Throwable?) {
-        add(AntplusLogEvent.DEBUG, msg, throwable = t)
+        add(AntplusLogLevel.DEBUG, msg, throwable = t)
     }
 
     override fun isDebugEnabled(marker: Marker?): Boolean {
@@ -152,23 +144,23 @@ class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerIm
     }
 
     override fun info(msg: String?) {
-        add(AntplusLogEvent.INFO, msg)
+        add(AntplusLogLevel.INFO, msg)
     }
 
     override fun info(format: String?, arg: Any?) {
-        add(AntplusLogEvent.INFO, format, arrayOf(arg))
+        add(AntplusLogLevel.INFO, format, arrayOf(arg))
     }
 
     override fun info(format: String?, arg1: Any?, arg2: Any?) {
-        add(AntplusLogEvent.INFO, format, arrayOf(arg1,arg2))
+        add(AntplusLogLevel.INFO, format, arrayOf(arg1,arg2))
     }
 
     override fun info(format: String?, vararg arguments: Any?) {
-        add(AntplusLogEvent.INFO, format, arguments.toList().toTypedArray())
+        add(AntplusLogLevel.INFO, format, arguments.toList().toTypedArray())
     }
 
     override fun info(msg: String?, t: Throwable?) {
-        add(AntplusLogEvent.INFO, msg, throwable = t)
+        add(AntplusLogLevel.INFO, msg, throwable = t)
     }
 
     override fun isInfoEnabled(marker: Marker?): Boolean {
@@ -210,24 +202,24 @@ class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerIm
     }
 
     override fun warn(msg: String?) {
-        add(AntplusLogEvent.WARNING, msg)
+        add(AntplusLogLevel.WARNING, msg)
 
     }
 
     override fun warn(format: String?, arg: Any?) {
-        add(AntplusLogEvent.WARNING, format(format?:"", arrayOf(arg)))
+        add(AntplusLogLevel.WARNING, format(format?:"", arrayOf(arg)))
     }
 
     override fun warn(format: String?, vararg arguments: Any?) {
-        add(AntplusLogEvent.WARNING, format, arguments.toList().toTypedArray())
+        add(AntplusLogLevel.WARNING, format, arguments.toList().toTypedArray())
     }
 
     override fun warn(format: String?, arg1: Any?, arg2: Any?) {
-        add(AntplusLogEvent.WARNING, format(format?:"", arrayOf(arg1,arg2)))
+        add(AntplusLogLevel.WARNING, format(format?:"", arrayOf(arg1,arg2)))
     }
 
     override fun warn(msg: String?, t: Throwable?) {
-        add(AntplusLogEvent.WARNING, msg, throwable = t)
+        add(AntplusLogLevel.WARNING, msg, throwable = t)
     }
 
     override fun isWarnEnabled(marker: Marker?): Boolean {
@@ -268,23 +260,23 @@ class OnLogDataStreamLogger(val onLogDataStreamHandler: OnLogDataStreamHandlerIm
     }
 
     override fun error(msg: String?) {
-        add(AntplusLogEvent.ERROR, msg)
+        add(AntplusLogLevel.ERROR, msg)
     }
 
     override fun error(format: String?, arg: Any?) {
-        add(AntplusLogEvent.ERROR, format, arrayOf(arg))
+        add(AntplusLogLevel.ERROR, format, arrayOf(arg))
     }
 
     override fun error(format: String?, arg1: Any?, arg2: Any?) {
-        add(AntplusLogEvent.ERROR, format, arrayOf(arg1, arg2))
+        add(AntplusLogLevel.ERROR, format, arrayOf(arg1, arg2))
     }
 
     override fun error(format: String?, vararg arguments: Any?) {
-        add(AntplusLogEvent.ERROR, format, arguments.toList().toTypedArray())
+        add(AntplusLogLevel.ERROR, format, arguments.toList().toTypedArray())
     }
 
     override fun error(msg: String?, t: Throwable?) {
-        add(AntplusLogEvent.ERROR, msg, throwable = t)
+        add(AntplusLogLevel.ERROR, msg, throwable = t)
     }
 
     override fun isErrorEnabled(marker: Marker?): Boolean {

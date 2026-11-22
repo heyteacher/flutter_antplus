@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_antplus/src/pigeons/logging_event_channel.g.dart'
-    show AntplusLogData, AntplusLogEvent, onLogData;
+    show AntplusLogData, AntplusLogLevel, onLogData;
 import 'package:logging/logging.dart';
 
-export 'src/pigeons/logging_event_channel.g.dart'
-    show AntplusLogData, AntplusLogEvent;
+export 'src/pigeons/logging_event_channel.g.dart' show AntplusLogData;
 
 /// A utility class for handling logging within the ANT+ plugin.
 ///
@@ -37,11 +36,11 @@ class AntplusLogging {
     unawaited(_onLogDataStreamSubscription?.cancel());
     _onLogDataStreamSubscription = onLogData().listen(
       (event) => switch (event.level) {
-        AntplusLogEvent.verbose => Logger(event.tag).finest(event.message),
-        AntplusLogEvent.debug => Logger(event.tag).finer(event.message),
-        AntplusLogEvent.info => Logger(event.tag).info(event.message),
-        AntplusLogEvent.warning => Logger(event.tag).warning(event.message),
-        AntplusLogEvent.error => Logger(event.tag).severe(event.message),
+        AntplusLogLevel.verbose => Logger(event.tag).finest(event.message),
+        AntplusLogLevel.debug => Logger(event.tag).finer(event.message),
+        AntplusLogLevel.info => Logger(event.tag).info(event.message),
+        AntplusLogLevel.warning => Logger(event.tag).warning(event.message),
+        AntplusLogLevel.error => Logger(event.tag).severe(event.message),
       },
     );
   }

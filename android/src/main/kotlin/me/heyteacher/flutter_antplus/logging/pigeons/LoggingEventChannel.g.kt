@@ -160,7 +160,7 @@ private object LoggingEventChannelPigeonUtils {
 
 }
 
-enum class AntplusLogEvent(val raw: Int) {
+enum class AntplusLogLevel(val raw: Int) {
   VERBOSE(0),
   DEBUG(1),
   INFO(2),
@@ -170,7 +170,7 @@ enum class AntplusLogEvent(val raw: Int) {
   companion object {
     private val pigeonValues = values()
 
-    fun ofRaw(raw: Int): AntplusLogEvent? {
+    fun ofRaw(raw: Int): AntplusLogLevel? {
       return pigeonValues.getOrNull(raw)
     }
   }
@@ -178,14 +178,14 @@ enum class AntplusLogEvent(val raw: Int) {
 
 /** Generated class from Pigeon that represents data sent in messages. */
 data class AntplusLogData (
-  val level: AntplusLogEvent,
+  val level: AntplusLogLevel,
   val tag: String,
   val message: String
 )
  {
   companion object {
     fun fromList(pigeonVar_list: List<Any?>): AntplusLogData {
-      val level = pigeonVar_list[0] as AntplusLogEvent
+      val level = pigeonVar_list[0] as AntplusLogLevel
       val tag = pigeonVar_list[1] as String
       val message = pigeonVar_list[2] as String
       return AntplusLogData(level, tag, message)
@@ -225,7 +225,7 @@ private open class LoggingEventChannelPigeonCodec : StandardMessageCodec() {
     return when (type) {
       129.toByte() -> {
         (readValue(buffer) as Long?)?.let {
-          AntplusLogEvent.ofRaw(it.toInt())
+          AntplusLogLevel.ofRaw(it.toInt())
         }
       }
       130.toByte() -> {
@@ -238,7 +238,7 @@ private open class LoggingEventChannelPigeonCodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is AntplusLogEvent -> {
+      is AntplusLogLevel -> {
         stream.write(129)
         writeValue(stream, value.raw.toLong())
       }

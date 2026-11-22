@@ -26,7 +26,7 @@ import me.heyteacher.flutter_antplus.device.pigeons.OnDeviceStateChangeStreamHan
 import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogEvent
+import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
 import me.heyteacher.flutter_antplus.usb_adapter.pigeons.AntplusUsbAdapterState
 import reactor.core.Disposable
 import java.io.PrintWriter
@@ -51,6 +51,35 @@ abstract class AbstractHostApi(
 ) {
     companion object {
         private val _TAG: String = AbstractHostApi::class.java.simpleName
+
+        /**
+         * Logs a message to the native log listener.
+         * @param tag the log tag
+         * @param level the log level
+         * @param message the log message
+         * @param throwable the throwable
+         * @param onLogDataStreamHandler the on log data stream handler
+         */
+        fun log(
+            tag: String,
+            level: AntplusLogLevel,
+            message: String,
+            throwable: Throwable? = null,
+            onLogDataStreamHandler: OnLogDataStreamHandlerImpl?
+        ) {
+            if (throwable != null) {
+                val sw = StringWriter()
+                throwable.printStackTrace(PrintWriter(sw))
+                Handler(Looper.getMainLooper()).post {
+                    onLogDataStreamHandler?.add(AntplusLogData(level, tag, "$message $sw"))
+                }
+                Log.e(tag, message, throwable)
+            } else {
+                Handler(Looper.getMainLooper()).post {
+                    onLogDataStreamHandler?.add(AntplusLogData(level, tag, message))
+                }
+            }
+        }
     }
 
     private var _connectedAntChannel: AntChannel? = null
@@ -79,7 +108,6 @@ abstract class AbstractHostApi(
             binaryMessenger, onDeviceStateChangeStreamHandler, deviceType().name
         )
         OnBatteryStatusDataStreamHandler.register(binaryMessenger, onBatteryStatusDataStreamHandler, deviceType().name)
-
         // listen adapter detection
         _scope.launch {
             onUsbAdapterStateChangeHandler.flow.collect { antplusRequestAccessResult ->
@@ -100,21 +128,21 @@ abstract class AbstractHostApi(
      * Starts an async scan for nearby ANT+ Bike Power Meters.
      * */
     fun startScan() {
-        log(tag = _TAG, level = AntplusLogEvent.DEBUG, message = "<startScan>:")
+        log(tag = _TAG, level = AntplusLogLevel.DEBUG, message = "<startScan>:")
         try {
             if (!UsbAntplusAdapterManager.getInstance()
                     .checkPermission(context, callback = { startScan() })
             ) {
                 log(
                     tag = _TAG,
-                    level = AntplusLogEvent.DEBUG,
+                    level = AntplusLogLevel.DEBUG,
                     message = "(startScan): permission not granted, request permission"
                 )
                 return
             }
             log(
                 tag = _TAG,
-                level = AntplusLogEvent.DEBUG,
+                level = AntplusLogLevel.DEBUG,
                 message = "(startScan): permission granted"
             )
             closeScanChannel()
@@ -124,7 +152,7 @@ abstract class AbstractHostApi(
                 .subscribe()
 
         } catch (t: Throwable) {
-            log(tag = _TAG, level = AntplusLogEvent.ERROR, message = "(startScan):", throwable = t)
+            log(tag = _TAG, level = AntplusLogLevel.ERROR, message = "(startScan):", throwable = t)
         }
     }
 
@@ -132,7 +160,7 @@ abstract class AbstractHostApi(
      * Stops scan device
      * */
     fun stopScan() {
-        log(tag = _TAG, level = AntplusLogEvent.VERBOSE, message = "<stopScan>:")
+        log(tag = _TAG, level = AntplusLogLevel.VERBOSE, message = "<stopScan>:")
         closeScanChannel()
     }
 
@@ -143,7 +171,7 @@ abstract class AbstractHostApi(
     open fun connect(deviceNumber: Long) {
         log(
             tag = _TAG,
-            level = AntplusLogEvent.DEBUG,
+            level = AntplusLogLevel.DEBUG,
             message = "<connect>: deviceNumber $deviceNumber"
         )
         // stop scan
@@ -153,14 +181,14 @@ abstract class AbstractHostApi(
             ) {
                 log(
                     tag = _TAG,
-                    level = AntplusLogEvent.DEBUG,
+                    level = AntplusLogLevel.DEBUG,
                     message = "(connect): deviceNumber $deviceNumber, permission not granted, request permission"
                 )
                 return
             }
             log(
                 tag = _TAG,
-                level = AntplusLogEvent.DEBUG,
+                level = AntplusLogLevel.DEBUG,
                 message = "(connect): deviceNumber $deviceNumber, permission granted"
             )
             closeScanChannel()
@@ -176,20 +204,20 @@ abstract class AbstractHostApi(
                 onDeviceStateChangeStreamHandler.add(AntplusDeviceState.PROCESSING_REQUEST)
             }
         } catch (t: Throwable) {
-            log(tag = _TAG, level = AntplusLogEvent.ERROR, message = "(connect):", throwable = t)
+            log(tag = _TAG, level = AntplusLogLevel.ERROR, message = "(connect):", throwable = t)
         }
     }
 
     /** Disconnects from the currently connected device. */
     open fun disconnect() {
-        log(tag = _TAG, level = AntplusLogEvent.DEBUG, message = "<disconnect>:")
+        log(tag = _TAG, level = AntplusLogLevel.DEBUG, message = "<disconnect>:")
         try {
             closeConnectChannel()
             Handler(Looper.getMainLooper()).post {
                 onDeviceStateChangeStreamHandler.add(AntplusDeviceState.CLOSED)
             }
         } catch (t: Throwable) {
-            log(tag = _TAG, level = AntplusLogEvent.ERROR, message = "(disconnect):", throwable = t)
+            log(tag = _TAG, level = AntplusLogLevel.ERROR, message = "(disconnect):", throwable = t)
         }
     }
 
@@ -251,7 +279,7 @@ abstract class AbstractHostApi(
         } catch (t: Throwable) {
             log(
                 tag = _TAG,
-                level = AntplusLogEvent.ERROR,
+                level = AntplusLogLevel.ERROR,
                 message = "(handleConnectedMessage):",
                 throwable = t
             )
@@ -263,25 +291,15 @@ abstract class AbstractHostApi(
      * @param tag the log tag
      * @param level the log level
      * @param message the log message
+     * @param throwable the throwable
      */
     protected fun log(
         tag: String,
-        level: AntplusLogEvent,
+        level: AntplusLogLevel,
         message: String,
         throwable: Throwable? = null
     ) {
-        if (throwable != null) {
-            val sw = StringWriter()
-            throwable.printStackTrace(PrintWriter(sw))
-            Handler(Looper.getMainLooper()).post {
-                onLogDataStreamHandler.add(AntplusLogData(level, tag, "$message $sw"))
-            }
-            Log.e(tag, message, throwable)
-        } else {
-            Handler(Looper.getMainLooper()).post {
-                onLogDataStreamHandler.add(AntplusLogData(level, tag, message))
-            }
-        }
+        log(tag, level, message, throwable, onLogDataStreamHandler)
     }
 
     /**
@@ -299,7 +317,7 @@ abstract class AbstractHostApi(
         } catch (t: Throwable) {
             log(
                 tag = _TAG,
-                level = AntplusLogEvent.ERROR,
+                level = AntplusLogLevel.ERROR,
                 message = "(handleScanMessage):",
                 throwable = t
             )
@@ -316,7 +334,7 @@ abstract class AbstractHostApi(
         } catch (t: Throwable) {
             log(
                 tag = _TAG,
-                level = AntplusLogEvent.ERROR,
+                level = AntplusLogLevel.ERROR,
                 message = "(closeScanChannel):",
                 throwable = t
             )
@@ -337,7 +355,7 @@ abstract class AbstractHostApi(
         } catch (t: Throwable) {
             log(
                 tag = _TAG,
-                level = AntplusLogEvent.ERROR,
+                level = AntplusLogLevel.ERROR,
                 message = "(closeConnectChannel):",
                 throwable = t
             )

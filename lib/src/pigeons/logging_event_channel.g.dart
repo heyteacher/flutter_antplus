@@ -71,7 +71,7 @@ int _deepHash(Object? value) {
 }
 
 
-enum AntplusLogEvent {
+enum AntplusLogLevel {
   verbose,
   debug,
   info,
@@ -86,7 +86,7 @@ class AntplusLogData {
     required this.message,
   });
 
-  AntplusLogEvent level;
+  AntplusLogLevel level;
 
   String tag;
 
@@ -106,7 +106,7 @@ class AntplusLogData {
   static AntplusLogData decode(Object result) {
     result as List<Object?>;
     return AntplusLogData(
-      level: result[0]! as AntplusLogEvent,
+      level: result[0]! as AntplusLogLevel,
       tag: result[1]! as String,
       message: result[2]! as String,
     );
@@ -142,7 +142,7 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is AntplusLogEvent) {
+    }    else if (value is AntplusLogLevel) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
     }    else if (value is AntplusLogData) {
@@ -158,7 +158,7 @@ class _PigeonCodec extends StandardMessageCodec {
     switch (type) {
       case 129:
         final value = readValue(buffer) as int?;
-        return value == null ? null : AntplusLogEvent.values[value];
+        return value == null ? null : AntplusLogLevel.values[value];
       case 130:
         return AntplusLogData.decode(readValue(buffer)!);
       default:
