@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.7.0+25] - 2026-11-23
+
+### 🚀 Features [0.7.0]
+
+- Abstract j-antplus implementation with `startScan`, `stopScan`, `connect`, `disconnect` and granting usb permission + rewrite Bike Power extending the abstract j-antplus implementation ([9952e76](https://codeberg.org/heyteacher/flutter_antplus/commit/9952e761cae847cb4c29d73baa2e2f9c6d214cc4)) by **heyteacher**
+- Add loading state and error handling to device connection management ([92824e8](https://codeberg.org/heyteacher/flutter_antplus/commit/92824e80492373572485df27faf552c944b4fbff)) by **heyteacher**
+- Manage usb adapter attach, detach and permission request ([2a3a36d](https://codeberg.org/heyteacher/flutter_antplus/commit/2a3a36d1fe8b16791039fe59213c35b858c238b9)) by **heyteacher**
+- Managed battery status ad device level and implemented for heart rate ([1f4f052](https://codeberg.org/heyteacher/flutter_antplus/commit/1f4f0524758fc271b2711c7e1fecbe3b14936990)) by **heyteacher**
+
+### 🐛 Bug Fixes [0.7.0]
+
+- Capitalize `docs: Release notes` regex in git-cliff configs to skip ([e859b6f](https://codeberg.org/heyteacher/flutter_antplus/commit/e859b6f46e76259ecda13a016308eae68d4e34bf)) by **heyteacher**
+- Reverse ls sort order for fetching latest `flutter_heyteacher_meta` version in Fastfile setup ([9196f34](https://codeberg.org/heyteacher/flutter_antplus/commit/9196f34d22b429224dc965fb982cf5048c4659d2)) by **heyteacher**
+- Remove `requestPermission` from pigeon, is managed internally in android implementation ([82adb69](https://codeberg.org/heyteacher/flutter_antplus/commit/82adb69b04cb70c9a22c02d19ad197456d3af9dd)) by **heyteacher**
+- Remove `class`, `subclass` and `protocol` from device filter used in android manifest in `USB_DEVICE_ATTACHED` permission ([2249c64](https://codeberg.org/heyteacher/flutter_antplus/commit/2249c64b90eb37077647d559537e999b4df464a8)) by **heyteacher**
+- Create ad abstract host api and add hrm and speed and cadence profile ([a8ce8b5](https://codeberg.org/heyteacher/flutter_antplus/commit/a8ce8b51ce3d3cbcaea99a0c274068f466065b49)) by **heyteacher**
+- Stop scanning progress indicator on connect and disconnect ([abd8533](https://codeberg.org/heyteacher/flutter_antplus/commit/abd85331a4d8d3b6fad76a02e8051a49c7f622ed)) by **heyteacher**
+- Reset logs before last 5 minute ([e756e17](https://codeberg.org/heyteacher/flutter_antplus/commit/e756e17aabcd205dfeb3fc9ed90c70b300d507d1)) by **heyteacher**
+- Request permission before scan and connect if not already granted and implement `OnRequestAccessListener` into a separated ViewModel ([39fe124](https://codeberg.org/heyteacher/flutter_antplus/commit/39fe124a1327a9fa38c5bc07b9b9e2a68552a8f3)) by **heyteacher**
+- Specify `RECEIVER_EXPORTED` flag for broadcast receiver on Android 13+ (mandatory for Android 14) ([44231c0](https://codeberg.org/heyteacher/flutter_antplus/commit/44231c0580b33721a9482f45052cf5215712b4a5)) by **heyteacher**
+
+### 🛠️ Build [0.7.0]
+
+- Reorganize dependencies and set `compileOnly` dependency `androidx.annotation:annotation` ([482f7dc](https://codeberg.org/heyteacher/flutter_antplus/commit/482f7dcc8a80a6c62ac032a12fce57b1f2b8417f)) by **heyteacher**
+- Update pigeon package and regenerate ([87416c4](https://codeberg.org/heyteacher/flutter_antplus/commit/87416c421a51703c82366b9c8a0e67185d9aad9a)) by **heyteacher**
+- Add example launch ([1c19eda](https://codeberg.org/heyteacher/flutter_antplus/commit/1c19eda32d87e23b9ec2ced0d74fd478f870d098)) by **heyteacher**
+- Set the system property `platform` as `android` for `j-antplus` and add `logback-android` ([4f14b9b](https://codeberg.org/heyteacher/flutter_antplus/commit/4f14b9b955f7c8381b3f8f98fe55bdbecbbcdd1d)) by **heyteacher**
+- Add logback configuration for Android logging ([db79bd2](https://codeberg.org/heyteacher/flutter_antplus/commit/db79bd29ba36e61dfe175c7005c7711dd3aff2ad)) by **heyteacher**
+- Use `io.github.heyteacher:j-antplus:0.2.0` released on maven central, no need of `mavenlocal()` ([5856025](https://codeberg.org/heyteacher/flutter_antplus/commit/5856025b5ebd4ce3fba53f7a2b02061ba49c3271)) by **heyteacher**
+
+### 🚜 Refactor [0.7.0]
+
+- Migrate bike power implementation to use j-antplus library ([1ba4b38](https://codeberg.org/heyteacher/flutter_antplus/commit/1ba4b3844b4106b678ed239e2125be9befe31a44)) by **heyteacher**
+- Remove ANT+ Plugin Service and PCC implementation ([c3477e0](https://codeberg.org/heyteacher/flutter_antplus/commit/c3477e0daa6d9611a4264e109a6bfbbd7cf1c33b)) by **heyteacher**
+- Upgrade `j-antplus`, no more need to check `deviceNumber` nullity before invoke `*Channel` costructors ([30d0363](https://codeberg.org/heyteacher/flutter_antplus/commit/30d036335be20344caf2938ca125562addbae394)) by **heyteacher**
+- Rename `AntplusLogEvent` to `AntplusLogLevel` and update logging implementation ([a0e18b6](https://codeberg.org/heyteacher/flutter_antplus/commit/a0e18b6396b02e2f2c50b382b9c61526ec1f8eff)) by **heyteacher**
+- Rename `flutter_antplus_example` app in `flutter_antplus_demo` and package from `com.example` to `me.heyteacher` ([6ad22fc](https://codeberg.org/heyteacher/flutter_antplus/commit/6ad22fc6963109910e598f9aeaabf2476841a2f3)) by **heyteacher**
+
+### 📚 Documentation [0.7.0]
+
+- Update `README.md` with instruction for `j-antplus` ([3786e2f](https://codeberg.org/heyteacher/flutter_antplus/commit/3786e2f04d21bc0f8ff501cc617919b0f0989219)) by **heyteacher**
+- Add  image on top of README ([0616c1e](https://codeberg.org/heyteacher/flutter_antplus/commit/0616c1ef6006860d4e51cf3fa41cdbc273a098fd)) by **heyteacher**
+
+### 🎨 Styling [0.7.0]
+
+- Add fastlane with app metadata, launch icons and native splash to example app ([e349e6b](https://codeberg.org/heyteacher/flutter_antplus/commit/e349e6b3fa4e12a42f17c6d4d23447e2d288166c)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.7.0]
+
+- Remove redundant log in logcat ([9b0660d](https://codeberg.org/heyteacher/flutter_antplus/commit/9b0660db01fdab999245c2666c20860fda8219ff)) by **heyteacher**
+- Stop logging data page not recognized in handles ([69609fb](https://codeberg.org/heyteacher/flutter_antplus/commit/69609fb375975132c193f338cf9465d184e394e1)) by **heyteacher**
+- Add `OnLogDataListenerLogger` and pass to j-antplus ([0dfb231](https://codeberg.org/heyteacher/flutter_antplus/commit/0dfb231f9f98bf6afd1a01145763ee5a1e9546ad)) by **heyteacher**
+- `onLogDataListener` become static on `AbstractHostApi` and initialized on `AbstractHostApi` ([dbe1ea7](https://codeberg.org/heyteacher/flutter_antplus/commit/dbe1ea7ec50380c9d203ea02e159114bab1ee8cc)) by **heyteacher**
+- Upgrade Android SDK, AGP, Sdk and ndk versions and dependencies in Android configuration ([2a77bd0](https://codeberg.org/heyteacher/flutter_antplus/commit/2a77bd0cac9c1f667435fdcfe3f593dd8ebf34d7)) by **heyteacher**
+- *(release)* New version 0.7.0+25 which closes ([#44](https://codeberg.org/heyteacher/flutter_antplus/issues/44)) ([085e3ab](https://codeberg.org/heyteacher/flutter_antplus/commit/085e3ab4c4313468f171dcc7d7cc11f50dd3cebe)) by **heyteacher**
+
 ## [flutter_antplus-0.6.12+24] - 2026-10-23
 
 ### ⚙️ Miscellaneous Tasks [0.6.12]
