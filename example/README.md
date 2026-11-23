@@ -1,3 +1,3 @@
 # flutter_antplus_demo
 
-Demonstrates how to use the flutter_antplus plugin.
+Demonstrates how to use the flutter_antplus package.

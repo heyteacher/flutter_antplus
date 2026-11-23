@@ -3,6 +3,8 @@
 [![pub package](https://img.shields.io/pub/v/flutter_antplus.svg)](https://pub.dev/packages/flutter_antplus)
 [![license](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/heyteacher/flutter_antplus/blob/main/LICENSE)
 
+![flutter_antplus](./example/fastlane/metadata/android/en-US/images/featureGraphic.png)
+
 > [!IMPORTANT]
 > __BREAKING CHANGE__ starting from version `7.0.0` the ANT+ plugin is not required anymore, so:
 >
