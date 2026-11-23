@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import be.glever.ant.AntException
@@ -102,10 +103,22 @@ class UsbAntplusAdapterManager private constructor() {
             AntplusLogLevel.DEBUG,
             "(initializeUsbAdapter): register usb receiver (permission, attach and detach intents"
         )
-        context.registerReceiver(
-            usbReceiver,
-            intentFilter
-        )
+
+        // Source - https://stackoverflow.com/a/77529595
+        // Posted by Mohd. Jafar Iqbal khan, modified by community. See post 'Timeline' for change history
+        // Retrieved 2026-11-22, License - CC BY-SA 4.0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(
+                usbReceiver,
+                intentFilter,
+                Context.RECEIVER_EXPORTED)
+        } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+            context.registerReceiver(
+                usbReceiver,
+                intentFilter)
+        }
+
         // set ant usb device as the first available device if found
         this._usbAntplusAdapter = AndroidAntUsbDeviceFactory.getAvailableAntDevices(
             context,
