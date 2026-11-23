@@ -19,11 +19,7 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-enum AntplusDeviceType {
-  heartrate,
-  bikepower,
-  cadence,
-}
+enum AntplusDeviceType { heartrate, bikepower, cadence }
 
 enum AntplusDeviceState {
   dead,
@@ -35,34 +31,26 @@ enum AntplusDeviceState {
 }
 
 class AntplusDevice {
-  AntplusDevice({
-    required this.number,
-    required this.name,
-    required this.type,
-  });
+  AntplusDevice({required this.number, required this.name, required this.type});
 
   final int number;
   final String name;
   final AntplusDeviceType type;
 }
 
-enum AntplusRequestAccessResult {
-  success,
-  userCancelled,
-  channelNotAvailable,
-  otherFailure,
-  dependencyNotInstalled,
-  deviceAlreadyInUse,
-  searchTimeout,
-  alreadySubscribed,
-  badParams,
-  adapterNotDetected,
+enum AntplusBatteryStatus {
+  newStatus,
+  good,
+  ok,
+  low,
+  critical,
+  invalid,
   unrecognized,
 }
 
 @EventChannelApi()
 abstract class EventChannelMethods {
   AntplusDevice onScanResult();
-  AntplusRequestAccessResult onRequestAccessResult();
   AntplusDeviceState onDeviceStateChange();
+  AntplusBatteryStatus onBatteryStatusData();
 }

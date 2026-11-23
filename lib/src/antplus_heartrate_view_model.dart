@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:flutter_antplus/src/antplus_device_view_model.dart';
+import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus/src/pigeons/device_event_channel.g.dart'
     show
         AntplusDevice,
         AntplusDeviceState,
         AntplusDeviceType,
-        AntplusRequestAccessResult,
+        onBatteryStatusData,
         onDeviceStateChange,
-        onRequestAccessResult,
         onScanResult;
 import 'package:flutter_antplus/src/pigeons/heartrate.g.dart';
 import 'package:flutter_antplus/src/pigeons/heartrate_event_channel.g.dart'
@@ -37,17 +36,17 @@ class AntplusHeartrateViewModel implements AntplusDeviceViewModel {
     instanceName: AntplusDeviceType.heartrate.name.toUpperCase(),
   );
 
-  /// A stream of access request results specifically for heart rate sensors.
-  @override
-  Stream<AntplusRequestAccessResult> get onRequestAccessResultStream =>
-      onRequestAccessResult(
-        instanceName: AntplusDeviceType.heartrate.name.toUpperCase(),
-      );
-
   /// A stream of the connection state for the heart rate device.
   @override
   Stream<AntplusDeviceState> get onDeviceStateChangeStream =>
       onDeviceStateChange(
+        instanceName: AntplusDeviceType.heartrate.name.toUpperCase(),
+      );
+
+  /// A stream of the battery status of the bike power sensor.
+  @override
+  Stream<AntplusBatteryStatus> get onBatteryStatusDataStream =>
+      onBatteryStatusData(
         instanceName: AntplusDeviceType.heartrate.name.toUpperCase(),
       );
 

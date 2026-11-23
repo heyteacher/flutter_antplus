@@ -17,11 +17,17 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   AntplusDevice? _connectedDevice;
   bool _scanning = false;
 
+  /// the battery status of the connected device
+  @protected
+  AntplusBatteryStatus? batteryStatus;
+
   StreamSubscription<AntplusDevice>? _onScanResultStreamSubscription;
   StreamSubscription<AntplusDeviceState>?
   _onDeviceStateChangeStreamSubscription;
-  StreamSubscription<AntplusRequestAccessResult>?
-  _onRequestAccessResultStreamSubscription;
+  StreamSubscription<AntplusBatteryStatus>?
+  _onBatteryStatusDataStreamSubscription;
+
+  bool _loading = false;
 
   /// Initialize state
   @protected
@@ -34,42 +40,31 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   }
 
   /// Initialize state
+  @protected
   Future<void> init(dynamic _) async {
     _onScanResultStreamSubscription = deviceViewModel.onScanResultStream.listen(
       (event) => setState(() => _scanDevices[event.number] = event),
     );
-    _onRequestAccessResultStreamSubscription = deviceViewModel
-        .onRequestAccessResultStream
-        .listen(
-          (requestAccessResult) =>
-              mounted &&
-                  requestAccessResult !=
-                      AntplusRequestAccessResult.userCancelled
-              ? showSnackBar(
-                  context: context,
-                  message: requestAccessResult.name,
-                  error:
-                      requestAccessResult != AntplusRequestAccessResult.success,
-                  persist:
-                      requestAccessResult != AntplusRequestAccessResult.success,
-                )
-              : null,
-        );
     _onDeviceStateChangeStreamSubscription = deviceViewModel
         .onDeviceStateChangeStream
         .listen((event) => setState(() => _deviceState = event));
+    _onBatteryStatusDataStreamSubscription = deviceViewModel
+        .onBatteryStatusDataStream
+        .listen((event) => setState(() => batteryStatus = event));
   }
 
   @override
   void dispose() {
     unawaited(_onScanResultStreamSubscription?.cancel());
     unawaited(_onDeviceStateChangeStreamSubscription?.cancel());
-    unawaited(_onRequestAccessResultStreamSubscription?.cancel());
+    unawaited(_onBatteryStatusDataStreamSubscription?.cancel());
     super.dispose();
   }
 
   /// Starts scan.
+  @protected
   Future<void> startScan() async {
+    _scanDevices.clear();
     await deviceViewModel.startScan();
     setState(() {
       _scanning = true;
@@ -77,6 +72,7 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   }
 
   /// Stop scan.
+  @protected
   Future<void> stopScan() async {
     await deviceViewModel.stopScan();
     setState(() {
@@ -85,26 +81,58 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   }
 
   /// Connect to device with [deviceNumber].
+  @protected
   Future<void> connect(int deviceNumber) async {
-    await stopScan();
-    await deviceViewModel.connect(deviceNumber);
-    setState(() {
-      _connectedDevice = _scanDevices[deviceNumber];
-      _scanDevices.remove(deviceNumber);
-    });
+    try {
+      setState(() {
+        _loading = true;
+        _scanning = false;
+      });
+      await deviceViewModel.connect(deviceNumber);
+      setState(() {
+        _connectedDevice = _scanDevices[deviceNumber];
+        _scanDevices.remove(deviceNumber);
+        _scanning = false;
+      });
+    } on Exception catch (e) {
+      if (mounted) {
+        showSnackBar(context: context, message: e.toString());
+      }
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
-  /// Disconnect to device .
+  /// Disconnect to device
+  @protected
   Future<void> disconnect() async {
-    await deviceViewModel.disconnect();
-    setState(() {
-      _scanDevices[_connectedDevice!.number] = _connectedDevice!;
-      _connectedDevice = null;
-      _deviceState = null;
-    });
+    try {
+      setState(() {
+        _loading = true;
+        _scanning = false;
+      });
+      await deviceViewModel.disconnect();
+      setState(() {
+        _scanDevices[_connectedDevice!.number] = _connectedDevice!;
+        _connectedDevice = null;
+        _deviceState = null;
+        batteryStatus = null;
+      });
+    } on Exception catch (e) {
+      if (mounted) {
+        showSnackBar(context: context, message: e.toString());
+      }
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   /// The table rows
+  @protected
   List<TableRow> get tableRows;
 
   /// Creates a table with [tableRows].
@@ -113,35 +141,29 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     border: TableBorder.all(color: Colors.white24),
     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
 
-    columnWidths: const {
-      0: FlexColumnWidth(2),
-      1: FlexColumnWidth(),
-    },
+    columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth()},
     children: tableRows,
   );
 
   /// Creates a table row with [label] and [value] follower by [unit].
   @protected
-  TableRow tableRow(
-    String label,
-    dynamic value, {
-    String unit = '',
-  }) => TableRow(
-    children: [
-      Text(
-        label,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      Text(
-        '${value ?? '-'} $unit'.trim(),
-        textAlign: TextAlign.center,
-        style: Theme.of(
-          context,
-        ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-      ),
-    ],
-  );
+  TableRow tableRow(String label, dynamic value, {String unit = ''}) =>
+      TableRow(
+        children: [
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          Text(
+            '${value ?? '-'} $unit'.trim(),
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+      );
 
   /// Creates a button with [onPressed], [label] and [color].
   @protected
@@ -153,12 +175,8 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
     onPressed: onPressed,
     style: OutlinedButton.styleFrom(
       foregroundColor: color,
-      side: BorderSide(
-        color: color,
-      ),
-      textStyle: Theme.of(
-        context,
-      ).textTheme.labelSmall,
+      side: BorderSide(color: color),
+      textStyle: Theme.of(context).textTheme.labelSmall,
       padding: const EdgeInsets.all(2),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.compact,
@@ -210,6 +228,7 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   };
 
   @override
+  @protected
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
@@ -233,11 +252,13 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
                 ListTile(
                   leading: deviceStatusBadge(_deviceState?.name),
                   title: AnimateText('${device.number} - ${device.name}'),
-                  trailing: button(
-                    onPressed: () => connect(device.number),
-                    label: 'Connect',
-                    color: ThemeViewModel.instance.greenColor,
-                  ),
+                  trailing: _loading
+                      ? const ProgressIndicatorWidget()
+                      : button(
+                          onPressed: () => connect(device.number),
+                          label: 'Connect',
+                          color: ThemeViewModel.instance.greenColor,
+                        ),
                 ),
                 const Divider(),
               ],
@@ -253,18 +274,18 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
                     title: AnimateText(
                       '${_connectedDevice!.number} - ${_connectedDevice!.name}',
                     ),
-                    trailing: button(
-                      onPressed: disconnect,
-                      label: 'Disconnect',
-                      color: ThemeViewModel.instance.redColor,
-                    ),
+                    trailing: _loading
+                        ? const ProgressIndicatorWidget()
+                        : button(
+                            onPressed: disconnect,
+                            label: 'Disconnect',
+                            color: ThemeViewModel.instance.redColor,
+                          ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: table(
-                    tableRows: tableRows,
-                  ),
+                  child: table(tableRows: tableRows),
                 ),
               ],
             ),

@@ -34,3 +34,4 @@ migrate_working_dir/
 fastlane/README.md
 fastlane/report.xml
 Gemfile.lock
+example/.ruby-version

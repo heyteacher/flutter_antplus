@@ -19,7 +19,7 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-enum AntplusLogEvent { verbose, debug, info, warning, error }
+enum AntplusLogLevel { verbose, debug, info, warning, error }
 
 class AntplusLogData {
   const AntplusLogData({
@@ -27,7 +27,7 @@ class AntplusLogData {
     required this.tag,
     required this.message,
   });
-  final AntplusLogEvent level;
+  final AntplusLogLevel level;
   final String tag;
   final String message;
 }
