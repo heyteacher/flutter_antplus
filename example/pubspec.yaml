@@ -2,6 +2,8 @@ name: flutter_antplus_demo
 description: "Demonstrates how to use the flutter_antplus plugin."
 publish_to: "none"
 
+version: 1.0.0+1
+
 environment:
   sdk: ">=3.12.0 <4.0.0"
   flutter: ^3.47.0
@@ -15,8 +17,10 @@ dependencies:
   flutter_heyteacher_locale: ^3.2.1+166
   flutter_heyteacher_logger: ^3.2.0+173
   flutter_heyteacher_views: ^7.1.1+193
+  flutter_launcher_icons: ^0.14.4
   flutter_localizations:
     sdk: flutter
+  flutter_native_splash: ^2.4.8
   font_awesome_flutter: ^11.0.0
   go_router: ^18.1.4
   logging: ^1.3.0
@@ -32,3 +36,19 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  remove_alpha_ios: true
+  image_path: "fastlane/metadata/android/en-US/images/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "fastlane/metadata/android/en-US/images/background.png"
+  adaptive_icon_foreground: "fastlane/metadata/android/en-US/images/icon.png"
+
+flutter_native_splash:
+  color: "#000000"
+  image: "fastlane/metadata/android/en-US/images/splash.png"
+  android_12:
+    image: "fastlane/metadata/android/en-US/images/splash.png"
+    color: "#000000"

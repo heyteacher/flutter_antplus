@@ -1,0 +1,7 @@
+Flutter ANT+ demo app that displays the real-time values of sensors: heart rate, bike power, and cadence. 
+
+In a real app, instead of displaying values, the data would be processed by an application for monitoring or training purposes. T
+
+This app can be used as a reference for integrating ANT+ into your Flutter-based fitness products. 
+
+Flutter ANT+ is a robust library that enables developers to add ANT+ wireless communication capabilities to their Flutter applications, allowing them to interact with a wide range of sports and fitness sensors directly from their mobile devices.
