@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.7.1+26] - 2026-11-24
+
+### 🐛 Bug Fixes [0.7.1]
+
+- Manage detach and re-attach adapter restarting last operation invoked and add a delay interval of 2 seconds between pending callback invocations ([164dcc7](https://codeberg.org/heyteacher/flutter_antplus/commit/164dcc7ba2d9936e9d608812f8952b6f2abc58f0)) by **heyteacher**
+
+### 🎨 Styling [0.7.1]
+
+- Disable persist of adapter status snakbar message ([6b153b1](https://codeberg.org/heyteacher/flutter_antplus/commit/6b153b10ff5890ac3c9600701dd6e085f34a7488)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.7.1]
+
+- Correct usb device logger ([c8d20fa](https://codeberg.org/heyteacher/flutter_antplus/commit/c8d20fae0fae54033dddfc22f01614c5221c96e3)) by **heyteacher**
+- *(release)* New version 0.7.1+26 which closes ([#49](https://codeberg.org/heyteacher/flutter_antplus/issues/49)) ([7efaaf7](https://codeberg.org/heyteacher/flutter_antplus/commit/7efaaf7909e923108c79d28af9863f8b9eedb727)) by **heyteacher**
+
 ## [flutter_antplus-0.7.0+25] - 2026-11-23
 
 ### 🚀 Features [0.7.0]
