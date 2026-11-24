@@ -14,9 +14,9 @@ dependencies:
     sdk: flutter
   flutter_antplus:
     path: ../
-  flutter_heyteacher_locale: ^3.2.1+166
-  flutter_heyteacher_logger: ^3.2.0+173
-  flutter_heyteacher_views: ^7.1.1+193
+  flutter_heyteacher_locale: ^3.2.2+167
+  flutter_heyteacher_logger: ^3.2.1+175
+  flutter_heyteacher_views: ^7.1.1+194
   flutter_launcher_icons: ^0.14.4
   flutter_localizations:
     sdk: flutter

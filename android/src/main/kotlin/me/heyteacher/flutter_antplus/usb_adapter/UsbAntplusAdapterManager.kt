@@ -13,12 +13,18 @@ import android.os.Looper
 import be.glever.ant.AntException
 import be.glever.ant.usb.AndroidAntUsbDeviceFactory
 import be.glever.ant.usb.impl.AndroidAntUsbDevice
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.heyteacher.flutter_antplus.AbstractHostApi
-import me.heyteacher.flutter_antplus.usb_adapter.pigeons.AntplusUsbAdapterState
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamLogger
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
+import me.heyteacher.flutter_antplus.usb_adapter.pigeons.AntplusUsbAdapterState
 import kotlin.jvm.optionals.getOrElse
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Singleton manager responsible for the lifecycle, permission requests, and broadcast receivers
@@ -51,17 +57,19 @@ class UsbAntplusAdapterManager private constructor() {
         null
     private val _pendingCallbacks: MutableList<(() -> Unit)?> = mutableListOf()
 
+    private val _scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+
     /**
-     * Gets the android ant usb device
-     * @return the android ant usb device
+     * Gets the android ant usb adapter
+     * @return the android ant usb adapter
      */
     fun getAntplusUsbAdapter(): AndroidAntUsbDevice? {
         return _usbAntplusAdapter
     }
 
     /**
-     * Initializes the android ant usb devices and register request permission, attach and detach
-     * device broadcast receiver
+     * Initializes the listeners
      * @param onLogDataListener the log listener
      * @param onRequestAccessListener the request access listener
      */
@@ -76,20 +84,19 @@ class UsbAntplusAdapterManager private constructor() {
     }
 
     /**
-     * Initializes the android ant usb devices and register request permission, attach and detach
-     * device broadcast receiver
+     * Initializes the usb adapter and register receiver usb permission, attach and detach
+     * adapter broadcast receiver
      * @param context the application context
      */
     fun initializeUsbAdapter(
         context: Context,
     ) {
         log(_TAG, AntplusLogLevel.DEBUG, "<initializeUsbAdapter>:")
-        // close ant usb device if was already initialized
         if (this._usbAntplusAdapter != null) {
-           log(
+            log(
                 _TAG,
-               AntplusLogLevel.DEBUG,
-                "(initializeUsbAdapter): ${usbAntplusAdapterName()} already initialized, do nothing"
+                AntplusLogLevel.DEBUG,
+                "(initializeUsbAdapter): usb adapter already initialized, do nothing"
             )
             return
         }
@@ -101,9 +108,8 @@ class UsbAntplusAdapterManager private constructor() {
         log(
             _TAG,
             AntplusLogLevel.DEBUG,
-            "(initializeUsbAdapter): register usb receiver (permission, attach and detach intents"
+            "(initializeUsbAdapter): register usb receiver (permission, attached and detached intents"
         )
-
         // Source - https://stackoverflow.com/a/77529595
         // Posted by Mohd. Jafar Iqbal khan, modified by community. See post 'Timeline' for change history
         // Retrieved 2026-11-22, License - CC BY-SA 4.0
@@ -111,49 +117,49 @@ class UsbAntplusAdapterManager private constructor() {
             context.registerReceiver(
                 usbReceiver,
                 intentFilter,
-                Context.RECEIVER_EXPORTED)
+                Context.RECEIVER_EXPORTED
+            )
         } else {
             @Suppress("UnspecifiedRegisterReceiverFlag")
             context.registerReceiver(
                 usbReceiver,
-                intentFilter)
+                intentFilter
+            )
         }
-
-        // set ant usb device as the first available device if found
+        // set usb adapter as the first available device if found
         this._usbAntplusAdapter = AndroidAntUsbDeviceFactory.getAvailableAntDevices(
             context,
             OnLogDataStreamLogger(this._onLogDataStreamHandler!!, "j-antplus")
-        )
-            .stream().findFirst().getOrElse {
-                // no device available, yield and adapter not detected message
-                _onUsbAdapterStateChangeStreamHandler?.add(
-                    AntplusUsbAdapterState.DETACHED
-                )
-                log(_TAG, AntplusLogLevel.ERROR,"(initializeUsbAdapter): adapter not detected")
-                return
-            }
-        log(_TAG, AntplusLogLevel.DEBUG,"(initializeUsbAdapter): ${usbAntplusAdapterName()} found")
-        // device found, if user grants permission, initialize it
+        ).stream().findFirst().getOrElse {
+            // no adapter available, yield and adapter not detected message
+            _onUsbAdapterStateChangeStreamHandler?.add(
+                AntplusUsbAdapterState.DETACHED
+            )
+            log(_TAG, AntplusLogLevel.ERROR, "(initializeUsbAdapter): adapter not detected")
+            return
+        }
+        log(_TAG, AntplusLogLevel.DEBUG, "(initializeUsbAdapter): usb adapter found")
         if (hasPermission(context)) {
             log(
                 _TAG,
                 AntplusLogLevel.DEBUG,
-                "(initializeUsbAdapter): permission granted, initialize ${usbAntplusAdapterName()}"
+                "(initializeUsbAdapter): permission granted, invoke pending callbacks"
             )
-            _usbAntplusAdapter!!.initialize()
-            invokePendingCallbacks()
+            _scope.launch {
+                invokePendingCallbacks()
+            }
         }
     }
 
     /**
-     * Checks if user has granted permission on usb device. If permission is not granted, enqueue
+     * Checks if user has granted permission on usb adapter. If permission is not granted, enqueue
      * the callback in order to execute when permission will be granted
      * @param context the Application context
      * @param callback the callback to be executed when permission will be granted
      * @return true if user has grant permission, false otherwise
      */
     fun checkPermission(context: Context, callback: (() -> Unit)): Boolean {
-        log(_TAG, AntplusLogLevel.DEBUG,"<checkPermission>:")
+        log(_TAG, AntplusLogLevel.DEBUG, "<checkPermission>:")
         if (_usbAntplusAdapter == null) {
             initializeUsbAdapter(context)
         }
@@ -163,8 +169,9 @@ class UsbAntplusAdapterManager private constructor() {
                 log(
                     _TAG,
                     AntplusLogLevel.DEBUG,
-                    "(checkPermission): ${usbAntplusAdapterName()} found and permission granted, returns true"
+                    "(checkPermission): usb adapter found and permission granted, returns true"
                 )
+                _usbAntplusAdapter!!.initialize()
                 return true
             }
             // permission not granted, request permission
@@ -177,22 +184,26 @@ class UsbAntplusAdapterManager private constructor() {
                     log(
                         _TAG,
                         AntplusLogLevel.DEBUG,
-                        "(checkPermission): ${usbAntplusAdapterName()} found, permission NOT granted " +
-                                "and not already requested. Request permission and returns false"
+                        "(checkPermission): usb adapter found, permission NOT granted " +
+                                "and TOP already requested. Request permission and returns false"
                     )
                     requestPermission(context)
                 } else {
                     log(
                         _TAG,
                         AntplusLogLevel.DEBUG,
-                        "(checkPermission): ${usbAntplusAdapterName()} found, permission NOT granted " +
+                        "(checkPermission): usb adapter found, permission NOT granted " +
                                 "and already requested. Returns false"
                     )
                 }
                 return false
             }
         } else {
-            log(_TAG, AntplusLogLevel.DEBUG,"(checkPermission): usb adapter not found, returns false")
+            log(
+                _TAG,
+                AntplusLogLevel.DEBUG,
+                "(checkPermission): usb adapter not found, returns false"
+            )
             return false
         }
     }
@@ -202,27 +213,24 @@ class UsbAntplusAdapterManager private constructor() {
      * @param channelNumber the number of channel to close
      */
     fun closeChannel(channelNumber: Byte) {
-        log(_TAG,AntplusLogLevel.DEBUG, "<checkPermission>: channelNumber $channelNumber")
+        log(_TAG, AntplusLogLevel.DEBUG, "<checkPermission>: channelNumber $channelNumber")
         _usbAntplusAdapter?.closeChannel(channelNumber)
     }
 
     /**
-     * Closes listeners and android ant usb device
+     * Closes listeners and android ant usb adapter
      */
     fun close() {
-        log(_TAG, AntplusLogLevel.DEBUG,"<close>:")
+        log(_TAG, AntplusLogLevel.DEBUG, "<close>:")
         // close device listeners
         _usbAntplusAdapter?.close()
     }
-
-    private fun usbAntplusAdapterName(): String =
-        "usb adapter ${_usbAntplusAdapter?.androidDevice?.productName?.trim()}"
 
     private fun usbPermission(context: Context): String = "${context.packageName}.USB_PERMISSION"
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun requestPermission(context: Context) {
-        log(_TAG, AntplusLogLevel.DEBUG,"<requestPermission>:")
+        log(_TAG, AntplusLogLevel.DEBUG, "<requestPermission>:")
         try {
             val androidDevice = _usbAntplusAdapter!!.androidDevice
             val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
@@ -230,7 +238,7 @@ class UsbAntplusAdapterManager private constructor() {
             log(
                 _TAG,
                 AntplusLogLevel.DEBUG,
-                "(requestPermission): has permission on ${usbAntplusAdapterName()} $hasPermission"
+                "(requestPermission): usb adapter granted $hasPermission"
             )
             if (!hasPermission) {
                 log(
@@ -251,32 +259,41 @@ class UsbAntplusAdapterManager private constructor() {
                 log(
                     _TAG,
                     AntplusLogLevel.DEBUG,
-                    "(requestPermission): permission granted, initialize ${usbAntplusAdapterName()}"
+                    "(requestPermission): permission granted, initialize usb adapter"
                 )
-                _usbAntplusAdapter!!.initialize()
-                invokePendingCallbacks()
+                _scope.launch {
+                    invokePendingCallbacks()
+                }
             }
         } catch (t: Throwable) {
-            log(_TAG, AntplusLogLevel.ERROR,"(requestPermission):", t)
+            log(_TAG, AntplusLogLevel.ERROR, "(requestPermission):", t)
             throw t
         }
     }
 
     private fun hasPermission(context: Context): Boolean {
-        log(_TAG, AntplusLogLevel.DEBUG,"<hasPermission>:")
+        log(_TAG, AntplusLogLevel.DEBUG, "<hasPermission>:")
         if (_usbAntplusAdapter == null) {
-            log(_TAG, AntplusLogLevel.DEBUG,"(hasPermission): usb adapter not found, returns false")
+            log(
+                _TAG,
+                AntplusLogLevel.DEBUG,
+                "(hasPermission): returns false, usb adapter not found"
+            )
             return false
         }
         val androidDevice = _usbAntplusAdapter!!.androidDevice
         val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
         val hasPermission = usbManager.hasPermission(androidDevice)
-        log(_TAG, AntplusLogLevel.DEBUG,"(hasPermission):  ${usbAntplusAdapterName()} found, returns $hasPermission")
+        log(
+            _TAG,
+            AntplusLogLevel.DEBUG,
+            "(hasPermission): returns $hasPermission"
+        )
         return hasPermission
     }
 
-    private fun invokePendingCallbacks() {
-        log(_TAG, AntplusLogLevel.DEBUG,"<invokePendingCallbacks>:")
+    private suspend fun invokePendingCallbacks() {
+        log(_TAG, AntplusLogLevel.DEBUG, "<invokePendingCallbacks>:")
         try {
             log(
                 _TAG,
@@ -285,9 +302,10 @@ class UsbAntplusAdapterManager private constructor() {
             )
             for (requestPermissionCallback in _pendingCallbacks) {
                 requestPermissionCallback?.invoke()
+                delay(2000.milliseconds)
             }
         } catch (t: Exception) {
-            log(_TAG, AntplusLogLevel.ERROR,"(invokePendingCallbacks):", t)
+            log(_TAG, AntplusLogLevel.ERROR, "(invokePendingCallbacks):", t)
         } finally {
             log(
                 _TAG,
@@ -307,28 +325,23 @@ class UsbAntplusAdapterManager private constructor() {
                     "<onReceive>: action ${intent.action}"
                 )
                 when (intent.action) {
-                    // usb device attached, initialize
                     UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
                         log(
                             _TAG,
                             AntplusLogLevel.DEBUG,
-                            "(onReceive): ${usbAntplusAdapterName()} attached, initialize"
+                            "(onReceive): usb adapter attached, invoke pending callbacks, unset usb adapter"
                         )
-                        if (_usbAntplusAdapter == null) {
-                            initializeUsbAdapter(context)
-                        }
-                        if (hasPermission(context)) {
-                            _usbAntplusAdapter!!.initialize()
+                        _usbAntplusAdapter = null
+                        _scope.launch {
                             invokePendingCallbacks()
                         }
                         _onUsbAdapterStateChangeStreamHandler?.add(AntplusUsbAdapterState.ATTACHED)
                     }
-                    // usb device detached, close
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                         log(
                             _TAG,
                             AntplusLogLevel.DEBUG,
-                            "(onReceive): ${usbAntplusAdapterName()} detached, close it"
+                            "(onReceive): usb adapter detached, close it"
                         )
                         close()
                         _onUsbAdapterStateChangeStreamHandler?.add(
@@ -342,22 +355,23 @@ class UsbAntplusAdapterManager private constructor() {
                                 log(
                                     _TAG,
                                     AntplusLogLevel.DEBUG,
-                                    "(onReceive): permission granted on ${usbAntplusAdapterName()}"
+                                    "(onReceive): permission granted on usb adapter"
                                 )
                                 _usbAntplusAdapter?.androidDevice.apply {
                                     log(
                                         _TAG,
                                         AntplusLogLevel.DEBUG,
-                                        "(onReceive): initialize ${usbAntplusAdapterName()}"
+                                        "(onReceive): invoke pending callbacks"
                                     )
-                                    _usbAntplusAdapter!!.initialize()
-                                    invokePendingCallbacks()
+                                    _scope.launch {
+                                        invokePendingCallbacks()
+                                    }
                                 }
                             } else {
                                 log(
                                     _TAG,
                                     AntplusLogLevel.WARNING,
-                                    "(onReceive): permission NOT granted on ${usbAntplusAdapterName()}"
+                                    "(onReceive): permission NOT granted on on usb adapter"
                                 )
                                 Handler(Looper.getMainLooper()).post {
                                     _onUsbAdapterStateChangeStreamHandler?.add(

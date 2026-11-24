@@ -1,6 +1,6 @@
 name: flutter_antplus
 description: "Flutter plugin for Ant+: search, listen, acquire data from Ant+ sensors like power meters, heart rate and cadence sensors"
-version: 0.7.0+25
+version: 0.7.1+26
 repository: https://codeberg.org/heyteacher/flutter_antplus
 license: BSD 3-Clause
 issue_tracker: https://codeberg.org/heyteacher/flutter_antplus/issues
@@ -24,7 +24,7 @@ dev_dependencies:
   flutter_heyteacher_meta: ^7.10.1+193
   flutter_test:
     sdk: flutter
-  pigeon: ^30.0.2
+  pigeon: ^30.0.4
   very_good_analysis: ^11.0.0
 
 flutter:

@@ -41,8 +41,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   context: context,
                   message: 'Usb Adapter ${adapterState.name}',
                   error: adapterState != AntplusUsbAdapterState.attached,
-                  persist: adapterState != AntplusUsbAdapterState.attached,
-                  showClose: true,
                 )
               : null,
         );
