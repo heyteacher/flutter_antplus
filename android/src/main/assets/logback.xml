@@ -15,11 +15,12 @@
 
     <logger name="me.heyteacher.flutter_antplus" level="DEBUG" />
     <logger name="be.glever.antplus.common.datapage.registry.AbstractDataPageRegistry" level="DEBUG" />
+    <logger name="be.glever.ant.usb.AbstractAntUsbDevice" level="DEBUG" />
+    <logger name="be.glever.ant.usb.impl.AndroidAntUsbDevice" level="DEBUG" />
     <!-- 
     <logger name="be.glever" level="DEBUG" />
     <logger name="be.glever.ant.usb.AntUsbWriter" level="DEBUG" />
     <logger name="be.glever.ant.usb.AntUsbReader" level="DEBUG" />
-    <logger name="be.glever.ant.usb.AntUsbDevice" level="DEBUG" />
     <logger name="be.glever.ant.message.AntMessageRegistry" level="DEBUG" />
     -->
 
