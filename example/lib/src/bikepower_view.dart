@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_antplus/flutter_antplus.dart';
 import 'package:flutter_antplus_demo/src/device_view_state.dart';
+import 'package:flutter_heyteacher_locale/flutter_heyteacher_locale.dart';
+import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 
 /// A widget that displays real-time telemetry from an ANT+ Bike Power Meter.
 ///
@@ -79,6 +81,29 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
     _torqueEffectivenessData = null;
     await super.disconnect();
   }
+
+  @override
+  List<IconButton>? get extraButtons => [
+    IconButton(
+      onPressed: () => showConfirmCancelDialog<void>(
+        context: context,
+        content: AntPlusBikePowerSettings(
+          crankLengthCallback: ({required crankLengthInMm}) async =>
+              showSnackBar(
+                context: context,
+                message:
+                    'crank length (mm) '
+                    '${FormatterHelper.doubleFormat(crankLengthInMm)}',
+              ),
+          is8hertzCallback: ({required enable}) async => showSnackBar(
+            context: context,
+            message: '8 Hertz enabled? $enable',
+          ),
+        ),
+      ),
+      icon: const Icon(Icons.settings),
+    ),
+  ];
 
   @override
   List<TableRow> get tableRows => [

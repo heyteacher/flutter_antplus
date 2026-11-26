@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_antplus/flutter_antplus.dart'
+    show FlutterAntPlusLocalizations;
 import 'package:flutter_antplus_demo/src/home_page.dart';
 import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart';
 import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
@@ -24,6 +26,7 @@ class _AppState extends State<App> {
     darkTheme: ThemeViewModel.instance.darkTheme,
     localizationsDelegates: const [
       FlutterHeyteacherLoggerLocalizations.delegate,
+      FlutterAntPlusLocalizations.delegate,
     ],
     routerConfig: GoRouter(
       routes: [
