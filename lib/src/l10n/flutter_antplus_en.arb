@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "bikePowerSettings": "Bike Power Settings",
+  "@bikePowerSettings": {},
+  "crankLengthInMm": "Crank Length (mm)",
+  "@crankLengthInMm": {},
+  "fourHertz": "4 Hz",
+  "@fourHertz": {},
+  "eightHertz": "8 Hz",
+  "@eightHertz": {},
+  "pco": "PCO",
+  "@pco": {},
+  "powerPhase": "Power Phase",
+  "@powerPhase": {},
+  "riderPosition": "Rider Position",
+  "@riderPosition": {},
+  "torqueBarycenter": "Torque Barycenter",
+  "@torqueBarycenter": {}
+}

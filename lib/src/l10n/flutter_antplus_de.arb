@@ -1,0 +1,11 @@
+{
+  "@@locale": "de",
+  "bikePowerSettings": "Fahrrad-Leistungseinstellungen",
+  "crankLengthInMm": "Kurbellänge (mm)",
+  "fourHertz": "4 Hz",
+  "eightHertz": "8 Hz",
+  "pco": "PCO",
+  "powerPhase": "Kraftphase",
+  "riderPosition": "Fahrerposition",
+  "torqueBarycenter": "Drehmoment-Baryzentrum"
+}
