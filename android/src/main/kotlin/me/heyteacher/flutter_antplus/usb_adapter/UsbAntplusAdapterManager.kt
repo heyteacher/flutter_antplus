@@ -11,12 +11,14 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import be.glever.ant.AntException
+import be.glever.ant.message.data.BroadcastDataMessage
 import be.glever.ant.usb.AndroidAntUsbDeviceFactory
 import be.glever.ant.usb.impl.AndroidAntUsbDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import me.heyteacher.flutter_antplus.AbstractHostApi
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
@@ -25,6 +27,7 @@ import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
 import me.heyteacher.flutter_antplus.usb_adapter.pigeons.AntplusUsbAdapterState
 import kotlin.jvm.optionals.getOrElse
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Singleton manager responsible for the lifecycle, permission requests, and broadcast receivers
@@ -59,6 +62,22 @@ class UsbAntplusAdapterManager private constructor() {
 
     private val _scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+    private val _messageFlow = MutableSharedFlow<BroadcastDataMessage>(replay = 0)
+
+    init {
+        _scope.launch {
+            _messageFlow.collect { broadcastDataMessage ->
+                delay(2.seconds)
+                log(
+                    _TAG,
+                    AntplusLogLevel.DEBUG,
+                    "<messageFlow.collect>: send message to channel ${broadcastDataMessage.channelNumber}"
+                )
+                _usbAntplusAdapter?.send(broadcastDataMessage)
+            }
+        }
+
+    }
 
     /**
      * Gets the android ant usb adapter
@@ -218,6 +237,16 @@ class UsbAntplusAdapterManager private constructor() {
     }
 
     /**
+     * Enqueues the broadcast data message
+     *
+     */
+    fun enqueueMessage(broadcastDataMessage: BroadcastDataMessage) {
+        _scope.launch {
+            _messageFlow.emit(broadcastDataMessage)
+        }
+    }
+
+    /**
      * Closes listeners and android ant usb adapter
      */
     fun close() {
@@ -302,7 +331,7 @@ class UsbAntplusAdapterManager private constructor() {
             )
             for (requestPermissionCallback in _pendingCallbacks) {
                 requestPermissionCallback?.invoke()
-                delay(2000.milliseconds)
+                delay(1000.milliseconds)
             }
         } catch (t: Exception) {
             log(_TAG, AntplusLogLevel.ERROR, "(invokePendingCallbacks):", t)
@@ -337,6 +366,7 @@ class UsbAntplusAdapterManager private constructor() {
                         }
                         _onUsbAdapterStateChangeStreamHandler?.add(AntplusUsbAdapterState.ATTACHED)
                     }
+
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                         log(
                             _TAG,

@@ -21,6 +21,7 @@ allprojects {
         google()
         mavenCentral()
         gradlePluginPortal()
+        mavenLocal()
     }
 }
 
@@ -70,7 +71,7 @@ tasks.withType<JavaExec> {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
-    implementation("io.github.heyteacher:j-antplus:0.3.1")
+    implementation("io.github.heyteacher:j-antplus:0.4.0")
     implementation("com.github.tony19:logback-android:3.0.0")
     compileOnly(files("libs/flutter.jar"))
     compileOnly("androidx.annotation:annotation:1.11.0")

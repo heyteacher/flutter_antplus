@@ -22,14 +22,17 @@ import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi
 import me.heyteacher.flutter_antplus.heartrate.pigeons.OnHeartRateDataStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
-import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
 
 /**
  * Android implementation of the [me.heyteacher.flutter_antplus.heartrate.pigeons.HeartrateHostApi] Pigeon interface.
  *
- * Manages scanning, connection, and heart rate data subscriptions for an ANT+ HRM.
- * Registers Pigeon event channel stream handlers for scan results, device state, access
- * results, and heart rate data, forwarding all native events to Flutter.
+ * Manages scanning, connection, and heart rate data subscriptions for an ANT+ HRM devices.
+ *
+ * Listen and forward to Flutter of:
+ * - scan result,
+ * - device state
+ * - battery status
+ * - heart rate in bpm.
  *
  * @param binaryMessenger the Flutter binary messenger for Pigeon channel registration
  */
@@ -50,7 +53,7 @@ class HeartrateHostApiImpl(
         OnHeartRateDataStreamHandlerImpl()
 
     companion object {
-        private val TAG: String = HeartrateHostApiImpl::class.java.simpleName
+        private val _TAG: String = HeartrateHostApiImpl::class.java.simpleName
     }
 
     init {
@@ -58,25 +61,20 @@ class HeartrateHostApiImpl(
         OnHeartRateDataStreamHandler.register(binaryMessenger, _onHeartRateDataStreamHandlerImpl)
     }
 
-    override fun deviceType(): AntplusDeviceType {
-        return AntplusDeviceType.HEARTRATE
-    }
+    override fun deviceType(): AntplusDeviceType { return AntplusDeviceType.HEARTRATE }
 
-    override fun dataRegistry(): AbstractDataPageRegistry {
-        return _hrmDataPageRegistry
-    }
+    override fun dataRegistry(): AbstractDataPageRegistry { return _hrmDataPageRegistry }
 
     override fun deviceChannel(deviceNumber: Long?): AntChannel {
-        return HRMChannel(UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(), deviceNumber)
+        return HRMChannel(
+            UsbAntplusAdapterManager.getInstance().getAntplusUsbAdapter(),
+            deviceNumber
+        )
     }
 
     override fun handleScanDataPage(dataPage: AbstractAntPlusDataPage) {
         if (dataPage is HrmDataPage2ManufacturerInformation) {
             Handler(Looper.getMainLooper()).post {
-                log(
-                    TAG, AntplusLogLevel.INFO, "(handleScanDataPage): " +
-                            "found device ${dataPage.deviceNumber} (${dataPage.deviceNumberAsString})"
-                )
                 onScanResultStreamHandler.add(
                     AntplusDevice(
                         dataPage.deviceNumber,
@@ -89,18 +87,20 @@ class HeartrateHostApiImpl(
     }
 
     override fun handleConnectedDataPage(dataPage: AbstractAntPlusDataPage) {
-        if (dataPage is HrmDataPage0Default) {
-            Handler(Looper.getMainLooper()).post {
-                _onHeartRateDataStreamHandlerImpl.add(dataPage.computedHeartRateInBpm.toLong())
+        when (dataPage) {
+            is HrmDataPage0Default -> {
+                Handler(Looper.getMainLooper()).post {
+                    _onHeartRateDataStreamHandlerImpl.add(dataPage.computedHeartRateInBpm.toLong())
+                }
             }
-        }
-        else if (dataPage is HrmDataPage7BatteryStatus) {
-            Handler(Looper.getMainLooper()).post {
-                onBatteryStatusDataStreamHandler.add(
-                    AntplusBatteryStatus.ofRaw(dataPage.batteryVoltageDescription.value)
-                        ?: AntplusBatteryStatus.INVALID
-                )
-                Log.d(TAG, "batteryVoltageDescription ${dataPage.batteryVoltageDescription}")
+            is HrmDataPage7BatteryStatus -> {
+                Handler(Looper.getMainLooper()).post {
+                    onBatteryStatusDataStreamHandler.add(
+                        AntplusBatteryStatus.ofRaw(dataPage.batteryVoltageDescription.value)
+                            ?: AntplusBatteryStatus.INVALID
+                    )
+                    Log.d(_TAG, "batteryVoltageDescription ${dataPage.batteryVoltageDescription}")
+                }
             }
         }
     }
