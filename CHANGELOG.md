@@ -23,6 +23,8 @@ All notable changes to this project will be documented in this file. See [conven
 ### ⚙️ Miscellaneous Tasks [0.8.0]
 
 - *(release)* New version 0.8.0+27 which closes ([#47](https://codeberg.org/heyteacher/flutter_antplus/issues/47)) ([78472ca](https://codeberg.org/heyteacher/flutter_antplus/commit/78472caa44b4d918a6173b76ec45d96b55853c69)) by **heyteacher**
+- Add `intl` package dependency needed by `flutter_localizations` ([74672fc](https://codeberg.org/heyteacher/flutter_antplus/commit/74672fc6aab7f16b46edc56705c56594b92c6443)) by **heyteacher**
+- *(release)* New version 0.8.0+27 which closes ([#47](https://codeberg.org/heyteacher/flutter_antplus/issues/47)) ([c2b3962](https://codeberg.org/heyteacher/flutter_antplus/commit/c2b3962b7f58ce7a237c23273562f1e894280e51)) by **heyteacher**
 
 ## [flutter_antplus-0.7.1+26] - 2026-11-24
 
