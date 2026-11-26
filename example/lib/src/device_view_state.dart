@@ -135,6 +135,10 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
   @protected
   List<TableRow> get tableRows;
 
+  /// Extra buttons for the device list tile.
+  @protected
+  List<IconButton>? get extraButtons => null;
+
   /// Creates a table with [tableRows].
   @protected
   Table table({required List<TableRow> tableRows}) => Table(
@@ -164,28 +168,6 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
           ),
         ],
       );
-
-  /// Creates a button with [onPressed], [label] and [color].
-  @protected
-  OutlinedButton button({
-    required VoidCallback onPressed,
-    required String label,
-    required Color color,
-  }) => OutlinedButton(
-    onPressed: onPressed,
-    style: OutlinedButton.styleFrom(
-      foregroundColor: color,
-      side: BorderSide(color: color),
-      textStyle: Theme.of(context).textTheme.labelSmall,
-      padding: const EdgeInsets.all(2),
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      visualDensity: VisualDensity.compact,
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(label),
-    ),
-  );
 
   /// Creates a message bottom sheet with [statusMessage].
   @protected
@@ -254,10 +236,12 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
                   title: AnimateText('${device.number} - ${device.name}'),
                   trailing: _loading
                       ? const ProgressIndicatorWidget()
-                      : button(
+                      : IconButton(
                           onPressed: () => connect(device.number),
-                          label: 'Connect',
-                          color: ThemeViewModel.instance.greenColor,
+                          icon: Icon(
+                            Icons.link,
+                            color: ThemeViewModel.instance.greenColor,
+                          ),
                         ),
                 ),
                 const Divider(),
@@ -276,10 +260,18 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
                     ),
                     trailing: _loading
                         ? const ProgressIndicatorWidget()
-                        : button(
-                            onPressed: disconnect,
-                            label: 'Disconnect',
-                            color: ThemeViewModel.instance.redColor,
+                        : Wrap(
+                            spacing: 4,
+                            children: [
+                              ...?extraButtons,
+                              IconButton(
+                                onPressed: disconnect,
+                                icon: Icon(
+                                  Icons.link_off,
+                                  color: ThemeViewModel.instance.redColor,
+                                ),
+                              ),
+                            ],
                           ),
                   ),
                 ),

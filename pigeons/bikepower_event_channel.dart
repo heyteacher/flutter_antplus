@@ -19,7 +19,6 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-
 class AntplusPedalSmoothnessData {
   const AntplusPedalSmoothnessData({
     required this.separatePedalSmoothnessSupport,
@@ -42,6 +41,36 @@ class AntplusTorqueEffectivenessData {
   final double rightTorqueEffectiveness;
 }
 
+class AntplusAdvancedCapabilitiesData {
+  const AntplusAdvancedCapabilitiesData({
+    required this.is4HertzSupported,
+    required this.is4HertzEnabled,
+    required this.is8HertzSupported,
+    required this.is8HertzEnabled,
+    required this.powerPhaseSupported,
+    required this.powerPhaseEnabled,
+    required this.pcoSupported,
+    required this.pcoEnabled,
+    required this.riderPositionSupported,
+    required this.riderPositionEnabled,
+    required this.torqueBarycenterSupported,
+    required this.torqueBarycenterEnabled,
+  });
+
+  final bool is4HertzSupported;
+  final bool is4HertzEnabled;
+  final bool is8HertzSupported;
+  final bool is8HertzEnabled;
+  final bool powerPhaseSupported;
+  final bool powerPhaseEnabled;
+  final bool pcoSupported;
+  final bool pcoEnabled;
+  final bool riderPositionSupported;
+  final bool riderPositionEnabled;
+  final bool torqueBarycenterSupported;
+  final bool torqueBarycenterEnabled;
+}
+
 @EventChannelApi()
 abstract class EventChannelMethods {
   int onPowerData();
@@ -49,4 +78,6 @@ abstract class EventChannelMethods {
   int onBalanceData();
   AntplusPedalSmoothnessData onPedalSmoothnessData();
   AntplusTorqueEffectivenessData onTorqueEffectivenessData();
+  double onCrankLengthInMm();
+  AntplusAdvancedCapabilitiesData onAdvancedCapabilitiesData();
 }

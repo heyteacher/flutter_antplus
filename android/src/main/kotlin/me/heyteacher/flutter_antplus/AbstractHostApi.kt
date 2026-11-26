@@ -15,10 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import me.heyteacher.flutter_antplus.device.OnBatteryStatusDataStreamHandlerImpl
-import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
 import me.heyteacher.flutter_antplus.device.OnDeviceStateChangeStreamHandlerImpl
 import me.heyteacher.flutter_antplus.device.OnScanResultStreamHandlerImpl
-import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceState
 import me.heyteacher.flutter_antplus.device.pigeons.AntplusDeviceType
 import me.heyteacher.flutter_antplus.device.pigeons.OnBatteryStatusDataStreamHandler
@@ -27,6 +25,8 @@ import me.heyteacher.flutter_antplus.device.pigeons.OnScanResultStreamHandler
 import me.heyteacher.flutter_antplus.logging.OnLogDataStreamHandlerImpl
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogData
 import me.heyteacher.flutter_antplus.logging.pigeons.AntplusLogLevel
+import me.heyteacher.flutter_antplus.usb_adapter.OnUsbAdapterStateChangeStreamHandlerImpl
+import me.heyteacher.flutter_antplus.usb_adapter.UsbAntplusAdapterManager
 import me.heyteacher.flutter_antplus.usb_adapter.pigeons.AntplusUsbAdapterState
 import reactor.core.Disposable
 import java.io.PrintWriter
@@ -91,7 +91,8 @@ abstract class AbstractHostApi(
     protected val onDeviceStateChangeStreamHandler: OnDeviceStateChangeStreamHandlerImpl =
         OnDeviceStateChangeStreamHandlerImpl()
 
-    protected val onBatteryStatusDataStreamHandler: OnBatteryStatusDataStreamHandlerImpl = OnBatteryStatusDataStreamHandlerImpl()
+    protected val onBatteryStatusDataStreamHandler: OnBatteryStatusDataStreamHandlerImpl =
+        OnBatteryStatusDataStreamHandlerImpl()
 
     private val _scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -107,7 +108,11 @@ abstract class AbstractHostApi(
         OnDeviceStateChangeStreamHandler.register(
             binaryMessenger, onDeviceStateChangeStreamHandler, deviceType().name
         )
-        OnBatteryStatusDataStreamHandler.register(binaryMessenger, onBatteryStatusDataStreamHandler, deviceType().name)
+        OnBatteryStatusDataStreamHandler.register(
+            binaryMessenger,
+            onBatteryStatusDataStreamHandler,
+            deviceType().name
+        )
         // listen adapter detection
         _scope.launch {
             onUsbAdapterStateChangeHandler.flow.collect { antplusRequestAccessResult ->
@@ -270,11 +275,13 @@ abstract class AbstractHostApi(
             Handler(Looper.getMainLooper()).post {
                 onDeviceStateChangeStreamHandler.add(AntplusDeviceState.TRACKING)
             }
-            if (antMessage is BroadcastDataMessage) {
-                val payLoad = antMessage.payLoad
-                removeToggleBit(payLoad)
-                val dataPage = dataRegistry().constructDataPage(payLoad) ?: return
-                handleConnectedDataPage(dataPage)
+            when (antMessage) {
+                is BroadcastDataMessage -> {
+                    val payLoad = antMessage.payLoad
+                    removeToggleBit(payLoad)
+                    val dataPage = dataRegistry().constructDataPage(payLoad) ?: return
+                    handleConnectedDataPage(dataPage)
+                }
             }
         } catch (t: Throwable) {
             log(
@@ -282,6 +289,30 @@ abstract class AbstractHostApi(
                 level = AntplusLogLevel.ERROR,
                 message = "(handleConnectedMessage):",
                 throwable = t
+            )
+        }
+    }
+
+    protected fun sendDataPage(dataPage: AbstractAntPlusDataPage) {
+        if (_connectedAntChannel != null) {
+            log(
+                _TAG,
+                AntplusLogLevel.DEBUG,
+                "(sendDataPage) message enqueued, " +
+                        "channel ${_connectedAntChannel!!.channelNumber} page ${dataPage.pageNumber}"
+            )
+            UsbAntplusAdapterManager.getInstance().enqueueMessage(
+                BroadcastDataMessage(
+                    _connectedAntChannel!!.channelNumber,
+                    dataPage.dataPageBytes
+                )
+            )
+        } else {
+            log(
+                _TAG,
+                AntplusLogLevel.WARNING,
+                "(sendDataPage) message NOT enqueued, device not connected, " +
+                        "page ${dataPage.pageNumber} "
             )
         }
     }

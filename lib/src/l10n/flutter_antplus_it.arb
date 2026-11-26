@@ -1,0 +1,11 @@
+{
+  "@@locale": "it",
+  "bikePowerSettings": "Impostazioni potenza bici",
+  "crankLengthInMm": "Lunghezza pedivella (mm)",
+  "fourHertz": "4 Hz",
+  "eightHertz": "8 Hz",
+  "pco": "PCO",
+  "powerPhase": "Fase di potenza",
+  "riderPosition": "Posizione del ciclista",
+  "torqueBarycenter": "Baricentro di coppia"
+}

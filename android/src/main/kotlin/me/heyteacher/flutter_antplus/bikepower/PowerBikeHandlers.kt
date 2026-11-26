@@ -1,9 +1,12 @@
 package me.heyteacher.flutter_antplus.bikepower
 
+import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusAdvancedCapabilitiesData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusPedalSmoothnessData
 import me.heyteacher.flutter_antplus.bikepower.pigeons.AntplusTorqueEffectivenessData
+import me.heyteacher.flutter_antplus.bikepower.pigeons.OnAdvancedCapabilitiesDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnBalanceDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnCadenceDataStreamHandler
+import me.heyteacher.flutter_antplus.bikepower.pigeons.OnCrankLengthInMmStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPedalSmoothnessDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnPowerDataStreamHandler
 import me.heyteacher.flutter_antplus.bikepower.pigeons.OnTorqueEffectivenessDataStreamHandler
@@ -140,6 +143,52 @@ class OnTorqueEffectivenessDataStreamHandlerImpl : OnTorqueEffectivenessDataStre
      */
     fun add(torqueEffectivenessData: AntplusTorqueEffectivenessData) {
         eventSink?.success(torqueEffectivenessData)
+    }
+
+    /** Signals end of stream and releases the event sink. */
+    fun onEventsDone() {
+        eventSink?.endOfStream()
+        eventSink = null
+    }
+}
+
+class OnCrankLengthInMmStreamHandlerImpl : OnCrankLengthInMmStreamHandler() {
+    private var eventSink: PigeonEventSink<Double>? = null
+
+    /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
+    override fun onListen(p0: Any?, sink: PigeonEventSink<Double>) {
+        eventSink = sink
+    }
+
+    /**
+     * Emits a [crankLengthInMn] reading to the Flutter torque effectiveness stream.
+     * @param crankLengthInMn the torque effectiveness measurement to emit
+     */
+    fun add(crankLengthInMn: Double) {
+        eventSink?.success(crankLengthInMn)
+    }
+
+    /** Signals end of stream and releases the event sink. */
+    fun onEventsDone() {
+        eventSink?.endOfStream()
+        eventSink = null
+    }
+}
+
+class OnAdvancedCapabilitiesDataStreamHandlerImpl : OnAdvancedCapabilitiesDataStreamHandler() {
+    private var eventSink: PigeonEventSink<AntplusAdvancedCapabilitiesData>? = null
+
+    /** Called when the Flutter side starts listening. Stores the [sink] for dispatching events. */
+    override fun onListen(p0: Any?, sink: PigeonEventSink<AntplusAdvancedCapabilitiesData>) {
+        eventSink = sink
+    }
+
+    /**
+     * Emits a [antplusAdvancedCapabilitiesData] reading to the Flutter torque effectiveness stream.
+     * @param antplusAdvancedCapabilitiesData the torque effectiveness measurement to emit
+     */
+    fun add(antplusAdvancedCapabilitiesData: AntplusAdvancedCapabilitiesData) {
+        eventSink?.success(antplusAdvancedCapabilitiesData)
     }
 
     /** Signals end of stream and releases the event sink. */

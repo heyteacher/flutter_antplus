@@ -6,8 +6,10 @@ import 'package:flutter_antplus/src/pigeons/bikepower_event_channel.g.dart'
     show
         AntplusPedalSmoothnessData,
         AntplusTorqueEffectivenessData,
+        onAdvancedCapabilitiesData,
         onBalanceData,
         onCadenceData,
+        onCrankLengthInMm,
         onPedalSmoothnessData,
         onPowerData,
         onTorqueEffectivenessData;
@@ -78,6 +80,13 @@ class AntplusBikepowerViewModel implements AntplusDeviceViewModel {
   /// calculated by the power meter.
   Stream<int> get onCadenceDataStream => onCadenceData();
 
+  /// A stream of crank length data from the bike power meter in millimeters.
+  Stream<double> get onCrankLengthInMmStream => onCrankLengthInMm();
+
+  /// A stream of advanced capabilities data from the bike power meter.
+  Stream<AntplusAdvancedCapabilitiesData>
+  get onAdvancedCapabilitiesDataStream => onAdvancedCapabilitiesData();
+
   /// Starts scanning for nearby ANT+ bike power meters.
   @override
   Future<void> startScan() => _hostApi.startScan();
@@ -93,4 +102,51 @@ class AntplusBikepowerViewModel implements AntplusDeviceViewModel {
   /// Disconnects from the current bike power meter.
   @override
   Future<void> disconnect() => _hostApi.disconnect();
+
+  /// Sets the crank length in millimeters for the bike power meter.
+  Future<void> setCrankLengthInMm({required double crankLengthInMm}) =>
+      _hostApi.setCrankLengthInMm(crankLengthInMm: crankLengthInMm);
+
+  /// Requests the crank length in millimeters from the bike power meter.
+  ///
+  /// Listen [onCrankLengthInMmStream] to receive the crank length value.
+  Future<void> requestCrankLengthInMm() => _hostApi.requestCrankLengthInMm();
+
+  /// Requests the advanced capabilities from the bike power meter.
+  ///
+  /// Listen [onAdvancedCapabilitiesDataStream] to receive the advanced
+  /// capabilities value.
+  Future<void> requestAdvancedCapabilities() =>
+      _hostApi.requestAdvancedCapabilities();
+
+  /// Enable or disable the bike power to send data at 8Hz frequency.
+  ///
+  /// If [enable] is true, the bike power will send data at 8Hz frequency.
+  /// If [enable] is false, the bike power will send data at 4Hz frequency.
+  Future<void> set8Hertz({required bool enable}) =>
+      _hostApi.set8Hertz(enable: enable);
+
+  /// Enable or disable PCO (Phase Compensation Offset).
+  ///
+  /// If [enable] is true, PCO is enabled, otherwise is disabled.
+  Future<void> setPco({required bool enable}) =>
+      _hostApi.setPco(enable: enable);
+
+  /// Enable or disable Power Phase.
+  ///
+  /// If [enable] is true, Power Phase is enabled, otherwise is disabled.
+  Future<void> setPowerPhase({required bool enable}) =>
+      _hostApi.setPowerPhase(enable: enable);
+
+  /// Enable or disable Rider Position.
+  ///
+  /// If [enable] is true, Rider Position is enabled, otherwise is disabled.
+  Future<void> setRiderPosition({required bool enable}) =>
+      _hostApi.setRiderPosition(enable: enable);
+
+  /// Enable or disable Torque Barycenter.
+  ///
+  /// If [enable] is true, Torque Barycenter is enabled, otherwise is disabled.
+  Future<void> setTorqueBarycenter({required bool enable}) =>
+      _hostApi.setTorqueBarycenter(enable: enable);
 }

@@ -7,6 +7,7 @@ import 'package:flutter_antplus_demo/src/cadence_view.dart' show CadenceView;
 import 'package:flutter_antplus_demo/src/heartrate_view.dart';
 import 'package:flutter_heyteacher_logger/flutter_heyteacher_logger.dart';
 import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 /// The main dashboard page of Flutter ANT+ demp app.
 ///
@@ -65,10 +66,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           dividerHeight: 1,
           dividerColor: Colors.white24,
           controller: _tabController,
-          tabs: const <Widget>[
-            Tab(text: 'BikePower'),
-            Tab(text: 'HeartRate'),
-            Tab(text: 'Cadence'),
+          tabs: <Widget>[
+            Tab(
+              text: 'Bike Power',
+              icon: Icon(
+                Icons.electric_bolt,
+                color: ThemeViewModel.instance.yellowColor,
+              ),
+            ),
+            Tab(
+              text: 'Heart Rate',
+              icon: FaIcon(
+                FontAwesomeIcons.heartPulse,
+                color: ThemeViewModel.instance.redColor,
+              ),
+            ),
+            Tab(
+              text: 'Cadence',
+              icon: Icon(
+                Icons.change_circle,
+                color: ThemeViewModel.instance.blueColor,
+              ),
+            ),
           ],
         ),
         SizedBox(

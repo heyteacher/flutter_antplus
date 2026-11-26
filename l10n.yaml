@@ -1,0 +1,6 @@
+arb-dir: lib/src/l10n
+template-arb-file: flutter_antplus_en.arb
+output-localization-file: flutter_antplus.dart
+output-class: FlutterAntPlusLocalizations
+output-dir: lib/src/l10n
+untranslated-messages-file: untranslated-messages.txt
