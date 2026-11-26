@@ -33,9 +33,10 @@ A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices
     - [Heart Rate](#heart-rate)
     - [Bike Power](#bike-power)
     - [Cadence](#cadence)
+    - [USB Adapter](#usb-adapter)
   - [For developers](#for-developers)
-    - [Setup Dev Environment](#setup-dev-environment)
     - [Pigeon Code Generation](#pigeon-code-generation)
+  - [Credits](#credits)
   - [License](#license)
 
 <!-- /TOC -->
@@ -44,6 +45,7 @@ A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices
 
 - __Heart Rate Monitor (HRM)__
   - Real-time Heart Rate (bpm) stream
+
 - __Bike Power Meter__
   - Real-time Power (watts)
   - Real-time Cadence (rpm)
@@ -51,12 +53,26 @@ A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices
   - Left & Right Pedal Smoothness (%)
   - Left & Right Torque Effectiveness (%)
   - Battery status tracking
+  - Show and update crank length (in mm)
+  - Show and update advanced capabilities
+    - 4 Hertz Trasmission
+    - 8 Hertz Trasmission
+    - PCO (Platform Center Offset)
+    - Power Phase
+    - Rider Position
+    - Torque Barycenter
+
 - __Cadence Sensor__
   - Real-time Cadence (rpm)
+
 - __Common API (`AntplusDeviceViewModel`)__
   - Universal start/stop scan interface
   - State monitoring (`onDeviceStateChangeStream`)
   - Subscriptions status tracking (`onRequestAccessResultStream`)
+
+- __USB Adapter__
+  - USB Adapter state monitoring (`onUsbAdapterStateChangeStream`)
+
 - __Plugin Logging__
   - Integrated debug logging through the `AntplusLogging` singleton
 
@@ -209,6 +225,34 @@ powerModel.onTorqueEffectivenessDataStream.listen((data) {
 powerModel.onBatteryStatusDataStream.listen((status) {
   print('Battery Status: ${status.name}');
 });
+
+// Request Advanced Capabilities
+powerModel.requestAdvancedCapabilities();
+powerModel.onAdvancedCapabilitiesDataStream.listen((capabilities) {
+  print('Advanced Capabilities:');
+  print('  - 4Hz Transmission: ${capabilities.transmission4HzEnabled}');
+  print('  - 8Hz Transmission: ${capabilities.transmission8HzEnabled}');
+  print('  - PCO: ${capabilities.platformCenterOffsetEnabled}');
+  print('  - Power Phase: ${capabilities.powerPhaseEnabled}');
+  print('  - Rider Position: ${capabilities.riderPositionEnabled}');
+  print('  - Torque Barycenter: ${capabilities.torqueBarycenterEnabled}');
+});
+
+// Set Advanced Capabilities
+powerModel.set8Hertz(enable: true);
+powerModel.setPCO(enable: true);
+powerModel.setPowerPhase(enable: true);
+powerModel.setRiderPosition(enable: true);
+powerModel.setTorqueBarycenter(enable: true);
+
+// Request Crank Length 
+powerModel.requestCrankLength();
+powerModel.onCrankLengthUpdateStream.listen((crankLength) {
+  print('Crank Length: $crankLength mm');
+});
+
+// Set Crank Length
+powerModel.setCrankLength(172.5);
 ```
 
 ### Cadence
@@ -219,45 +263,20 @@ final cadenceSubscription = AntplusCadenceViewModel.instance.onCadenceDataStream
 });
 ```
 
+### USB Adapter
+
+```dart
+final usbAdapterModel = AntplusUsbAdapterViewModel.instance;
+
+usbAdapterModel.usbAdapterStateChangeStream.listen((antplusUsbAdapterState) {
+  print('USB Adapter state changed to: ${antplusUsbAdapterState.name}');
+  // Usb Adapter States: attached, detached, permissionNotGranted
+});
+```
+
 ---
 
 ## For developers
-
-### Setup Dev Environment
-
-In order to setup developper environment you need to install `Android 14 SDK`, `maven`, `@heyteacher/j-antplus` from GitHub.
-
-Following these instructions:
-
-1. install `Android 14 SDK` following [Set up the Android 14 SDK](https://developer.android.com/about/versions/14/setup-sdk)
-
-2. clone `j-antplus` from [@heyteacher/j-antplus](https://github.com/heyteacher/j-antplus)
-
-   ```bash
-   git clone https://github.com/heyteacher/j-antplus.git
-   ```
-
-3. install `maven`
-
-   i.e. `Ubuntu`
-
-   ```bash
-   sudo apt install maven
-   ```
-
-4. install `j-antplus` in your local maven repository
-
-   ```bash
-   cd j-antplus
-   mvn clean install
-   ```
-
-5. go to `flutter_antplus` and run example application
-
-   ```bash
-   cd example
-   flutter run
-   ```
 
 ### Pigeon Code Generation
 
@@ -291,6 +310,13 @@ dart run pigeon --input pigeons/device_event_channel.dart
 # USB Adapter
 dart run pigeon --input pigeons/usb_adapter_event_channel.dart
 ```
+
+---
+
+## Credits
+
+This package in Android plug-in uses [@heyteacher/j-antplus](https://github.com/heyteacher/j-antplus)
+a Java Library for speaking with ANT / ANT+ devices through a USB Ant+ Stick.
 
 ---
 
