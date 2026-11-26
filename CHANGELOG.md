@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.8.0+27] - 2026-11-26
+
+### 🚀 Features [0.8.0]
+
+- Add localization ([b5f2acc](https://codeberg.org/heyteacher/flutter_antplus/commit/b5f2acc3b4e54d117003af97fb8284454a163c47)) by **heyteacher**
+- Add request and set of crank length and advanced capabilities ([43a486c](https://codeberg.org/heyteacher/flutter_antplus/commit/43a486c8eaebbc6902e8f484974e28c1c7d4e1ed)) by **heyteacher**
+- Implemented request and set of crank length and advanced capabilities in android plug-in ([4e11ec8](https://codeberg.org/heyteacher/flutter_antplus/commit/4e11ec885537fcad739d19ccf52c7e0d7c08c945)) by **heyteacher**
+- Add `AntPlusBikePowerSettings` which show and update crank length and advanced capabilities ([2c475a7](https://codeberg.org/heyteacher/flutter_antplus/commit/2c475a7685ffd00d19caef105b2455ae372d50e0)) by **heyteacher**
+- Add `AntPlusBikePowerSettings` which show and update crank length and advanced capabilities to example app ([88ea493](https://codeberg.org/heyteacher/flutter_antplus/commit/88ea4936bacd4e6470c6d575268cc63493882364)) by **heyteacher**
+
+### 🚜 Refactor [0.8.0]
+
+- Reorganized packages, craeted `view_model` and `view` ([ac336a4](https://codeberg.org/heyteacher/flutter_antplus/commit/ac336a426aa7290a06fe8c9c8efdd40ddca3710f)) by **heyteacher**
+
+### 📚 Documentation [0.8.0]
+
+- Update README with advanced power features, USB adapter, and usage examples ([d103bb4](https://codeberg.org/heyteacher/flutter_antplus/commit/d103bb453661916373dc56a654888a58f5e23fef)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.8.0]
+
+- *(release)* New version 0.8.0+27 which closes ([#47](https://codeberg.org/heyteacher/flutter_antplus/issues/47)) ([78472ca](https://codeberg.org/heyteacher/flutter_antplus/commit/78472caa44b4d918a6173b76ec45d96b55853c69)) by **heyteacher**
+
 ## [flutter_antplus-0.7.1+26] - 2026-11-24
 
 ### 🐛 Bug Fixes [0.7.1]
