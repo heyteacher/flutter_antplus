@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [flutter_antplus-0.8.1+28] - 2026-11-27
+
+### 📚 Documentation [0.8.1]
+
+- Update README with power bike settings and correct version number ([bf7fdc7](https://codeberg.org/heyteacher/flutter_antplus/commit/bf7fdc7433b625fd662ffeb86314d436ab6c13bf)) by **heyteacher**
+- Upgrade phone screenshots ([ff10bed](https://codeberg.org/heyteacher/flutter_antplus/commit/ff10bedd993d570e1b4f5f0aa6636b576ce92c65)) by **heyteacher**
+
+### 🎨 Styling [0.8.1]
+
+- Add `supported` and `not supported` localization ([e51386b](https://codeberg.org/heyteacher/flutter_antplus/commit/e51386b1928b30e948370f58a56c49429cea9097)) by **heyteacher**
+- Add a progress indicator during scanning devices in example ([11ca303](https://codeberg.org/heyteacher/flutter_antplus/commit/11ca303467deb4b87d35cee29baf4ba7a1a48e9c)) by **heyteacher**
+- Add `AntPlusBikePowerSettingsButton` which shows a dialog containing  [AntPlusBikePowerSettingsWidget] ([5e6db81](https://codeberg.org/heyteacher/flutter_antplus/commit/5e6db819574600343fbe1d5fe2fd3d9b06d549bb)) by **heyteacher**
+
+### ⚙️ Miscellaneous Tasks [0.8.1]
+
+- Corrected getting of `flutter_heyteacher_meta` latest version ([0523f2a](https://codeberg.org/heyteacher/flutter_antplus/commit/0523f2abd45e275007442e145a6b83b4f71859ae)) by **heyteacher**
+- *(release)* New version 0.8.1+28 which closes ([#53](https://codeberg.org/heyteacher/flutter_antplus/issues/53)) ([f30848c](https://codeberg.org/heyteacher/flutter_antplus/commit/f30848c6c01dacdc0172be556b6c7ce8a3f9c42c)) by **heyteacher**
+
 ## [flutter_antplus-0.8.0+27] - 2026-11-26
 
 ### 🚀 Features [0.8.0]
