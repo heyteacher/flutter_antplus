@@ -1,1 +1,1 @@
-Flutter ANT+ Demo
+Flutter ANT+ demo
