@@ -156,6 +156,18 @@ abstract class FlutterAntPlusLocalizations {
   /// In en, this message translates to:
   /// **'Torque Barycenter'**
   String get torqueBarycenter;
+
+  /// No description provided for @supported.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported'**
+  String get supported;
+
+  /// No description provided for @notSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Supported'**
+  String get notSupported;
 }
 
 class _FlutterAntPlusLocalizationsDelegate

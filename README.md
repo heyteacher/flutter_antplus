@@ -6,12 +6,18 @@
 ![flutter_antplus](./example/fastlane/metadata/android/en-US/images/featureGraphic.png)
 
 > [!IMPORTANT]
-> __BREAKING CHANGE__ starting from version `7.0.0` the ANT+ plugin is not required anymore, so:
+> __BREAKING CHANGE__ starting from version `0.7.0` the ANT+ plugin is not required anymore, so:
 >
 > - uninstall `ANT Radio Service` and `ANT+ USB Service` apps from your device.
 > - change the `androidManifest.xml` in your app as describe in [Requirements](#requirements)
 
-A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices__ on Android. It allows seamless scanning, connection, and data acquisition from multiple fitness sensors like __heart rate monitors__, __bike power meters__, and __speed/cadence sensors__.
+A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices__ on Android.
+
+It allows seamless scanning, connection, and data acquisition from multiple fitness sensors like:
+
+- __heart rate monitors__
+- __bike power meters__
+- __speed/cadence sensors__
 
 ---
 
@@ -29,10 +35,12 @@ A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices
       - [Start Scanning](#start-scanning)
       - [Connect to a Device](#connect-to-a-device)
       - [Monitor Device Connection State](#monitor-device-connection-state)
-  - [Reading Sensor Data](#reading-sensor-data)
-    - [Heart Rate](#heart-rate)
-    - [Bike Power](#bike-power)
-    - [Cadence](#cadence)
+    - [Reading Sensor Data](#reading-sensor-data)
+      - [Heart Rate](#heart-rate)
+      - [Bike Power](#bike-power)
+      - [Cadence](#cadence)
+    - [Power Bike Settings](#power-bike-settings)
+      - [Power Bike Settings Widgets](#power-bike-settings-widgets)
     - [USB Adapter](#usb-adapter)
   - [For developers](#for-developers)
     - [Pigeon Code Generation](#pigeon-code-generation)
@@ -53,13 +61,14 @@ A powerful, high-performance __Flutter__ plugin for connecting to __ANT+ devices
   - Left & Right Pedal Smoothness (%)
   - Left & Right Torque Effectiveness (%)
   - Battery status tracking
-  - Show and update crank length (in mm)
-  - Show and update advanced capabilities
-    - 4 Hertz Trasmission
-    - 8 Hertz Trasmission
-    - PCO (Platform Center Offset)
-    - Power Phase
-    - Rider Position
+  - Power Bike Settings
+    - Show and update crank length (in mm)
+    - Show and update Advanced Capabilities
+      - 4 Hertz Trasmission
+      - 8 Hertz Trasmission
+      - PCO (Platform Center Offset)
+      - Power Phase
+      - Rider Position
     - Torque Barycenter
 
 - __Cadence Sensor__
@@ -179,9 +188,9 @@ final stateSubscription = hrViewModel.onDeviceStateChangeStream.listen((state) {
 
 ---
 
-## Reading Sensor Data
+### Reading Sensor Data
 
-### Heart Rate
+#### Heart Rate
 
 ```dart
 final hrSubscription = AntplusHeartrateViewModel.instance.onHeartRateDataStream.listen((bpm) {
@@ -189,7 +198,7 @@ final hrSubscription = AntplusHeartrateViewModel.instance.onHeartRateDataStream.
 });
 ```
 
-### Bike Power
+#### Bike Power
 
 The bike power view model offers multiple specialized telemetry streams:
 
@@ -225,9 +234,47 @@ powerModel.onTorqueEffectivenessDataStream.listen((data) {
 powerModel.onBatteryStatusDataStream.listen((status) {
   print('Battery Status: ${status.name}');
 });
+```
+
+#### Cadence
+
+```dart
+final cadenceSubscription = AntplusCadenceViewModel.instance.onCadenceDataStream.listen((rpm) {
+  print('Cadence: $rpm rpm');
+});
+```
+
+### Power Bike Settings
+
+The Power Bike Settings to get and set are the following:
+
+- Crank length (mm)
+- Advanced capabilities:
+  - 4 Hertz Transmission
+  - 8 Hertz Transmission
+  - PCO (Platform Center Offset)
+  - Power Phase
+  - Rider Position
+  - Torque Barycenter
+
+The getting is asynchronous, you need to request them from the power meter as a response you will receive it from a stream.
+
+The setting of any parameter is asynchronous too, you will receive the new value from a stream.
+
+Each advanced capability can be enabled or disabled if supported.
+If not supported, the setting will be ignored.
+
+```dart
+// Request Crank Length 
+powerModel.onCrankLengthInMmStream.listen((crankLength) {
+  print('Crank Length: $crankLength mm');
+});
+powerModel.requestCrankLength();
+
+// Set Crank Length, if the value is changed in the power meter the new value is sent from the stream
+powerModel.setCrankLength(172.5);
 
 // Request Advanced Capabilities
-powerModel.requestAdvancedCapabilities();
 powerModel.onAdvancedCapabilitiesDataStream.listen((capabilities) {
   print('Advanced Capabilities:');
   print('  - 4Hz Transmission: ${capabilities.transmission4HzEnabled}');
@@ -237,30 +284,57 @@ powerModel.onAdvancedCapabilitiesDataStream.listen((capabilities) {
   print('  - Rider Position: ${capabilities.riderPositionEnabled}');
   print('  - Torque Barycenter: ${capabilities.torqueBarycenterEnabled}');
 });
+powerModel.requestAdvancedCapabilities();
 
-// Set Advanced Capabilities
+// Set Advanced Capabilities, if the values is changed in the power meter the new values is sent from the stream
 powerModel.set8Hertz(enable: true);
 powerModel.setPCO(enable: true);
 powerModel.setPowerPhase(enable: true);
 powerModel.setRiderPosition(enable: true);
 powerModel.setTorqueBarycenter(enable: true);
 
-// Request Crank Length 
-powerModel.requestCrankLength();
-powerModel.onCrankLengthUpdateStream.listen((crankLength) {
-  print('Crank Length: $crankLength mm');
-});
-
-// Set Crank Length
-powerModel.setCrankLength(172.5);
 ```
 
-### Cadence
+> [!IMPORTANT]
+> Only `8 Hertz Transmission` setter is implemented and `4 Hertz Transmission` is read-only  because `4 Hertz Transmission` and `8 Hertz Transmission` are __mutually exclusive__.
+>
+> - When `8 Hertz Transmission` is enabled, `4 Hertz Transmission` is disabled automatically.
+> - When `4 Hertz Transmission` is enabled, `8 Hertz Transmission` is disabled automatically.
+
+#### Power Bike Settings Widgets
+
+The Ant+ Bike Power Settings widget shows and allows to set the crank length and advanced capabilities.
+
+Crank length can be updated by the user with a value in range  165 mm - 167 mm with 0.5 mm step.
+
+Each advanced capability can be enabled or disabled if supported.
 
 ```dart
-final cadenceSubscription = AntplusCadenceViewModel.instance.onCadenceDataStream.listen((rpm) {
-  print('Cadence: $rpm rpm');
-});
+AntPlusBikePowerSettings(
+  crankLengthCallback: ({required crankLengthInMm}) async => showSnackBar(
+    context: context,
+    message:
+        'crank length (mm) '
+        '${FormatterHelper.doubleFormat(crankLengthInMm)}',
+  ),
+  is8hertzCallback: ({required enable}) async =>
+      showSnackBar(context: context, message: '8 Hertz enabled? $enable'),
+)
+```
+
+The Ant+ Bike Power Settings Button open a dialog containing the Ant+ Bike Power Settings widget.
+
+```dart
+AntPlusBikePowerSettingsButton(
+  crankLengthCallback: ({required crankLengthInMm}) async => showSnackBar(
+    context: context,
+    message:
+        'crank length (mm) '
+        '${FormatterHelper.doubleFormat(crankLengthInMm)}',
+  ),
+  is8hertzCallback: ({required enable}) async =>
+      showSnackBar(context: context, message: '8 Hertz enabled? $enable'),
+)
 ```
 
 ### USB Adapter

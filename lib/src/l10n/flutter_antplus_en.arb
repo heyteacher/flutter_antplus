@@ -15,5 +15,9 @@
   "riderPosition": "Rider Position",
   "@riderPosition": {},
   "torqueBarycenter": "Torque Barycenter",
-  "@torqueBarycenter": {}
+  "@torqueBarycenter": {},
+  "supported": "Supported",
+  "@supported": {},
+  "notSupported": "Not Supported",
+  "@notSupported": {}
 }

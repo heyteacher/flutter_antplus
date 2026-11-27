@@ -7,5 +7,7 @@
   "pco": "PCO",
   "powerPhase": "Kraftphase",
   "riderPosition": "Fahrerposition",
-  "torqueBarycenter": "Drehmoment-Baryzentrum"
+  "torqueBarycenter": "Drehmoment-Baryzentrum",
+  "supported": "Unterstützt",
+  "notSupported": "Nicht unterstützt"
 }

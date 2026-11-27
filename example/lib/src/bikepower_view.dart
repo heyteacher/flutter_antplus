@@ -83,25 +83,16 @@ class _BikepowerViewState extends DeviceViewState<BikepowerView> {
   }
 
   @override
-  List<IconButton>? get extraButtons => [
-    IconButton(
-      onPressed: () => showConfirmCancelDialog<void>(
+  List<Widget>? get extraButtons => [
+    AntPlusBikePowerSettingsButton(
+      crankLengthCallback: ({required crankLengthInMm}) async => showSnackBar(
         context: context,
-        content: AntPlusBikePowerSettings(
-          crankLengthCallback: ({required crankLengthInMm}) async =>
-              showSnackBar(
-                context: context,
-                message:
-                    'crank length (mm) '
-                    '${FormatterHelper.doubleFormat(crankLengthInMm)}',
-              ),
-          is8hertzCallback: ({required enable}) async => showSnackBar(
-            context: context,
-            message: '8 Hertz enabled? $enable',
-          ),
-        ),
+        message:
+            'crank length (mm) '
+            '${FormatterHelper.doubleFormat(crankLengthInMm)}',
       ),
-      icon: const Icon(Icons.settings),
+      is8hertzCallback: ({required enable}) async =>
+          showSnackBar(context: context, message: '8 Hertz enabled? $enable'),
     ),
   ];
 

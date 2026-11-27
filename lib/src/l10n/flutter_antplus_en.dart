@@ -31,4 +31,10 @@ class FlutterAntPlusLocalizationsEn extends FlutterAntPlusLocalizations {
 
   @override
   String get torqueBarycenter => 'Torque Barycenter';
+
+  @override
+  String get supported => 'Supported';
+
+  @override
+  String get notSupported => 'Not Supported';
 }

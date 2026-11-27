@@ -6,7 +6,7 @@ import 'package:flutter_heyteacher_locale/flutter_heyteacher_locale.dart'
     show FormatterHelper;
 import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 
-/// Shows the Ant+ Bike Power Settings:
+/// The Ant+ Bike Power Settings widget which shows:
 ///
 /// - Crank length (mm)
 /// - Advanced capabilities:
@@ -17,21 +17,24 @@ import 'package:flutter_heyteacher_views/flutter_heyteacher_views.dart';
 ///   - Rider Position
 ///   - Torque Barycenter
 ///
-/// Each advanced capability can be enabled or disabled if it is supported.
+/// Crank length can be updated by the user with a value in range
+/// 165 mm - 167 mm with 0.5 mm step.
+///
+/// Each advanced capability can be enabled or disabled if supported.
 ///
 /// Two callbacks can be provided:
 ///
 /// - [_crankLengthCallback]: callback invokend whenthe crank length is set
 /// - [_is8hertzCallback]: callback invokend when the 8Hz is set
 ///
-class AntPlusBikePowerSettings extends StatefulWidget {
-  /// Creates [AntPlusBikePowerSettings]
+class AntPlusBikePowerSettingsWidget extends StatefulWidget {
+  /// Creates [AntPlusBikePowerSettingsWidget]
   ///
   /// Two callbacks can be provided:
   ///
   /// - [_crankLengthCallback] callback invokend whenthe crank length is set
   /// - [_is8hertzCallback] callback invokend when the 8Hz is set
-  const AntPlusBikePowerSettings({
+  const AntPlusBikePowerSettingsWidget({
     super.key,
     this._crankLengthCallback,
     this._is8hertzCallback,
@@ -43,11 +46,12 @@ class AntPlusBikePowerSettings extends StatefulWidget {
   final Future<void> Function({required bool enable})? _is8hertzCallback;
 
   @override
-  State<AntPlusBikePowerSettings> createState() =>
-      _AntPlusBikePowerSettingsState();
+  State<AntPlusBikePowerSettingsWidget> createState() =>
+      _AntPlusBikePowerSettingsWidgetState();
 }
 
-class _AntPlusBikePowerSettingsState extends State<AntPlusBikePowerSettings> {
+class _AntPlusBikePowerSettingsWidgetState
+    extends State<AntPlusBikePowerSettingsWidget> {
   AntplusAdvancedCapabilitiesData? _advancedCapabilitiesData;
 
   StreamSubscription<AntplusAdvancedCapabilitiesData>?
@@ -109,7 +113,7 @@ class _AntPlusBikePowerSettingsState extends State<AntPlusBikePowerSettings> {
     children: [
       Center(
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 4),
+          padding: const EdgeInsets.only(bottom: 16),
           child: Text(
             FlutterAntPlusLocalizations.of(context)!.bikePowerSettings,
             style: Theme.of(context).textTheme.titleLarge,
@@ -122,39 +126,63 @@ class _AntPlusBikePowerSettingsState extends State<AntPlusBikePowerSettings> {
       ),
       _buildCapabilityListTile(
         title: FlutterAntPlusLocalizations.of(context)!.fourHertz,
-        value: _advancedCapabilitiesData?.is4HertzEnabled,
-        supported: false,
+        value: _advancedCapabilitiesData != null
+            ? (
+                enabled: _advancedCapabilitiesData!.is4HertzEnabled,
+                supported: _advancedCapabilitiesData!.is4HertzSupported,
+              )
+            : null,
         setter: ({required enable}) => Future<void>.value(),
+        readOnly: true,
       ),
       _buildCapabilityListTile(
         title: FlutterAntPlusLocalizations.of(context)!.eightHertz,
-        value: _advancedCapabilitiesData?.is8HertzEnabled,
-        supported: _advancedCapabilitiesData?.is4HertzSupported,
+        value: _advancedCapabilitiesData != null
+            ? (
+                enabled: _advancedCapabilitiesData!.is8HertzEnabled,
+                supported: _advancedCapabilitiesData!.is8HertzSupported,
+              )
+            : null,
         setter: AntplusBikepowerViewModel.instance.set8Hertz,
       ),
       _buildCapabilityListTile(
         title: FlutterAntPlusLocalizations.of(context)!.pco,
-        value: _advancedCapabilitiesData?.pcoEnabled,
-        supported: _advancedCapabilitiesData?.pcoSupported,
+        value: _advancedCapabilitiesData != null
+            ? (
+                enabled: _advancedCapabilitiesData!.pcoEnabled,
+                supported: _advancedCapabilitiesData!.pcoSupported,
+              )
+            : null,
         setter: AntplusBikepowerViewModel.instance.setPco,
       ),
       _buildCapabilityListTile(
         title: FlutterAntPlusLocalizations.of(context)!.powerPhase,
-        value: _advancedCapabilitiesData?.powerPhaseEnabled,
-        supported: _advancedCapabilitiesData?.powerPhaseSupported,
+        value: _advancedCapabilitiesData != null
+            ? (
+                enabled: _advancedCapabilitiesData!.powerPhaseEnabled,
+                supported: _advancedCapabilitiesData!.powerPhaseSupported,
+              )
+            : null,
         setter: AntplusBikepowerViewModel.instance.setPowerPhase,
       ),
       _buildCapabilityListTile(
         title: FlutterAntPlusLocalizations.of(context)!.riderPosition,
-        value: _advancedCapabilitiesData?.riderPositionEnabled,
-        supported: _advancedCapabilitiesData?.riderPositionSupported,
+        value: _advancedCapabilitiesData != null
+            ? (
+                enabled: _advancedCapabilitiesData!.riderPositionEnabled,
+                supported: _advancedCapabilitiesData!.riderPositionSupported,
+              )
+            : null,
         setter: AntplusBikepowerViewModel.instance.setRiderPosition,
       ),
       _buildCapabilityListTile(
         title: FlutterAntPlusLocalizations.of(context)!.torqueBarycenter,
-        value: _advancedCapabilitiesData?.torqueBarycenterEnabled,
-        supported:
-            _advancedCapabilitiesData?.torqueBarycenterSupported ?? true,
+        value: _advancedCapabilitiesData != null
+            ? (
+                enabled: _advancedCapabilitiesData!.torqueBarycenterEnabled,
+                supported: _advancedCapabilitiesData!.torqueBarycenterSupported,
+              )
+            : null,
         setter: AntplusBikepowerViewModel.instance.setTorqueBarycenter,
       ),
     ],
@@ -162,17 +190,31 @@ class _AntPlusBikePowerSettingsState extends State<AntPlusBikePowerSettings> {
 
   Widget _buildCapabilityListTile({
     required String title,
-    required bool? value,
-    required bool? supported,
+    required ({bool enabled, bool supported})? value,
     required Future<void> Function({required bool enable}) setter,
+    bool readOnly = false,
   }) => _addDivider(
     child: ListTile(
       title: Text(title),
+      subtitle: value != null
+          ? Text(
+              value.supported
+                  ? FlutterAntPlusLocalizations.of(context)!.supported
+                  : FlutterAntPlusLocalizations.of(context)!.notSupported,
+              style: TextStyle(
+                color:
+                    (value.supported
+                            ? ThemeViewModel.instance.greenColor
+                            : ThemeViewModel.instance.colorScheme.onError)
+                        .withValues(alpha: 0.5),
+              ),
+            )
+          : null,
       trailing: value == null
           ? _buildProgressIndicator()
           : Switch(
-              value: value,
-              onChanged: supported == null || !supported
+              value: value.enabled,
+              onChanged: readOnly || !value.supported
                   ? null
                   : (value) {
                       setState(() => _advancedCapabilitiesData = null);

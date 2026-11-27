@@ -16,6 +16,7 @@ export 'src/pigeons/device_event_channel.g.dart'
         AntplusDeviceType;
 export 'src/pigeons/usb_adapter_event_channel.g.dart'
     show AntplusUsbAdapterState;
+export 'src/view/ant_plus_bike_power_settings_button.dart';
 export 'src/view/antplus_bikepower_settings.dart';
 export 'src/view_model/antplus_bikepower_view_model.dart'
     show AntplusBikepowerViewModel;

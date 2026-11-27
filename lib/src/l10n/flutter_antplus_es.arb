@@ -7,5 +7,7 @@
   "pco": "PCO",
   "powerPhase": "Fase de potencia",
   "riderPosition": "Posición del ciclista",
-  "torqueBarycenter": "Baricentro de par"
+  "torqueBarycenter": "Baricentro de par",
+  "supported": "Soportado",
+  "notSupported": "No compatible"
 }

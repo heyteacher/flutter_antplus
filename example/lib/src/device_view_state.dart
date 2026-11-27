@@ -137,7 +137,7 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
 
   /// Extra buttons for the device list tile.
   @protected
-  List<IconButton>? get extraButtons => null;
+  List<Widget>? get extraButtons => null;
 
   /// Creates a table with [tableRows].
   @protected
@@ -280,6 +280,11 @@ abstract class DeviceViewState<T extends StatefulWidget> extends State<T>
                   child: table(tableRows: tableRows),
                 ),
               ],
+            ),
+          if (_scanning)
+            const Padding(
+              padding: EdgeInsets.only(top: 64),
+              child: ProgressIndicatorView(timeout: Duration(minutes: 3)),
             ),
         ],
       ),
